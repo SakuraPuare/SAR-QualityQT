@@ -1,0 +1,2 @@
+data/LC08_L1TP_127035_20200425_20200509_01_T1_B2.TIF filter=lfs diff=lfs merge=lfs -text
+data filter=lfs diff=lfs merge=lfs -text
