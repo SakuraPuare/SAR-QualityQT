@@ -22,6 +22,8 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        imagehandler.cpp
+        imagehandler.h
         analysis_snr.cpp
         analysis_infocontent.cpp
         analysis_clarity.cpp
@@ -71,6 +73,7 @@ qt_finalize_executable(SAR-QualityQT)
 target_sources(SAR-QualityQT PRIVATE
     main.cpp
     mainwindow.cpp
+    imagehandler.cpp
     analysis_snr.cpp
     analysis_infocontent.cpp
     analysis_clarity.cpp

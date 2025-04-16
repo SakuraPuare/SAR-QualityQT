@@ -7,14 +7,14 @@
 
 // 实现 SNR (信噪比) 和 ENL (等效视数) 分析
 // 注意：这些指标通常在均匀区域计算才有意义。全局计算可能受场景内容影响。
-void MainWindow::performSNRAnalysis() {
+void MainWindow::performSNRAnalysis(const cv::Mat& inputImage) {
   QString resultLog = tr("SNR/ENL Analysis Results (Global):\n");
   QString overviewResult = tr("SNR/ENL (Global): "); // 指明是全局计算
 
-  if (currentImage.empty()) {
-    resultLog = tr("Error: No image loaded for SNR/ENL analysis.");
+  if (inputImage.empty()) {
+    resultLog = tr("Error: No valid image data provided for SNR/ENL analysis.");
     ui->method1ResultsTextEdit->setText(resultLog);
-    ui->overviewResultsTextEdit->append(overviewResult + tr("Error - No Image"));
+    ui->overviewResultsTextEdit->append(overviewResult + tr("Error - No Data"));
     logMessage(resultLog);
     return;
   }
@@ -23,11 +23,11 @@ void MainWindow::performSNRAnalysis() {
 
   // 1. 准备用于分析的单通道浮点图像
   logMessage(tr("Preparing single-channel float image for SNR/ENL analysis..."));
-  if (currentImage.channels() == 2) {
+  if (inputImage.channels() == 2) {
     // 处理复数数据：计算幅度
     logMessage(tr("Input is complex (2-channel), calculating magnitude."));
     std::vector<cv::Mat> channels;
-    cv::split(currentImage, channels);
+    cv::split(inputImage, channels);
     // 确保通道是浮点类型
     if (channels[0].depth() != CV_32F && channels[0].depth() != CV_64F) {
         logMessage(tr("Converting complex channels to CV_32F for magnitude calculation."));
@@ -36,10 +36,10 @@ void MainWindow::performSNRAnalysis() {
     }
     cv::magnitude(channels[0], channels[1], analysisMat); // 幅度图是单通道浮点型
     resultLog += tr("Using magnitude image calculated from complex data.\n");
-  } else if (currentImage.channels() == 1) {
+  } else if (inputImage.channels() == 1) {
     // 输入已经是单通道（例如强度图像）
     logMessage(tr("Input is single-channel."));
-    analysisMat = currentImage.clone(); // 克隆以防修改
+    analysisMat = inputImage.clone(); // 克隆以防修改
     // 确保是浮点类型，因为 SNR/ENL 计算涉及除法，需要精度
     if (analysisMat.depth() != CV_32F && analysisMat.depth() != CV_64F) {
         logMessage(tr("Converting single-channel image (type: %1) to 32-bit float (CV_32F) for analysis.")
@@ -52,7 +52,7 @@ void MainWindow::performSNRAnalysis() {
   } else {
     // 不支持其他通道数的输入进行此分析
      resultLog = tr("Error: Unsupported channel count (%1) for SNR/ENL analysis. Expected 1 (intensity/magnitude) or 2 (complex).")
-                .arg(currentImage.channels());
+                .arg(inputImage.channels());
      ui->method1ResultsTextEdit->setText(resultLog);
      ui->overviewResultsTextEdit->append(overviewResult + tr("Error - Unsupported Channels"));
      logMessage(resultLog);
