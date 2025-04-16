@@ -1,477 +1,483 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1200</width>
-    <height>800</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>SAR Image Analyzer</string>
-  </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_Main">
-    <item>
-     <widget class="QSplitter" name="mainSplitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QWidget" name="imageWidgetContainer" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>1</horstretch>
-         <verstretch>1</verstretch>
-        </sizepolicy>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_Image">
-        <property name="leftMargin">
-         <number>0</number>
+    <class>MainWindow</class>
+    <widget class="QMainWindow" name="MainWindow">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1200</width>
+                <height>800</height>
+            </rect>
         </property>
-        <property name="topMargin">
-         <number>0</number>
+        <property name="windowTitle">
+            <string>SAR Image Analyzer</string>
         </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="imageDisplayLabel">
-          <property name="text">
-           <string>Image Display Area</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          <property name="frameShape">
-           <enum>QFrame::Box</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Sunken</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="controlPanelWidget" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>300</width>
-         <height>0</height>
-        </size>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_Controls">
-        <item>
-         <widget class="QGroupBox" name="imageInfoGroupBox">
-          <property name="title">
-           <string>Image Information</string>
-          </property>
-          <layout class="QFormLayout" name="formLayout_Info">
-           <item row="0" column="0">
-            <widget class="QLabel" name="labelFilename">
-             <property name="text">
-              <string>Filename:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="valueFilename">
-             <property name="text">
-              <string>N/A</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="labelDimensions">
-             <property name="text">
-              <string>Dimensions:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="valueDimensions">
-             <property name="text">
-              <string>N/A</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="labelDataType">
-             <property name="text">
-              <string>Data Type:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="valueDataType">
-             <property name="text">
-              <string>N/A</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="analysisMethodsGroupBox">
-          <property name="title">
-           <string>Analysis Methods</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_Methods">
-           <item>
-            <widget class="QCheckBox" name="checkBoxSNR">
-             <property name="text">
-              <string>信噪比 (SNR / ENL)</string>
-             </property>
-             <property name="checked">
-                <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBoxInfoContent">
-             <property name="text">
-              <string>信息量</string>
-             </property>
-              <property name="checked">
-                <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBoxClarity">
-             <property name="text">
-              <string>清晰度 (边缘响应)</string>
-             </property>
-              <property name="checked">
-                <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBoxRadiometricAccuracy">
-             <property name="text">
-              <string>辐射精度/分辨率</string>
-             </property>
-              <property name="checked">
-                <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBoxGLCM">
-             <property name="text">
-              <string>灰度共生矩阵 (GLCM)</string>
-             </property>
-              <property name="checked">
-                <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-            <item>
-            <widget class="QCheckBox" name="checkBoxPointTarget">
-             <property name="text">
-              <string>点目标分析</string>
-             </property>
-              <property name="checked">
-                <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="Line" name="line">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBoxSelectAll">
-             <property name="text">
-              <string>Select/Deselect All</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="startAnalysisButton">
-          <property name="text">
-           <string>Start Analysis</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QProgressBar" name="progressBar">
-          <property name="value">
-           <number>0</number>
-          </property>
-          <property name="textVisible">
-             <bool>true</bool>
-         </property>
-         <property name="format">
-              <string>%p%</string>
-         </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_Controls">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
-    <item>
-     <widget class="QTabWidget" name="resultsTabWidget">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-       <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-       </property>
-        <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>150</height>
-          </size>
-         </property>
-      <widget class="QWidget" name="tabOverview">
-       <attribute name="title">
-        <string>Overview</string>
-       </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_TabOverview">
-         <item>
-          <widget class="QTextEdit" name="overviewResultsTextEdit">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-           <property name="placeholderText">
-             <string>Summary of all analysis results...</string>
+        <widget class="QWidget" name="centralwidget">
+            <layout class="QVBoxLayout" name="verticalLayout_Main">
+                <item>
+                    <widget class="QSplitter" name="mainSplitter">
+                        <property name="orientation">
+                            <enum>Qt::Horizontal</enum>
+                        </property>
+                        <widget class="QWidget" name="imageWidgetContainer" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                                    <horstretch>1</horstretch>
+                                    <verstretch>1</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <layout class="QVBoxLayout" name="verticalLayout_Image">
+                                <property name="leftMargin">
+                                    <number>0</number>
+                                </property>
+                                <property name="topMargin">
+                                    <number>0</number>
+                                </property>
+                                <property name="rightMargin">
+                                    <number>0</number>
+                                </property>
+                                <property name="bottomMargin">
+                                    <number>0</number>
+                                </property>
+                                <item>
+                                    <widget class="QLabel" name="imageDisplayLabel">
+                                        <property name="text">
+                                            <string>Image Display Area</string>
+                                        </property>
+                                        <property name="alignment">
+                                            <set>Qt::AlignCenter</set>
+                                        </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="frameShape">
+                                            <enum>QFrame::Box</enum>
+                                        </property>
+                                        <property name="frameShadow">
+                                            <enum>QFrame::Sunken</enum>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                        <widget class="QWidget" name="controlPanelWidget" native="true">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                                <size>
+                                    <width>300</width>
+                                    <height>0</height>
+                                </size>
+                            </property>
+                            <layout class="QVBoxLayout" name="verticalLayout_Controls">
+                                <item>
+                                    <widget class="QGroupBox" name="imageInfoGroupBox">
+                                        <property name="title">
+                                            <string>Image Information</string>
+                                        </property>
+                                        <layout class="QFormLayout" name="formLayout_Info">
+                                            <item row="0" column="0">
+                                                <widget class="QLabel" name="labelFilename">
+                                                    <property name="text">
+                                                        <string>Filename:</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item row="0" column="1">
+                                                <widget class="QLabel" name="valueFilename">
+                                                    <property name="text">
+                                                        <string>N/A</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item row="1" column="0">
+                                                <widget class="QLabel" name="labelDimensions">
+                                                    <property name="text">
+                                                        <string>Dimensions:</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item row="1" column="1">
+                                                <widget class="QLabel" name="valueDimensions">
+                                                    <property name="text">
+                                                        <string>N/A</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item row="2" column="0">
+                                                <widget class="QLabel" name="labelDataType">
+                                                    <property name="text">
+                                                        <string>Data Type:</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item row="2" column="1">
+                                                <widget class="QLabel" name="valueDataType">
+                                                    <property name="text">
+                                                        <string>N/A</string>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                        </layout>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QGroupBox" name="analysisMethodsGroupBox">
+                                        <property name="title">
+                                            <string>Analysis Methods</string>
+                                        </property>
+                                        <layout class="QVBoxLayout" name="verticalLayout_Methods">
+                                            <item>
+                                                <widget class="QCheckBox" name="checkBoxSNR">
+                                                    <property name="text">
+                                                        <string>信噪比 (SNR / ENL)</string>
+                                                    </property>
+                                                    <property name="checked">
+                                                        <bool>true</bool>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="QCheckBox" name="checkBoxInfoContent">
+                                                    <property name="text">
+                                                        <string>信息量</string>
+                                                    </property>
+                                                    <property name="checked">
+                                                        <bool>true</bool>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="QCheckBox" name="checkBoxClarity">
+                                                    <property name="text">
+                                                        <string>清晰度 (边缘响应)</string>
+                                                    </property>
+                                                    <property name="checked">
+                                                        <bool>true</bool>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="QCheckBox"
+                                                    name="checkBoxRadiometricAccuracy">
+                                                    <property name="text">
+                                                        <string>辐射精度/分辨率</string>
+                                                    </property>
+                                                    <property name="checked">
+                                                        <bool>true</bool>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="QCheckBox" name="checkBoxGLCM">
+                                                    <property name="text">
+                                                        <string>灰度共生矩阵 (GLCM)</string>
+                                                    </property>
+                                                    <property name="checked">
+                                                        <bool>true</bool>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="QCheckBox" name="checkBoxPointTarget">
+                                                    <property name="text">
+                                                        <string>点目标分析</string>
+                                                    </property>
+                                                    <property name="checked">
+                                                        <bool>true</bool>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="Line" name="line">
+                                                    <property name="orientation">
+                                                        <enum>Qt::Horizontal</enum>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                            <item>
+                                                <widget class="QCheckBox" name="checkBoxSelectAll">
+                                                    <property name="text">
+                                                        <string>Select/Deselect All</string>
+                                                    </property>
+                                                    <property name="checked">
+                                                        <bool>true</bool>
+                                                    </property>
+                                                </widget>
+                                            </item>
+                                        </layout>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="startAnalysisButton">
+                                        <property name="text">
+                                            <string>Start Analysis</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QProgressBar" name="progressBar">
+                                        <property name="value">
+                                            <number>0</number>
+                                        </property>
+                                        <property name="textVisible">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="format">
+                                            <string>%p%</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="verticalSpacer_Controls">
+                                        <property name="orientation">
+                                            <enum>Qt::Vertical</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>20</width>
+                                                <height>40</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </widget>
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QTabWidget" name="resultsTabWidget">
+                        <property name="currentIndex">
+                            <number>0</number>
+                        </property>
+                        <property name="sizePolicy">
+                            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                            </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                            <size>
+                                <width>0</width>
+                                <height>150</height>
+                            </size>
+                        </property>
+                        <widget class="QWidget" name="tabOverview">
+                            <attribute name="title">
+                                <string>Overview</string>
+                            </attribute>
+                            <layout class="QVBoxLayout" name="verticalLayout_TabOverview">
+                                <item>
+                                    <widget class="QTextEdit" name="overviewResultsTextEdit">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>Summary of all analysis results...</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                        <widget class="QWidget" name="tabMethod1">
+                            <attribute name="title">
+                                <string>Method 1 (SNR)</string>
+                            </attribute>
+                            <layout class="QVBoxLayout" name="verticalLayout_TabMethod1">
+                                <item>
+                                    <widget class="QTextEdit" name="method1ResultsTextEdit">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>Detailed results for Method 1 (e.g., SNR: 15.2)</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                        <widget class="QWidget" name="tabMethod2">
+                            <attribute name="title">
+                                <string>Method 2 (Info)</string>
+                            </attribute>
+                            <layout class="QVBoxLayout" name="verticalLayout_TabMethod2">
+                                <item>
+                                    <widget class="QTextEdit" name="method2ResultsTextEdit">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>Detailed results for Method 2 (Information
+                                                Content)</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                        <widget class="QWidget" name="tabMethod3">
+                            <attribute name="title">
+                                <string>Method 3 (Clarity)</string>
+                            </attribute>
+                            <layout class="QVBoxLayout" name="verticalLayout_TabMethod3">
+                                <item>
+                                    <widget class="QTextEdit" name="method3ResultsTextEdit">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>Detailed results for Method 3 (Clarity / Edge
+                                                Response)</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                        <widget class="QWidget" name="tabMethod4">
+                            <attribute name="title">
+                                <string>Method 4 (Radiometric)</string>
+                            </attribute>
+                            <layout class="QVBoxLayout" name="verticalLayout_TabMethod4">
+                                <item>
+                                    <widget class="QTextEdit" name="method4ResultsTextEdit">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>Detailed results for Method 4 (Radiometric
+                                                Accuracy / Resolution)</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                        <widget class="QWidget" name="tabMethod5">
+                            <attribute name="title">
+                                <string>Method 5 (GLCM)</string>
+                            </attribute>
+                            <layout class="QVBoxLayout" name="verticalLayout_TabMethod5">
+                                <item>
+                                    <widget class="QTextEdit" name="method5ResultsTextEdit">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>Detailed results for Method 5 (GLCM: Contrast,
+                                                Energy, Entropy, Correlation...)</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                        <widget class="QWidget" name="tabMethod6">
+                            <attribute name="title">
+                                <string>Method 6 (Point Target)</string>
+                            </attribute>
+                            <layout class="QVBoxLayout" name="verticalLayout_TabMethod6">
+                                <item>
+                                    <widget class="QTextEdit" name="method6ResultsTextEdit">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>Detailed results for Method 6 (Point Target
+                                                Analysis)</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QLabel" name="labelLog">
+                        <property name="text">
+                            <string>Log Output:</string>
+                        </property>
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QTextEdit" name="logTextEdit">
+                        <property name="readOnly">
+                            <bool>true</bool>
+                        </property>
+                        <property name="maximumSize">
+                            <size>
+                                <width>16777215</width>
+                                <height>100</height>
+                            </size>
+                        </property>
+                        <property name="placeholderText">
+                            <string>Analysis log messages will appear here...</string>
+                        </property>
+                    </widget>
+                </item>
+            </layout>
+        </widget>
+        <widget class="QMenuBar" name="menubar">
+            <property name="geometry">
+                <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>1200</width>
+                    <height>29</height>
+                </rect>
             </property>
-          </widget>
-         </item>
-        </layout>
-      </widget>
-      <widget class="QWidget" name="tabMethod1">
-       <attribute name="title">
-        <string>Method 1 (SNR)</string>
-       </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_TabMethod1">
-         <item>
-          <widget class="QTextEdit" name="method1ResultsTextEdit">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-            <property name="placeholderText">
-             <string>Detailed results for Method 1 (e.g., SNR: 15.2)</string>
+            <widget class="QMenu" name="menuFile">
+                <property name="title">
+                    <string>&amp;File</string>
+                </property>
+                <addaction name="actionOpenImage" />
+                <addaction name="separator" />
+                <addaction name="actionExit" />
+            </widget>
+            <addaction name="menuFile" />
+        </widget>
+        <widget class="QStatusBar" name="statusbar" />
+        <action name="actionOpenImage">
+            <property name="text">
+                <string>Open Image</string>
             </property>
-          </widget>
-         </item>
-        </layout>
-      </widget>
-       <widget class="QWidget" name="tabMethod2">
-       <attribute name="title">
-        <string>Method 2 (Info)</string>
-       </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_TabMethod2">
-         <item>
-          <widget class="QTextEdit" name="method2ResultsTextEdit">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-            <property name="placeholderText">
-             <string>Detailed results for Method 2 (Information Content)</string>
+            <property name="toolTip">
+                <string>Open SAR Image File (Ctrl+O)</string>
             </property>
-          </widget>
-         </item>
-        </layout>
-      </widget>
-       <widget class="QWidget" name="tabMethod3">
-       <attribute name="title">
-        <string>Method 3 (Clarity)</string>
-       </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_TabMethod3">
-         <item>
-          <widget class="QTextEdit" name="method3ResultsTextEdit">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-            <property name="placeholderText">
-             <string>Detailed results for Method 3 (Clarity / Edge Response)</string>
+            <property name="shortcut">
+                <string>Ctrl+O</string>
             </property>
-          </widget>
-         </item>
-        </layout>
-      </widget>
-       <widget class="QWidget" name="tabMethod4">
-       <attribute name="title">
-        <string>Method 4 (Radiometric)</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_TabMethod4">
-         <item>
-          <widget class="QTextEdit" name="method4ResultsTextEdit">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-            <property name="placeholderText">
-             <string>Detailed results for Method 4 (Radiometric Accuracy / Resolution)</string>
+        </action>
+        <action name="actionExit">
+            <property name="text">
+                <string>E&amp;xit</string>
             </property>
-          </widget>
-         </item>
-        </layout>
-      </widget>
-      <widget class="QWidget" name="tabMethod5">
-       <attribute name="title">
-        <string>Method 5 (GLCM)</string>
-       </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_TabMethod5">
-         <item>
-          <widget class="QTextEdit" name="method5ResultsTextEdit">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-            <property name="placeholderText">
-             <string>Detailed results for Method 5 (GLCM: Contrast, Energy, Entropy, Correlation...)</string>
+            <property name="shortcut">
+                <string>Ctrl+Q</string>
             </property>
-          </widget>
-         </item>
-        </layout>
-      </widget>
-       <widget class="QWidget" name="tabMethod6">
-       <attribute name="title">
-        <string>Method 6 (Point Target)</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_TabMethod6">
-         <item>
-          <widget class="QTextEdit" name="method6ResultsTextEdit">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-            <property name="placeholderText">
-             <string>Detailed results for Method 6 (Point Target Analysis)</string>
-            </property>
-          </widget>
-         </item>
-        </layout>
-      </widget>
-     </widget>
-    </item>
-    <item>
-      <widget class="QLabel" name="labelLog">
-         <property name="text">
-          <string>Log Output:</string>
-         </property>
-      </widget>
-    </item>
-    <item>
-     <widget class="QTextEdit" name="logTextEdit">
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>100</height>
-       </size>
-      </property>
-       <property name="placeholderText">
-        <string>Analysis log messages will appear here...</string>
-       </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1200</width>
-     <height>29</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="actionOpenImage"/>
-    <addaction name="separator"/>
-    <addaction name="actionExit"/>
-   </widget>
-   <addaction name="menuFile"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionOpenImage">
-   <property name="text">
-    <string>Open Image</string>
-   </property>
-   <property name="toolTip">
-    <string>Open SAR Image File (Ctrl+O)</string>
-   </property>
-    <property name="shortcut">
-       <string>Ctrl+O</string>
-    </property>
-  </action>
-   <action name="actionExit">
-     <property name="text">
-      <string>E&amp;xit</string>
-     </property>
-      <property name="shortcut">
-       <string>Ctrl+Q</string>
-    </property>
-    </action>
- </widget>
- <resources/>
- <connections>
-  <connection>
-   <sender>actionExit</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>599</x>
-     <y>399</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+        </action>
+    </widget>
+    <resources />
+    <connections>
+        <connection>
+            <sender>actionExit</sender>
+            <signal>triggered()</signal>
+            <receiver>MainWindow</receiver>
+            <slot>close()</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>-1</x>
+                    <y>-1</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>599</x>
+                    <y>399</y>
+                </hint>
+            </hints>
+        </connection>
+    </connections>
 </ui>

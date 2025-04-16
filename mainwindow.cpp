@@ -25,14 +25,24 @@ MainWindow::MainWindow(QWidget *parent)
   ui->valueDimensions->setText(tr("N/A"));
   ui->valueDataType->setText(tr("N/A"));
   ui->imageDisplayLabel->setText(tr("Image Display Area"));
-  ui->overviewResultsTextEdit->setPlaceholderText(tr("Summary of all analysis results..."));
-  ui->method1ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 1 (e.g., SNR: 15.2)"));
-  ui->method2ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 2 (e.g., Information Content: 8.5 bits/pixel)"));
-  ui->method3ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 3 (e.g., Clarity: 0.75)"));
-  ui->method4ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 4 (e.g., Radiometric Accuracy: 95%)"));
-  ui->method5ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 5 (e.g., GLCM Features: Contrast: 0.25, Correlation: 0.5)"));
-  ui->method6ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 6 (Point Target Analysis)"));
-  ui->logTextEdit->setPlaceholderText(tr("Analysis log messages will appear here..."));
+  ui->overviewResultsTextEdit->setPlaceholderText(
+      tr("Summary of all analysis results..."));
+  ui->method1ResultsTextEdit->setPlaceholderText(
+      tr("Detailed results for Method 1 (e.g., SNR: 15.2)"));
+  ui->method2ResultsTextEdit->setPlaceholderText(
+      tr("Detailed results for Method 2 (e.g., Information Content: 8.5 "
+         "bits/pixel)"));
+  ui->method3ResultsTextEdit->setPlaceholderText(
+      tr("Detailed results for Method 3 (e.g., Clarity: 0.75)"));
+  ui->method4ResultsTextEdit->setPlaceholderText(
+      tr("Detailed results for Method 4 (e.g., Radiometric Accuracy: 95%)"));
+  ui->method5ResultsTextEdit->setPlaceholderText(
+      tr("Detailed results for Method 5 (e.g., GLCM Features: Contrast: 0.25, "
+         "Correlation: 0.5)"));
+  ui->method6ResultsTextEdit->setPlaceholderText(
+      tr("Detailed results for Method 6 (Point Target Analysis)"));
+  ui->logTextEdit->setPlaceholderText(
+      tr("Analysis log messages will appear here..."));
 }
 
 MainWindow::~MainWindow() {
@@ -85,11 +95,13 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
       if (suffix == "tif" || suffix == "tiff" || suffix == "img" ||
           suffix == "hdr" || suffix == "dat") {
         event->acceptProposedAction(); // 如果是支持的文件，接受拖动操作
-        logMessage(tr("Drag entered with supported file: %1").arg(fileInfo.fileName()));
+        logMessage(tr("Drag entered with supported file: %1")
+                       .arg(fileInfo.fileName()));
         // 可以添加视觉反馈，比如改变边框颜色
         return;
       } else {
-        logMessage(tr("Drag entered with unsupported file type: %1").arg(suffix));
+        logMessage(
+            tr("Drag entered with unsupported file type: %1").arg(suffix));
       }
     }
   }
@@ -207,7 +219,8 @@ void MainWindow::openImageFile(const QString &filePath) {
     isComplex = true;
     break;
   default:
-    logMessage(tr("Error: Unsupported GDAL data type: %1").arg(GDALGetDataTypeName(dataType)));
+    logMessage(tr("Error: Unsupported GDAL data type: %1")
+                   .arg(GDALGetDataTypeName(dataType)));
     QMessageBox::critical(this, tr("Error"),
                           tr("Unsupported image data type."));
     closeCurrentImage();
@@ -216,7 +229,8 @@ void MainWindow::openImageFile(const QString &filePath) {
 
   // 处理复数和非复数数据
   if (isComplex) {
-    logMessage(tr("Complex data type detected. Reading as 2-channel matrix (real, imag)."));
+    logMessage(tr("Complex data type detected. Reading as 2-channel matrix "
+                  "(real, imag)."));
     int elementSize = GDALGetDataTypeSizeBytes(dataType) / 2; // 每个分量的大小
     currentImage =
         cv::Mat(height, width, CV_MAKETYPE(cvType, 2)); // 创建双通道 Mat
@@ -240,7 +254,8 @@ void MainWindow::openImageFile(const QString &filePath) {
 
     // 分析时通常需要幅度或强度图像，这里先将复数数据存储起来
     // displayImage 将需要处理双通道输入，或者我们在这里计算幅度
-    logMessage(tr("Stored complex data (real, imag). Analysis functions need to handle this."));
+    logMessage(tr("Stored complex data (real, imag). Analysis functions need "
+                  "to handle this."));
     // 为了显示，我们计算幅度图
     // cv::Mat magnitudeImage;
     // std::vector<cv::Mat> channels(2);
@@ -266,7 +281,8 @@ void MainWindow::openImageFile(const QString &filePath) {
     // displayImage(currentImage); // 直接显示
   }
 
-  logMessage(tr("Image data read into cv::Mat. Dimensions: %1x%2, Type: %3, Channels: %4")
+  logMessage(tr("Image data read into cv::Mat. Dimensions: %1x%2, Type: %3, "
+                "Channels: %4")
                  .arg(width)
                  .arg(height)
                  .arg(cv::typeToString(currentImage.type()))
@@ -329,8 +345,9 @@ void MainWindow::displayImage(const cv::Mat &image) {
   if (image.channels() == 1) {
     singleChannelImage = image;
   } else if (image.channels() > 1) {
-    logMessage(tr("Input image has %1 channels. Taking the first channel for display.")
-                   .arg(image.channels()));
+    logMessage(
+        tr("Input image has %1 channels. Taking the first channel for display.")
+            .arg(image.channels()));
     std::vector<cv::Mat> channels;
     cv::split(image, channels);
     singleChannelImage =
@@ -368,7 +385,8 @@ void MainWindow::displayImage(const cv::Mat &image) {
     qimg = QImage((const uchar *)displayMat.data, displayMat.cols,
                   displayMat.rows, displayMat.step, QImage::Format_Grayscale8);
   } else {
-    logMessage(tr("Error: Could not prepare image for QImage conversion (Expected CV_8UC1, got Type %1)")
+    logMessage(tr("Error: Could not prepare image for QImage conversion "
+                  "(Expected CV_8UC1, got Type %1)")
                    .arg(cv::typeToString(displayMat.type())));
     return; // 无法转换
   }
@@ -494,7 +512,8 @@ void MainWindow::on_startAnalysisButton_clicked() {
 
   logMessage(tr("Analysis finished."));
   ui->overviewResultsTextEdit->setText(
-      overviewResult + tr("\n(Detailed results in respective tabs)")); // 更新总览
+      overviewResult +
+      tr("\n(Detailed results in respective tabs)"));      // 更新总览
   ui->resultsTabWidget->setCurrentWidget(ui->tabOverview); // 最后切回总览标签页
   QMessageBox::information(
       this, tr("Analysis Complete"),
@@ -508,7 +527,8 @@ void MainWindow::on_checkBoxSelectAll_toggled(bool checked) {
   ui->checkBoxRadiometricAccuracy->setChecked(checked);
   ui->checkBoxGLCM->setChecked(checked);
   ui->checkBoxPointTarget->setChecked(checked); // 控制点目标复选框
-  logMessage(checked ? tr("Analysis methods selected all.") : tr("Analysis methods deselected all."));
+  logMessage(checked ? tr("Analysis methods selected all.")
+                     : tr("Analysis methods deselected all."));
 }
 
 // --- 分析方法占位符实现 ---
@@ -521,7 +541,8 @@ void MainWindow::performSNRAnalysis() {
   // 3. 计算 SNR = mean / stddev 或 ENL = (mean/stddev)^2
   // 4. 将结果显示在 ui->method1ResultsTextEdit
   QString result = tr("SNR/ENL calculation placeholder.\n");
-  result += tr("Requires selection of homogeneous region or automatic detection.\n");
+  result +=
+      tr("Requires selection of homogeneous region or automatic detection.\n");
   result += tr("Image type: %1, channels: %2")
                 .arg(currentImage.type())
                 .arg(currentImage.channels());
@@ -535,7 +556,8 @@ void MainWindow::performInfoContentAnalysis() {
   // 1. 计算图像的直方图
   // 2. 根据直方图计算熵 H = -sum(p_i * log2(p_i))
   // 3. 将结果显示在 ui->method2ResultsTextEdit
-  QString result = tr("Information Content (Entropy) calculation placeholder.\n");
+  QString result =
+      tr("Information Content (Entropy) calculation placeholder.\n");
   if (!currentImage.empty() && currentImage.channels() == 1) {
     // 示例：计算灰度图的熵 (需要确保图像是 CV_8U)
     cv::Mat hist;
@@ -598,8 +620,10 @@ void MainWindow::performRadiometricAnalysis() {
   // 1. 这可能涉及分析已知亮度的目标，或统计均匀区域的分布特性
   // 2. 计算等效比特数或其他指标
   // 3. 将结果显示在 ui->method4ResultsTextEdit
-  QString result = tr("Radiometric Accuracy/Resolution analysis placeholder.\n");
-  result += tr("May involve analyzing known targets or statistical distributions.");
+  QString result =
+      tr("Radiometric Accuracy/Resolution analysis placeholder.\n");
+  result +=
+      tr("May involve analyzing known targets or statistical distributions.");
   ui->method4ResultsTextEdit->setText(result);
   // 更新 Overview tab
   ui->overviewResultsTextEdit->append(
@@ -612,10 +636,12 @@ void MainWindow::performGLCMAnalysis() {
   // 2. 从 GLCM 计算纹理特征 (对比度，相关性，能量，熵/均匀性等)
   // 3. 将结果显示在 ui->method5ResultsTextEdit
   QString result = tr("GLCM calculation placeholder.\n");
-  result += tr("Requires calculating GLCM and deriving texture features (Contrast, Correlation, Energy, Homogeneity...).");
+  result += tr("Requires calculating GLCM and deriving texture features "
+               "(Contrast, Correlation, Energy, Homogeneity...).");
   ui->method5ResultsTextEdit->setText(result);
   // 更新 Overview tab
-  ui->overviewResultsTextEdit->append(tr("GLCM Features: Pending Implementation"));
+  ui->overviewResultsTextEdit->append(
+      tr("GLCM Features: Pending Implementation"));
 }
 
 void MainWindow::performPointTargetAnalysis() {
@@ -626,7 +652,8 @@ void MainWindow::performPointTargetAnalysis() {
   // (ISLR)、分辨率等
   // 4. 将结果显示在 ui->method6ResultsTextEdit
   QString result = tr("Point Target Analysis placeholder.\n");
-  result += tr("Requires selection of point target, oversampling, and analysis of PSF/IPR (PSLR, ISLR, Resolution...).");
+  result += tr("Requires selection of point target, oversampling, and analysis "
+               "of PSF/IPR (PSLR, ISLR, Resolution...).");
   ui->method6ResultsTextEdit->setText(result);
   // 更新 Overview tab
   ui->overviewResultsTextEdit->append(
