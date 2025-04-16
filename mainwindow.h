@@ -54,10 +54,32 @@ private:
   cv::Mat currentImage;             // 当前加载的 OpenCV 图像
   QString currentFilename;          // 当前文件名
 
+  /**
+   * @brief 在日志窗口记录带有时间戳的消息。
+   * @param message 要记录的消息。
+   */
   void logMessage(const QString &message);
+
+  /**
+   * @brief 在 UI 的 imageDisplayLabel 上显示图像。
+   * @param image 要显示的 OpenCV Mat 对象。
+   */
   void displayImage(const cv::Mat &image);
+
+  /**
+   * @brief 更新 UI 控件以显示当前图像的基本信息（文件名、尺寸、数据类型）。
+   */
   void updateImageInfo();
+
+  /**
+   * @brief 关闭当前打开的 GDAL 数据集并释放相关资源。
+   */
   void closeCurrentImage();
+
+  /**
+   * @brief 使用 GDAL 打开指定路径的图像文件，读取数据到 currentImage 并更新 UI。
+   * @param filePath 图像文件的完整路径。
+   */
   void openImageFile(const QString &filePath);
 
   // --- 分析方法占位符 ---
