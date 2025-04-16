@@ -9,58 +9,44 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets LinguistTools)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets LinguistTools)
+# 仅查找 Qt6
+find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools Core)
 find_package(OpenCV REQUIRED)
 find_package(GDAL CONFIG REQUIRED)
 
 set(TS_FILES SAR-QualityQT_zh_CN.ts)
 
+# 定义基础源文件
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
-        ${TS_FILES}
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(SAR-QualityQT
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
+# 使用 Qt6 的方式添加可执行文件和翻译
+qt_add_executable(SAR-QualityQT
+    MANUAL_FINALIZATION
+    ${PROJECT_SOURCES}
+)
+qt_add_translations(SAR-QualityQT TS_FILES ${TS_FILES})
+
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET SAR-QualityQT APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 
-    qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
-else()
-    if(ANDROID)
-        add_library(SAR-QualityQT SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(SAR-QualityQT
-            ${PROJECT_SOURCES}
-        )
-    endif()
-
-    qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
-endif()
-
-target_link_libraries(SAR-QualityQT PRIVATE Qt${QT_VERSION_MAJOR}::Widgets GDAL::GDAL ${OpenCV_LIBS})
+target_link_libraries(SAR-QualityQT PRIVATE Qt6::Widgets Qt6::Core GDAL::GDAL ${OpenCV_LIBS})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
-if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.SAR-QualityQT)
-endif()
+# 如果你的目标 Qt 版本保证是 6.1 或更高，可以移除这个 if 判断
+# set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.SAR-QualityQT)
+# if(${QT_VERSION} VERSION_LESS 6.1.0) # 移除此条件判断
+#   set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.SAR-QualityQT)
+# endif()
 set_target_properties(SAR-QualityQT PROPERTIES
-    ${BUNDLE_ID_OPTION}
+#    ${BUNDLE_ID_OPTION} # 可以直接设置，或者如果不需要兼容老版本 macOS/iOS，可以移除
+    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.SAR-QualityQT # 直接设置 Bundle ID
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
@@ -74,6 +60,5 @@ install(TARGETS SAR-QualityQT
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(SAR-QualityQT)
-endif()
+# 始终为 Qt6 调用 finalize
+qt_finalize_executable(SAR-QualityQT)

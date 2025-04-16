@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
   ui->setupUi(this);
   setAcceptDrops(true); // 启用拖放接收
   GDALAllRegister();    // 初始化 GDAL 驱动
-  logMessage("Application started. GDAL initialized. Drag & Drop enabled.");
+  logMessage(tr("Application started. GDAL initialized. Drag & Drop enabled."));
   // 可以选择在此显式连接信号和槽，但遵循命名约定通常足够
   // connect(ui->actionOpenImage, &QAction::triggered, this,
   // &MainWindow::on_actionOpenImage_triggered);
@@ -19,6 +19,20 @@ MainWindow::MainWindow(QWidget *parent)
   ui->startAnalysisButton->setEnabled(false);
   // 初始化分析方法复选框状态 (根据 UI 文件设置，可以省略)
   on_checkBoxSelectAll_toggled(ui->checkBoxSelectAll->isChecked());
+
+  // Initial default text for labels etc. should use tr()
+  ui->valueFilename->setText(tr("N/A"));
+  ui->valueDimensions->setText(tr("N/A"));
+  ui->valueDataType->setText(tr("N/A"));
+  ui->imageDisplayLabel->setText(tr("Image Display Area"));
+  ui->overviewResultsTextEdit->setPlaceholderText(tr("Summary of all analysis results..."));
+  ui->method1ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 1 (e.g., SNR: 15.2)"));
+  ui->method2ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 2 (e.g., Information Content: 8.5 bits/pixel)"));
+  ui->method3ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 3 (e.g., Clarity: 0.75)"));
+  ui->method4ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 4 (e.g., Radiometric Accuracy: 95%)"));
+  ui->method5ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 5 (e.g., GLCM Features: Contrast: 0.25, Correlation: 0.5)"));
+  ui->method6ResultsTextEdit->setPlaceholderText(tr("Detailed results for Method 6 (Point Target Analysis)"));
+  ui->logTextEdit->setPlaceholderText(tr("Analysis log messages will appear here..."));
 }
 
 MainWindow::~MainWindow() {
@@ -36,17 +50,17 @@ void MainWindow::closeCurrentImage() {
   if (poDataset != nullptr) {
     GDALClose(poDataset);
     poDataset = nullptr;
-    logMessage("Closed current image dataset.");
+    logMessage(tr("Closed current image dataset."));
   }
   currentImage.release();
   currentFilename.clear();
   // 清空图像信息
-  ui->valueFilename->setText("N/A");
-  ui->valueDimensions->setText("N/A");
-  ui->valueDataType->setText("N/A");
+  ui->valueFilename->setText(tr("N/A"));
+  ui->valueDimensions->setText(tr("N/A"));
+  ui->valueDataType->setText(tr("N/A"));
   // 清空图像显示
   ui->imageDisplayLabel->clear();
-  ui->imageDisplayLabel->setText("Image Display Area");
+  ui->imageDisplayLabel->setText(tr("Image Display Area"));
   // 禁用分析按钮
   ui->startAnalysisButton->setEnabled(false);
   // 清空结果区域
@@ -71,13 +85,11 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
       if (suffix == "tif" || suffix == "tiff" || suffix == "img" ||
           suffix == "hdr" || suffix == "dat") {
         event->acceptProposedAction(); // 如果是支持的文件，接受拖动操作
-        logMessage(QString("Drag entered with supported file: %1")
-                       .arg(fileInfo.fileName()));
+        logMessage(tr("Drag entered with supported file: %1").arg(fileInfo.fileName()));
         // 可以添加视觉反馈，比如改变边框颜色
         return;
       } else {
-        logMessage(
-            QString("Drag entered with unsupported file type: %1").arg(suffix));
+        logMessage(tr("Drag entered with unsupported file type: %1").arg(suffix));
       }
     }
   }
@@ -90,7 +102,7 @@ void MainWindow::dropEvent(QDropEvent *event) {
     QList<QUrl> urls = mimeData->urls();
     if (!urls.isEmpty()) {
       QString filePath = urls.first().toLocalFile(); // 获取第一个拖放的文件路径
-      logMessage(QString("File dropped: %1").arg(filePath));
+      logMessage(tr("File dropped: %1").arg(filePath));
       openImageFile(filePath); // 使用新的函数打开文件
       event->acceptProposedAction();
       // 恢复可能的视觉反馈
@@ -103,11 +115,11 @@ void MainWindow::dropEvent(QDropEvent *event) {
 
 void MainWindow::openImageFile(const QString &filePath) {
   if (filePath.isEmpty()) {
-    logMessage("Image opening cancelled or invalid path.");
+    logMessage(tr("Image opening cancelled or invalid path."));
     return;
   }
 
-  logMessage(QString("Attempting to open image: %1").arg(filePath));
+  logMessage(tr("Attempting to open image: %1").arg(filePath));
 
   // 先关闭之前打开的图像
   closeCurrentImage();
@@ -117,7 +129,7 @@ void MainWindow::openImageFile(const QString &filePath) {
       (GDALDataset *)GDALOpen(filePath.toStdString().c_str(), GA_ReadOnly);
 
   if (poDataset == nullptr) {
-    logMessage(QString("Error: Could not open image file: %1").arg(filePath));
+    logMessage(tr("Error: Could not open image file: %1").arg(filePath));
     QMessageBox::critical(this, tr("Error"),
                           tr("Could not open the selected image file. Check "
                              "GDAL configuration and file format."));
@@ -125,7 +137,7 @@ void MainWindow::openImageFile(const QString &filePath) {
   }
 
   currentFilename = QFileInfo(filePath).fileName();
-  logMessage(QString("Successfully opened: %1").arg(currentFilename));
+  logMessage(tr("Successfully opened: %1").arg(currentFilename));
 
   // 更新图像信息
   updateImageInfo();
@@ -136,7 +148,7 @@ void MainWindow::openImageFile(const QString &filePath) {
   int numBands = poDataset->GetRasterCount(); // SAR 通常是单波段
 
   if (numBands < 1) {
-    logMessage("Error: Image has no raster bands.");
+    logMessage(tr("Error: Image has no raster bands."));
     QMessageBox::critical(this, tr("Error"), tr("Image has no raster bands."));
     closeCurrentImage();
     return;
@@ -144,7 +156,7 @@ void MainWindow::openImageFile(const QString &filePath) {
 
   GDALRasterBand *poBand = poDataset->GetRasterBand(1); // 读取第一个波段
   if (!poBand) {
-    logMessage("Error: Could not get raster band 1.");
+    logMessage(tr("Error: Could not get raster band 1."));
     QMessageBox::critical(this, tr("Error"),
                           tr("Could not get raster band 1."));
     closeCurrentImage();
@@ -195,8 +207,7 @@ void MainWindow::openImageFile(const QString &filePath) {
     isComplex = true;
     break;
   default:
-    logMessage(QString("Error: Unsupported GDAL data type: %1")
-                   .arg(GDALGetDataTypeName(dataType)));
+    logMessage(tr("Error: Unsupported GDAL data type: %1").arg(GDALGetDataTypeName(dataType)));
     QMessageBox::critical(this, tr("Error"),
                           tr("Unsupported image data type."));
     closeCurrentImage();
@@ -205,8 +216,7 @@ void MainWindow::openImageFile(const QString &filePath) {
 
   // 处理复数和非复数数据
   if (isComplex) {
-    logMessage("Complex data type detected. Reading as 2-channel matrix (real, "
-               "imag).");
+    logMessage(tr("Complex data type detected. Reading as 2-channel matrix (real, imag)."));
     int elementSize = GDALGetDataTypeSizeBytes(dataType) / 2; // 每个分量的大小
     currentImage =
         cv::Mat(height, width, CV_MAKETYPE(cvType, 2)); // 创建双通道 Mat
@@ -221,7 +231,7 @@ void MainWindow::openImageFile(const QString &filePath) {
         GDALGetDataTypeSizeBytes(dataType) * width); // Line spacing
 
     if (err != CE_None) {
-      logMessage("Error reading complex raster data.");
+      logMessage(tr("Error reading complex raster data."));
       QMessageBox::critical(this, tr("Error"),
                             tr("Failed to read complex image data."));
       closeCurrentImage();
@@ -230,8 +240,7 @@ void MainWindow::openImageFile(const QString &filePath) {
 
     // 分析时通常需要幅度或强度图像，这里先将复数数据存储起来
     // displayImage 将需要处理双通道输入，或者我们在这里计算幅度
-    logMessage("Stored complex data (real, imag). Analysis functions need to "
-               "handle this.");
+    logMessage(tr("Stored complex data (real, imag). Analysis functions need to handle this."));
     // 为了显示，我们计算幅度图
     // cv::Mat magnitudeImage;
     // std::vector<cv::Mat> channels(2);
@@ -242,13 +251,13 @@ void MainWindow::openImageFile(const QString &filePath) {
 
   } else {
     // 读取非复数数据
-    logMessage("Reading non-complex data.");
+    logMessage(tr("Reading non-complex data."));
     currentImage = cv::Mat(height, width, cvType);
     CPLErr err =
         poBand->RasterIO(GF_Read, 0, 0, width, height, currentImage.ptr(),
                          width, height, dataType, 0, 0); // 使用自动像素和行间距
     if (err != CE_None) {
-      logMessage("Error reading raster data.");
+      logMessage(tr("Error reading raster data."));
       QMessageBox::critical(this, tr("Error"),
                             tr("Failed to read image data."));
       closeCurrentImage();
@@ -257,8 +266,7 @@ void MainWindow::openImageFile(const QString &filePath) {
     // displayImage(currentImage); // 直接显示
   }
 
-  logMessage(QString("Image data read into cv::Mat. Dimensions: %1x%2, Type: "
-                     "%3, Channels: %4")
+  logMessage(tr("Image data read into cv::Mat. Dimensions: %1x%2, Type: %3, Channels: %4")
                  .arg(width)
                  .arg(height)
                  .arg(cv::typeToString(currentImage.type()))
@@ -272,7 +280,7 @@ void MainWindow::openImageFile(const QString &filePath) {
       std::vector<cv::Mat> channels(2);
       cv::split(currentImage, channels); // 分离实部和虚部
       cv::magnitude(channels[0], channels[1], magnitudeImage);
-      logMessage("Displaying magnitude of complex image.");
+      logMessage(tr("Displaying magnitude of complex image."));
       displayImage(magnitudeImage);
     } else {
       displayImage(currentImage); // 显示非复数图像
@@ -280,7 +288,7 @@ void MainWindow::openImageFile(const QString &filePath) {
     // 图像加载成功后启用分析按钮
     ui->startAnalysisButton->setEnabled(true);
   } else {
-    logMessage("Error: cv::Mat is empty after reading.");
+    logMessage(tr("Error: cv::Mat is empty after reading."));
     QMessageBox::critical(this, tr("Error"),
                           tr("Failed to process image data after reading."));
     closeCurrentImage();
@@ -301,17 +309,17 @@ void MainWindow::updateImageInfo() {
     GDALDataType dataType = poBand->GetRasterDataType();
     ui->valueDataType->setText(GDALGetDataTypeName(dataType));
   } else {
-    ui->valueDataType->setText("Error reading type");
+    ui->valueDataType->setText(tr("Error reading type"));
   }
 }
 
 void MainWindow::displayImage(const cv::Mat &image) {
   if (image.empty()) {
-    logMessage("Cannot display empty image.");
+    logMessage(tr("Cannot display empty image."));
     return;
   }
 
-  logMessage(QString("Displaying image with type: %1, channels: %2")
+  logMessage(tr("Displaying image with type: %1, channels: %2")
                  .arg(cv::typeToString(image.type()))
                  .arg(image.channels()));
 
@@ -321,15 +329,14 @@ void MainWindow::displayImage(const cv::Mat &image) {
   if (image.channels() == 1) {
     singleChannelImage = image;
   } else if (image.channels() > 1) {
-    logMessage(QString("Input image has %1 channels. Taking the first channel "
-                       "for display.")
+    logMessage(tr("Input image has %1 channels. Taking the first channel for display.")
                    .arg(image.channels()));
     std::vector<cv::Mat> channels;
     cv::split(image, channels);
     singleChannelImage =
         channels[0]; // 或者显示幅度，如果输入是复数计算后的幅度
   } else {
-    logMessage("Error: Input image has 0 channels.");
+    logMessage(tr("Error: Input image has 0 channels."));
     return;
   }
 
@@ -340,7 +347,7 @@ void MainWindow::displayImage(const cv::Mat &image) {
     // 归一化到 0-255
     double minVal, maxVal;
     cv::minMaxLoc(singleChannelImage, &minVal, &maxVal);
-    logMessage(QString("Normalizing for display. Original min: %1, max: %2")
+    logMessage(tr("Normalizing for display. Original min: %1, max: %2")
                    .arg(minVal)
                    .arg(maxVal));
     if (maxVal > minVal) {
@@ -361,14 +368,13 @@ void MainWindow::displayImage(const cv::Mat &image) {
     qimg = QImage((const uchar *)displayMat.data, displayMat.cols,
                   displayMat.rows, displayMat.step, QImage::Format_Grayscale8);
   } else {
-    logMessage(QString("Error: Could not prepare image for QImage conversion "
-                       "(Expected CV_8UC1, got Type %1)")
+    logMessage(tr("Error: Could not prepare image for QImage conversion (Expected CV_8UC1, got Type %1)")
                    .arg(cv::typeToString(displayMat.type())));
     return; // 无法转换
   }
 
   if (qimg.isNull()) {
-    logMessage("Error converting cv::Mat to QImage.");
+    logMessage(tr("Error converting cv::Mat to QImage."));
     return;
   }
 
@@ -378,18 +384,18 @@ void MainWindow::displayImage(const cv::Mat &image) {
   ui->imageDisplayLabel->setPixmap(pixmap.scaled(ui->imageDisplayLabel->size(),
                                                  Qt::KeepAspectRatio,
                                                  Qt::SmoothTransformation));
-  logMessage("Image displayed.");
+  logMessage(tr("Image displayed."));
 }
 
 void MainWindow::on_startAnalysisButton_clicked() {
   if (currentImage.empty() || poDataset == nullptr) {
     QMessageBox::warning(this, tr("Warning"),
                          tr("Please open an image first."));
-    logMessage("Analysis skipped: No image loaded.");
+    logMessage(tr("Analysis skipped: No image loaded."));
     return;
   }
 
-  logMessage("Starting analysis...");
+  logMessage(tr("Starting analysis..."));
   ui->progressBar->setValue(0); // Reset progress bar
 
   // 清空之前的分析结果
@@ -419,7 +425,7 @@ void MainWindow::on_startAnalysisButton_clicked() {
   if (totalSteps == 0) {
     QMessageBox::information(this, tr("Info"),
                              tr("Please select at least one analysis method."));
-    logMessage("Analysis stopped: No methods selected.");
+    logMessage(tr("Analysis stopped: No methods selected."));
     return;
   }
 
@@ -427,10 +433,10 @@ void MainWindow::on_startAnalysisButton_clicked() {
   ui->progressBar->setMaximum(totalSteps); // 设置进度条最大值
 
   // 运行选定的分析 (目前只是占位符)
-  QString overviewResult = "Analysis Overview:\n";
+  QString overviewResult = tr("Analysis Overview:\n");
 
   if (ui->checkBoxSNR->isChecked()) {
-    logMessage("Performing SNR/ENL analysis...");
+    logMessage(tr("Performing SNR/ENL analysis..."));
     performSNRAnalysis(); // 调用实际分析函数
     currentStep++;
     ui->progressBar->setValue(currentStep);
@@ -440,7 +446,7 @@ void MainWindow::on_startAnalysisButton_clicked() {
     QCoreApplication::processEvents();                      // 更新 UI
   }
   if (ui->checkBoxInfoContent->isChecked()) {
-    logMessage("Performing Information Content analysis...");
+    logMessage(tr("Performing Information Content analysis..."));
     performInfoContentAnalysis();
     currentStep++;
     ui->progressBar->setValue(currentStep);
@@ -449,7 +455,7 @@ void MainWindow::on_startAnalysisButton_clicked() {
     QCoreApplication::processEvents();
   }
   if (ui->checkBoxClarity->isChecked()) {
-    logMessage("Performing Clarity analysis...");
+    logMessage(tr("Performing Clarity analysis..."));
     performClarityAnalysis();
     currentStep++;
     ui->progressBar->setValue(currentStep);
@@ -458,7 +464,7 @@ void MainWindow::on_startAnalysisButton_clicked() {
     QCoreApplication::processEvents();
   }
   if (ui->checkBoxRadiometricAccuracy->isChecked()) {
-    logMessage("Performing Radiometric Accuracy/Resolution analysis...");
+    logMessage(tr("Performing Radiometric Accuracy/Resolution analysis..."));
     performRadiometricAnalysis();
     currentStep++;
     ui->progressBar->setValue(currentStep);
@@ -467,7 +473,7 @@ void MainWindow::on_startAnalysisButton_clicked() {
     QCoreApplication::processEvents();
   }
   if (ui->checkBoxGLCM->isChecked()) {
-    logMessage("Performing GLCM analysis...");
+    logMessage(tr("Performing GLCM analysis..."));
     performGLCMAnalysis();
     currentStep++;
     ui->progressBar->setValue(currentStep);
@@ -476,7 +482,7 @@ void MainWindow::on_startAnalysisButton_clicked() {
     QCoreApplication::processEvents();
   }
   if (ui->checkBoxPointTarget->isChecked()) {
-    logMessage("Performing Point Target analysis...");
+    logMessage(tr("Performing Point Target analysis..."));
     performPointTargetAnalysis(); // 调用点目标分析函数
     currentStep++;
     ui->progressBar->setValue(currentStep);
@@ -486,9 +492,9 @@ void MainWindow::on_startAnalysisButton_clicked() {
     QCoreApplication::processEvents();
   }
 
-  logMessage("Analysis finished.");
+  logMessage(tr("Analysis finished."));
   ui->overviewResultsTextEdit->setText(
-      overviewResult + "\n(Detailed results in respective tabs)"); // 更新总览
+      overviewResult + tr("\n(Detailed results in respective tabs)")); // 更新总览
   ui->resultsTabWidget->setCurrentWidget(ui->tabOverview); // 最后切回总览标签页
   QMessageBox::information(
       this, tr("Analysis Complete"),
@@ -502,8 +508,7 @@ void MainWindow::on_checkBoxSelectAll_toggled(bool checked) {
   ui->checkBoxRadiometricAccuracy->setChecked(checked);
   ui->checkBoxGLCM->setChecked(checked);
   ui->checkBoxPointTarget->setChecked(checked); // 控制点目标复选框
-  logMessage(QString("Analysis methods %1.")
-                 .arg(checked ? "selected all" : "deselected all"));
+  logMessage(checked ? tr("Analysis methods selected all.") : tr("Analysis methods deselected all."));
 }
 
 // --- 分析方法占位符实现 ---
@@ -515,15 +520,14 @@ void MainWindow::performSNRAnalysis() {
   // 2. 计算区域内均值和标准差
   // 3. 计算 SNR = mean / stddev 或 ENL = (mean/stddev)^2
   // 4. 将结果显示在 ui->method1ResultsTextEdit
-  QString result = "SNR/ENL calculation placeholder.\n";
-  result +=
-      "Requires selection of homogeneous region or automatic detection.\n";
-  result += QString("Image type: %1, channels: %2")
+  QString result = tr("SNR/ENL calculation placeholder.\n");
+  result += tr("Requires selection of homogeneous region or automatic detection.\n");
+  result += tr("Image type: %1, channels: %2")
                 .arg(currentImage.type())
                 .arg(currentImage.channels());
   ui->method1ResultsTextEdit->setText(result);
   // 更新 Overview tab
-  ui->overviewResultsTextEdit->append("SNR/ENL: Pending Implementation");
+  ui->overviewResultsTextEdit->append(tr("SNR/ENL: Pending Implementation"));
 }
 
 void MainWindow::performInfoContentAnalysis() {
@@ -531,7 +535,7 @@ void MainWindow::performInfoContentAnalysis() {
   // 1. 计算图像的直方图
   // 2. 根据直方图计算熵 H = -sum(p_i * log2(p_i))
   // 3. 将结果显示在 ui->method2ResultsTextEdit
-  QString result = "Information Content (Entropy) calculation placeholder.\n";
+  QString result = tr("Information Content (Entropy) calculation placeholder.\n");
   if (!currentImage.empty() && currentImage.channels() == 1) {
     // 示例：计算灰度图的熵 (需要确保图像是 CV_8U)
     cv::Mat hist;
@@ -563,18 +567,18 @@ void MainWindow::performInfoContentAnalysis() {
         entropy -= p * log2(p);
       }
     }
-    result += QString("Calculated Entropy: %1 bits/pixel").arg(entropy);
+    result += tr("Calculated Entropy: %1 bits/pixel").arg(entropy);
 
   } else {
-    result += "Cannot calculate entropy for current image format directly.";
+    result += tr("Cannot calculate entropy for current image format directly.");
   }
 
   ui->method2ResultsTextEdit->setText(result);
   // 更新 Overview tab
-  ui->overviewResultsTextEdit->append("Information Content: " +
-                                      (result.contains("Calculated Entropy")
+  ui->overviewResultsTextEdit->append(tr("Information Content: ") +
+                                      (result.contains(tr("Calculated Entropy"))
                                            ? result.split(": ").last()
-                                           : "Pending/Error"));
+                                           : tr("Pending/Error")));
 }
 
 void MainWindow::performClarityAnalysis() {
@@ -582,11 +586,11 @@ void MainWindow::performClarityAnalysis() {
   // 1. 可能需要用户选择边缘区域或自动检测强边缘
   // 2. 分析边缘剖面，计算边缘宽度或梯度等指标
   // 3. 将结果显示在 ui->method3ResultsTextEdit
-  QString result = "Clarity (Edge Response) calculation placeholder.\n";
-  result += "Requires selection/detection of an edge and profile analysis.";
+  QString result = tr("Clarity (Edge Response) calculation placeholder.\n");
+  result += tr("Requires selection/detection of an edge and profile analysis.");
   ui->method3ResultsTextEdit->setText(result);
   // 更新 Overview tab
-  ui->overviewResultsTextEdit->append("Clarity: Pending Implementation");
+  ui->overviewResultsTextEdit->append(tr("Clarity: Pending Implementation"));
 }
 
 void MainWindow::performRadiometricAnalysis() {
@@ -594,12 +598,12 @@ void MainWindow::performRadiometricAnalysis() {
   // 1. 这可能涉及分析已知亮度的目标，或统计均匀区域的分布特性
   // 2. 计算等效比特数或其他指标
   // 3. 将结果显示在 ui->method4ResultsTextEdit
-  QString result = "Radiometric Accuracy/Resolution analysis placeholder.\n";
-  result += "May involve analyzing known targets or statistical distributions.";
+  QString result = tr("Radiometric Accuracy/Resolution analysis placeholder.\n");
+  result += tr("May involve analyzing known targets or statistical distributions.");
   ui->method4ResultsTextEdit->setText(result);
   // 更新 Overview tab
   ui->overviewResultsTextEdit->append(
-      "Radiometric Accuracy: Pending Implementation");
+      tr("Radiometric Accuracy: Pending Implementation"));
 }
 
 void MainWindow::performGLCMAnalysis() {
@@ -607,12 +611,11 @@ void MainWindow::performGLCMAnalysis() {
   // 1. 计算图像的 GLCM (可能需要选择方向和距离)
   // 2. 从 GLCM 计算纹理特征 (对比度，相关性，能量，熵/均匀性等)
   // 3. 将结果显示在 ui->method5ResultsTextEdit
-  QString result = "GLCM calculation placeholder.\n";
-  result += "Requires calculating GLCM and deriving texture features "
-            "(Contrast, Correlation, Energy, Homogeneity...).";
+  QString result = tr("GLCM calculation placeholder.\n");
+  result += tr("Requires calculating GLCM and deriving texture features (Contrast, Correlation, Energy, Homogeneity...).");
   ui->method5ResultsTextEdit->setText(result);
   // 更新 Overview tab
-  ui->overviewResultsTextEdit->append("GLCM Features: Pending Implementation");
+  ui->overviewResultsTextEdit->append(tr("GLCM Features: Pending Implementation"));
 }
 
 void MainWindow::performPointTargetAnalysis() {
@@ -622,13 +625,12 @@ void MainWindow::performPointTargetAnalysis() {
   // 3. 分析点目标响应函数 (PSF/IPR)，计算峰值旁瓣比 (PSLR)、积分旁瓣比
   // (ISLR)、分辨率等
   // 4. 将结果显示在 ui->method6ResultsTextEdit
-  QString result = "Point Target Analysis placeholder.\n";
-  result += "Requires selection of point target, oversampling, and analysis of "
-            "PSF/IPR (PSLR, ISLR, Resolution...).";
+  QString result = tr("Point Target Analysis placeholder.\n");
+  result += tr("Requires selection of point target, oversampling, and analysis of PSF/IPR (PSLR, ISLR, Resolution...).");
   ui->method6ResultsTextEdit->setText(result);
   // 更新 Overview tab
   ui->overviewResultsTextEdit->append(
-      "Point Target Analysis: Pending Implementation");
+      tr("Point Target Analysis: Pending Implementation"));
 }
 
 // 添加缺失的槽函数实现
@@ -641,9 +643,9 @@ void MainWindow::on_actionOpenImage_triggered() {
          "(*)")); // 文件过滤器
 
   if (!filePath.isEmpty()) {
-    logMessage(QString("Opening image via menu: %1").arg(filePath));
+    logMessage(tr("Opening image via menu: %1").arg(filePath));
     openImageFile(filePath); // 调用现有函数打开文件
   } else {
-    logMessage("Image opening cancelled by user.");
+    logMessage(tr("Image opening cancelled by user."));
   }
 }
