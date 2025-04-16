@@ -22,6 +22,11 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        analysis_snr.cpp
+        analysis_infocontent.cpp
+        analysis_clarity.cpp
+        analysis_radiometric.cpp
+        analysis_glcm.cpp
 )
 
 # 使用 Qt6 的方式添加可执行文件和翻译
@@ -62,3 +67,13 @@ install(TARGETS SAR-QualityQT
 
 # 始终为 Qt6 调用 finalize
 qt_finalize_executable(SAR-QualityQT)
+
+target_sources(SAR-QualityQT PRIVATE
+    main.cpp
+    mainwindow.cpp
+    analysis_snr.cpp
+    analysis_infocontent.cpp
+    analysis_clarity.cpp
+    analysis_radiometric.cpp
+    analysis_glcm.cpp
+)
