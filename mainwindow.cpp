@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
+#include <vector>
+#include <cmath>
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
@@ -39,8 +43,6 @@ MainWindow::MainWindow(QWidget *parent)
   ui->method5ResultsTextEdit->setPlaceholderText(
       tr("Detailed results for Method 5 (e.g., GLCM Features: Contrast: 0.25, "
          "Correlation: 0.5)"));
-  ui->method6ResultsTextEdit->setPlaceholderText(
-      tr("Detailed results for Method 6 (Point Target Analysis)"));
   ui->logTextEdit->setPlaceholderText(
       tr("Analysis log messages will appear here..."));
 }
@@ -80,7 +82,6 @@ void MainWindow::closeCurrentImage() {
   ui->method3ResultsTextEdit->clear();
   ui->method4ResultsTextEdit->clear();
   ui->method5ResultsTextEdit->clear();
-  ui->method6ResultsTextEdit->clear();
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
@@ -423,7 +424,6 @@ void MainWindow::on_startAnalysisButton_clicked() {
   ui->method3ResultsTextEdit->clear();
   ui->method4ResultsTextEdit->clear();
   ui->method5ResultsTextEdit->clear();
-  ui->method6ResultsTextEdit->clear(); // 清空点目标分析结果
 
   // 检查选择了哪些方法
   int totalSteps = 0;
@@ -437,8 +437,6 @@ void MainWindow::on_startAnalysisButton_clicked() {
     totalSteps++;
   if (ui->checkBoxGLCM->isChecked())
     totalSteps++;
-  if (ui->checkBoxPointTarget->isChecked())
-    totalSteps++; // 检查点目标分析
 
   if (totalSteps == 0) {
     QMessageBox::information(this, tr("Info"),
@@ -499,16 +497,6 @@ void MainWindow::on_startAnalysisButton_clicked() {
     ui->resultsTabWidget->setCurrentWidget(ui->tabMethod5);
     QCoreApplication::processEvents();
   }
-  if (ui->checkBoxPointTarget->isChecked()) {
-    logMessage(tr("Performing Point Target analysis..."));
-    performPointTargetAnalysis(); // 调用点目标分析函数
-    currentStep++;
-    ui->progressBar->setValue(currentStep);
-    // overviewResult += "Point Target Analysis: [Result]\n";
-    ui->resultsTabWidget->setCurrentWidget(
-        ui->tabMethod6); // 切换到点目标标签页
-    QCoreApplication::processEvents();
-  }
 
   logMessage(tr("Analysis finished."));
   ui->overviewResultsTextEdit->setText(
@@ -526,7 +514,6 @@ void MainWindow::on_checkBoxSelectAll_toggled(bool checked) {
   ui->checkBoxClarity->setChecked(checked);
   ui->checkBoxRadiometricAccuracy->setChecked(checked);
   ui->checkBoxGLCM->setChecked(checked);
-  ui->checkBoxPointTarget->setChecked(checked); // 控制点目标复选框
   logMessage(checked ? tr("Analysis methods selected all.")
                      : tr("Analysis methods deselected all."));
 }
@@ -535,129 +522,682 @@ void MainWindow::on_checkBoxSelectAll_toggled(bool checked) {
 // 这些函数需要你根据具体的算法使用 OpenCV 和 GDAL 来实现
 
 void MainWindow::performSNRAnalysis() {
-  // TODO: 实现 SNR/ENL 计算
-  // 1. 可能需要用户选择均匀区域 (或者自动检测)
-  // 2. 计算区域内均值和标准差
-  // 3. 计算 SNR = mean / stddev 或 ENL = (mean/stddev)^2
-  // 4. 将结果显示在 ui->method1ResultsTextEdit
-  QString result = tr("SNR/ENL calculation placeholder.\n");
-  result +=
-      tr("Requires selection of homogeneous region or automatic detection.\n");
-  result += tr("Image type: %1, channels: %2")
-                .arg(currentImage.type())
+  QString resultLog = tr("SNR/ENL Analysis Results:\n");
+  QString overviewResult = tr("SNR/ENL: ");
+
+  if (currentImage.empty()) {
+    resultLog = tr("Error: No image loaded.");
+    ui->method1ResultsTextEdit->setText(resultLog);
+    ui->overviewResultsTextEdit->append(overviewResult + tr("Error - No Image"));
+    logMessage(resultLog);
+    return;
+  }
+
+  cv::Mat analysisMat; // 用于分析的矩阵 (通常是强度或幅度)
+
+  // 1. 准备用于分析的单通道幅度/强度图像
+  if (currentImage.channels() == 2) {
+    // 处理复数数据：计算幅度
+    logMessage(tr("SNR Analysis: Input is complex (2-channel), calculating magnitude."));
+    std::vector<cv::Mat> channels;
+    cv::split(currentImage, channels);
+    // 幅度计算需要浮点型
+    if (channels[0].depth() != CV_32F && channels[0].depth() != CV_64F) {
+        logMessage(tr("Converting complex channels to CV_32F for magnitude calculation."));
+        channels[0].convertTo(channels[0], CV_32F);
+        channels[1].convertTo(channels[1], CV_32F);
+    }
+    cv::magnitude(channels[0], channels[1], analysisMat); // analysisMat 现在是单通道浮点型
+    resultLog += tr("Using magnitude image calculated from complex data.\n");
+  } else if (currentImage.channels() == 1) {
+    // 已经是单通道（通常是强度或已处理的幅度）
+    logMessage(tr("SNR Analysis: Input is single-channel."));
+    analysisMat = currentImage.clone(); // 克隆以防修改
+    // 如果不是浮点型，转换为浮点型以进行精确计算
+    if (analysisMat.depth() != CV_32F && analysisMat.depth() != CV_64F) {
+        logMessage(tr("Converting single-channel image to CV_32F for analysis."));
+        analysisMat.convertTo(analysisMat, CV_32F);
+        resultLog += tr("Converted input to floating-point type (CV_32F).\n");
+    } else {
+         resultLog += tr("Using existing single-channel floating-point data.\n");
+    }
+  } else {
+    // 不支持的通道数
+     resultLog = tr("Error: Unsupported channel count (%1) for SNR analysis. Expected 1 (intensity/amplitude) or 2 (complex).")
                 .arg(currentImage.channels());
-  ui->method1ResultsTextEdit->setText(result);
-  // 更新 Overview tab
-  ui->overviewResultsTextEdit->append(tr("SNR/ENL: Pending Implementation"));
+     ui->method1ResultsTextEdit->setText(resultLog);
+     ui->overviewResultsTextEdit->append(overviewResult + tr("Error - Unsupported Channels"));
+     logMessage(resultLog);
+     return;
+  }
+
+  // 2. 计算均值和标准差
+  cv::Scalar meanValue, stdDevValue;
+  try {
+      // 计算整个图像的均值和标准差
+      // 注意：对于大图像，这可能比较耗时
+      cv::meanStdDev(analysisMat, meanValue, stdDevValue);
+
+      double mean = meanValue[0]; // 取第一个通道的值
+      double stddev = stdDevValue[0];
+
+      resultLog += tr("\n--- Global Statistics ---\n");
+      resultLog += tr("Mean (μ): %1\n").arg(mean);
+      resultLog += tr("Standard Deviation (σ): %1\n").arg(stddev);
+
+      // 3. 计算 SNR 和 ENL
+      if (stddev > 1e-9) { // 避免除以零或非常小的值
+          double snr = mean / stddev;
+          double enl = snr * snr; // ENL = (μ/σ)^2
+
+          resultLog += tr("\n--- Quality Metrics (Global) ---\n");
+          resultLog += tr("Signal-to-Noise Ratio (SNR = μ/σ): %1\n").arg(snr);
+          resultLog += tr("Equivalent Number of Looks (ENL = (μ/σ)²): %1\n").arg(enl);
+
+          overviewResult += tr("SNR=%1, ENL=%2 (Global)")
+                               .arg(QString::number(snr, 'f', 2))
+                               .arg(QString::number(enl, 'f', 2));
+          logMessage(tr("SNR/ENL calculated (Global): Mean=%1, StdDev=%2, SNR=%3, ENL=%4")
+                         .arg(mean).arg(stddev).arg(snr).arg(enl));
+      } else {
+          resultLog += tr("\nWarning: Standard deviation is close to zero. Cannot calculate SNR/ENL reliably.");
+          overviewResult += tr("N/A (StdDev near zero)");
+          logMessage(tr("SNR/ENL calculation skipped: Standard deviation is near zero."));
+      }
+
+       resultLog += tr("\nNote: These metrics are calculated globally. For more accurate results, select a homogeneous region.");
+
+  } catch (const cv::Exception& e) {
+      resultLog += tr("\nError during mean/stddev calculation: %1")
+                       .arg(QString::fromStdString(e.msg));
+      overviewResult += tr("Error - Calculation Failed");
+      logMessage(tr("OpenCV Error during SNR/ENL calculation: %1")
+                     .arg(QString::fromStdString(e.msg)));
+  }
+
+
+  // 4. 更新 UI
+  ui->method1ResultsTextEdit->setText(resultLog);
+  ui->overviewResultsTextEdit->append(overviewResult);
 }
 
 void MainWindow::performInfoContentAnalysis() {
-  // TODO: 实现信息量计算 (例如，图像熵)
-  // 1. 计算图像的直方图
-  // 2. 根据直方图计算熵 H = -sum(p_i * log2(p_i))
-  // 3. 将结果显示在 ui->method2ResultsTextEdit
-  QString result =
-      tr("Information Content (Entropy) calculation placeholder.\n");
-  if (!currentImage.empty() && currentImage.channels() == 1) {
-    // 示例：计算灰度图的熵 (需要确保图像是 CV_8U)
-    cv::Mat hist;
-    int histSize = 256;
-    float range[] = {0, 256};
-    const float *histRange = {range};
-    cv::Mat calcMat;
-    if (currentImage.type() != CV_8U) {
-      // 尝试转换，可能需要更智能的归一化
-      double minVal, maxVal;
-      cv::minMaxLoc(currentImage, &minVal, &maxVal);
-      if (maxVal > minVal)
-        currentImage.convertTo(calcMat, CV_8U, 255.0 / (maxVal - minVal),
-                               -minVal * 255.0 / (maxVal - minVal));
-      else
-        currentImage.convertTo(calcMat, CV_8U);
-    } else {
-      calcMat = currentImage;
-    }
+  QString resultLog; // 用于在文本框中显示详细信息
+  QString overviewResult = tr("Information Content: "); // 用于在总览中显示结果
 
-    cv::calcHist(&calcMat, 1, 0, cv::Mat(), hist, 1, &histSize, &histRange,
-                 true, false);
-
-    hist /= calcMat.total(); // 归一化直方图
-    float entropy = 0.0f;
-    for (int i = 0; i < histSize; i++) {
-      float p = hist.at<float>(i);
-      if (p > 0) { // 避免 log(0)
-        entropy -= p * log2(p);
-      }
-    }
-    result += tr("Calculated Entropy: %1 bits/pixel").arg(entropy);
-
-  } else {
-    result += tr("Cannot calculate entropy for current image format directly.");
+  if (currentImage.empty()) {
+    resultLog = tr("Error: No image loaded.");
+    ui->method2ResultsTextEdit->setText(resultLog);
+    ui->overviewResultsTextEdit->append(overviewResult + tr("Error"));
+    logMessage(resultLog);
+    return;
   }
 
-  ui->method2ResultsTextEdit->setText(result);
-  // 更新 Overview tab
-  ui->overviewResultsTextEdit->append(tr("Information Content: ") +
-                                      (result.contains(tr("Calculated Entropy"))
-                                           ? result.split(": ").last()
-                                           : tr("Pending/Error")));
+  cv::Mat analysisMat; // 用于计算熵的矩阵
+
+  // 检查数据是否为复数 (这里假设 2 通道表示之前加载的复数数据)
+  // 注意：更可靠的方法是在 openImageFile 中存储 isComplex 标志并在需要时访问它
+  if (currentImage.channels() == 2) {
+    logMessage(tr("Input is 2-channel, calculating magnitude for entropy "
+                  "analysis."));
+    std::vector<cv::Mat> channels;
+    cv::split(currentImage, channels);
+    // 确保通道是浮点类型，如果不是则转换 (幅度计算通常需要浮点)
+    if (channels[0].depth() != CV_32F && channels[0].depth() != CV_64F) {
+        logMessage(tr("Converting complex channels to CV_32F for magnitude calculation."));
+        channels[0].convertTo(channels[0], CV_32F);
+        channels[1].convertTo(channels[1], CV_32F);
+    }
+    cv::magnitude(channels[0], channels[1], analysisMat); // analysisMat 现在是单通道浮点型
+    resultLog = tr("Calculated magnitude from complex data.\n");
+  } else if (currentImage.channels() > 1) {
+    // 对于非复数的多通道数据，转换为灰度图
+    // 注意：如果原始多通道图像不是常见的 BGR/RGB 顺序，转换可能需要调整
+    logMessage(tr("Input is multi-channel (%1), converting to grayscale for "
+                  "entropy analysis.")
+                   .arg(currentImage.channels()));
+    // 尝试使用 COLOR_BGR2GRAY，如果失败或类型不支持，则用第一通道
+    try {
+         // 确保输入类型与 cvtColor 兼容，通常是 CV_8U, CV_16U, CV_32F
+         cv::Mat sourceForCvt;
+         if (currentImage.depth() != CV_8U && currentImage.depth() != CV_16U && currentImage.depth() != CV_32F) {
+             // 选择一个合适的转换类型，例如归一化到 CV_8U 或转换为 CV_32F
+             logMessage(tr("Converting multi-channel image to CV_8UC3 before grayscale conversion."));
+      double minVal, maxVal;
+             // 需要对每个通道找到全局 min/max 进行归一化，这里简化处理
+             currentImage.convertTo(sourceForCvt, CV_8U); // 简单截断/缩放，可能不理想
+    } else {
+             sourceForCvt = currentImage;
+         }
+         // 假设输入是 3 或 4 通道的 BGR(A) 图像，否则可能需要其他转换码
+         if (sourceForCvt.channels() >= 3)
+            cv::cvtColor(sourceForCvt, analysisMat, cv::COLOR_BGR2GRAY);
+         else { // 如果不是标准的 3/4 通道，回退到第一通道
+             logMessage(tr("Cannot determine standard color format, using first channel."));
+             std::vector<cv::Mat> channels;
+             cv::split(sourceForCvt, channels);
+             analysisMat = channels[0];
+         }
+
+    } catch (const cv::Exception& e) {
+        logMessage(tr("cvtColor failed (%1), falling back to first channel.")
+                        .arg(QString::fromStdString(e.msg)));
+         std::vector<cv::Mat> channels;
+         cv::split(currentImage, channels);
+         analysisMat = channels[0];
+    }
+     resultLog = tr("Converted multi-channel image to single channel.\n");
+
+  } else {
+    // 已经是单通道图像
+    analysisMat = currentImage.clone(); // 克隆以防修改原始数据
+    resultLog = tr("Input is single-channel.\n");
+  }
+
+  // --- 确保 analysisMat 是单通道 ---
+  if (analysisMat.channels() != 1) {
+      logMessage(tr("Error: Could not obtain single-channel image for entropy calculation."));
+       resultLog += tr("\nError: Failed to get single-channel data.");
+       ui->method2ResultsTextEdit->setText(resultLog);
+       ui->overviewResultsTextEdit->append(overviewResult + tr("Error"));
+       return;
+  }
+
+
+  // --- 将 analysisMat (单通道) 转换为 CV_8U 以计算直方图 ---
+  cv::Mat histMat;
+  if (analysisMat.depth() != CV_8U) {
+    logMessage(tr("Normalizing single-channel image (type: %1) to 8-bit for histogram.")
+                   .arg(cv::typeToString(analysisMat.type())));
+    resultLog += tr("Normalized data to 8-bit range (0-255) for calculation.\n");
+    // 归一化到 0-255
+    double minVal, maxVal;
+    cv::minMaxLoc(analysisMat, &minVal, &maxVal);
+    if (maxVal > minVal) {
+      // 使用 CV_64F 进行中间计算以提高精度
+      cv::Mat tempMat;
+      analysisMat.convertTo(tempMat, CV_64F);
+      tempMat = (tempMat - minVal) * (255.0 / (maxVal - minVal));
+      tempMat.convertTo(histMat, CV_8U); // 最后转回 CV_8U
+    } else {
+      // 处理图像值恒定的情况
+      analysisMat.convertTo(histMat, CV_8U); // 结果将是单个值 (通常是 0)
+      resultLog += tr("Image has constant value, entropy will be 0.\n");
+    }
+  } else {
+    histMat = analysisMat; // 已经是 CV_8U
+    resultLog += tr("Using existing 8-bit data directly for calculation.\n");
+  }
+
+  // --- 计算直方图 ---
+  cv::Mat hist;
+  int histSize = 256;       // 对于 CV_8U
+  float range[] = {0, 256}; // CV_8U 的范围
+  const float *histRange = {range};
+  bool uniform = true;
+  bool accumulate = false;
+  float entropy = 0.0f; // 初始化熵
+
+  try {
+    cv::calcHist(&histMat, 1, // images
+                 0,          // channels (use channel 0)
+                 cv::Mat(),  // mask
+                 hist,       // output histogram
+                 1,          // histogram dimensions
+                 &histSize,  // histogram size for each dimension
+                 &histRange, // range for each dimension
+                 uniform, accumulate);
+
+    // 归一化直方图 (得到概率 p_i)
+    hist /= histMat.total(); // histMat.total() 是像素总数
+
+    // --- 计算熵 H = -sum(p_i * log2(p_i)) ---
+    for (int i = 0; i < histSize; i++) {
+      float p = hist.at<float>(i);
+      if (p > 0) { // 避免 log2(0) 导致 -inf
+        entropy -= p * log2f(p); // 使用 log2f 处理 float
+      }
+    }
+
+    resultLog += tr("\nCalculated Entropy: %1 bits/pixel").arg(entropy);
+    overviewResult +=
+        tr("%1 bits/pixel").arg(QString::number(entropy, 'f', 4)); // 格式化概览结果
+    logMessage(tr("Entropy calculation successful: %1 bits/pixel").arg(entropy));
+
+  } catch (const cv::Exception &e) {
+    resultLog += tr("\nError during histogram/entropy calculation: %1")
+                     .arg(QString::fromStdString(e.msg));
+    overviewResult += tr("Error");
+    logMessage(tr("OpenCV Error during entropy calculation: %1")
+                   .arg(QString::fromStdString(e.msg)));
+     // 即使出错，也要显示日志
+     ui->method2ResultsTextEdit->setText(resultLog);
+     ui->overviewResultsTextEdit->append(overviewResult);
+     return; // 提前返回
+  }
+
+  // --- 更新 UI ---
+  ui->method2ResultsTextEdit->setText(resultLog);
+  ui->overviewResultsTextEdit->append(overviewResult);
 }
 
 void MainWindow::performClarityAnalysis() {
-  // TODO: 实现清晰度评价 (例如，边缘响应)
-  // 1. 可能需要用户选择边缘区域或自动检测强边缘
-  // 2. 分析边缘剖面，计算边缘宽度或梯度等指标
-  // 3. 将结果显示在 ui->method3ResultsTextEdit
-  QString result = tr("Clarity (Edge Response) calculation placeholder.\n");
-  result += tr("Requires selection/detection of an edge and profile analysis.");
-  ui->method3ResultsTextEdit->setText(result);
-  // 更新 Overview tab
-  ui->overviewResultsTextEdit->append(tr("Clarity: Pending Implementation"));
+  // Basic implementation using average gradient magnitude
+  QString resultLog = tr("Clarity Analysis (Average Gradient Magnitude):\n");
+  QString overviewResult = tr("Clarity (GradMag): ");
+
+  if (currentImage.empty()) {
+    resultLog = tr("Error: No image loaded.");
+    ui->method3ResultsTextEdit->setText(resultLog);
+    ui->overviewResultsTextEdit->append(overviewResult + tr("Error - No Image"));
+    logMessage(resultLog);
+    return;
+  }
+
+  cv::Mat analysisMat;
+  QString prepareLog;
+  analysisMat = prepareImageForGLCM(currentImage, prepareLog); // Reuse preparation
+  resultLog += prepareLog;
+
+  if (analysisMat.empty() || analysisMat.type() != CV_8UC1) {
+      resultLog += tr("Error: Could not prepare 8-bit single channel image for gradient calculation.");
+      ui->method3ResultsTextEdit->setText(resultLog);
+      ui->overviewResultsTextEdit->append(overviewResult + tr("Error - Prep Failed"));
+      logMessage(resultLog);
+      return;
+  }
+
+   try {
+        cv::Mat grad_x, grad_y;
+        cv::Mat abs_grad_x, abs_grad_y;
+        cv::Mat grad;
+
+        // Calculate gradients (Sobel)
+        cv::Sobel(analysisMat, grad_x, CV_16S, 1, 0, 3); // Use 16S to avoid overflow
+        cv::Sobel(analysisMat, grad_y, CV_16S, 0, 1, 3);
+
+        // Convert gradients back to absolute 8U representation (optional but common)
+        cv::convertScaleAbs(grad_x, abs_grad_x);
+        cv::convertScaleAbs(grad_y, abs_grad_y);
+
+        // Combine gradients (approximate magnitude)
+        cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
+
+        // Calculate average gradient magnitude
+        cv::Scalar avgGrad = cv::mean(grad);
+        double averageGradient = avgGrad[0];
+
+        resultLog += tr("\n--- Gradient Analysis ---\n");
+        resultLog += tr("Average Gradient Magnitude: %1\n").arg(averageGradient);
+        resultLog += tr("\nNote: Higher values generally indicate sharper details or more texture/noise.");
+
+        overviewResult += tr("%1").arg(QString::number(averageGradient, 'f', 2));
+        logMessage(tr("Clarity (Avg Grad Mag) calculated: %1").arg(averageGradient));
+
+    } catch (const cv::Exception& e) {
+        resultLog += tr("\nError during gradient calculation: %1")
+                       .arg(QString::fromStdString(e.msg));
+        overviewResult += tr("Error - Calculation Failed");
+        logMessage(tr("OpenCV Error during Clarity calculation: %1")
+                     .arg(QString::fromStdString(e.msg)));
+    }
+
+  ui->method3ResultsTextEdit->setText(resultLog);
+  ui->overviewResultsTextEdit->append(overviewResult);
 }
 
 void MainWindow::performRadiometricAnalysis() {
-  // TODO: 实现辐射精度/分辨率评估
-  // 1. 这可能涉及分析已知亮度的目标，或统计均匀区域的分布特性
-  // 2. 计算等效比特数或其他指标
-  // 3. 将结果显示在 ui->method4ResultsTextEdit
-  QString result =
-      tr("Radiometric Accuracy/Resolution analysis placeholder.\n");
-  result +=
-      tr("May involve analyzing known targets or statistical distributions.");
-  ui->method4ResultsTextEdit->setText(result);
-  // 更新 Overview tab
-  ui->overviewResultsTextEdit->append(
-      tr("Radiometric Accuracy: Pending Implementation"));
+  // Basic implementation: Report dynamic range and standard deviation
+  QString resultLog = tr("Radiometric Analysis (Basic):\n");
+  QString overviewResult = tr("Radiometric: ");
+
+  if (currentImage.empty()) {
+    resultLog = tr("Error: No image loaded.");
+    ui->method4ResultsTextEdit->setText(resultLog);
+    ui->overviewResultsTextEdit->append(overviewResult + tr("Error - No Image"));
+    logMessage(resultLog);
+    return;
+  }
+
+  cv::Mat analysisMat;
+  // Use original data if possible, avoid normalization to 8-bit here for range
+   if (currentImage.channels() == 2) {
+      logMessage(tr("Radiometric Analysis: Input is complex, calculating magnitude."));
+      resultLog += tr("Using magnitude image calculated from complex data.\n");
+      std::vector<cv::Mat> channels;
+      cv::split(currentImage, channels);
+      if (channels[0].depth() != CV_32F && channels[0].depth() != CV_64F) {
+          channels[0].convertTo(channels[0], CV_32F);
+          channels[1].convertTo(channels[1], CV_32F);
+      }
+      cv::magnitude(channels[0], channels[1], analysisMat);
+  } else if (currentImage.channels() == 1) {
+       logMessage(tr("Radiometric Analysis: Using single-channel input."));
+       resultLog += tr("Using single-channel input data.\n");
+       analysisMat = currentImage.clone();
+  } else {
+       logMessage(tr("Radiometric Analysis: Input is multi-channel (%1), using first channel.")
+                    .arg(currentImage.channels()));
+       resultLog += tr("Using first channel of multi-channel input.\n");
+       std::vector<cv::Mat> channels;
+       cv::split(currentImage, channels);
+       analysisMat = channels[0];
+  }
+
+  // Ensure float type for stats if not already
+  if (analysisMat.depth() != CV_32F && analysisMat.depth() != CV_64F) {
+      logMessage(tr("Converting image to CV_32F for radiometric stats."));
+      resultLog += tr("Converting data to floating point (CV_32F) for analysis.\n");
+      analysisMat.convertTo(analysisMat, CV_32F);
+  }
+
+
+  try {
+        double minVal, maxVal;
+        cv::minMaxLoc(analysisMat, &minVal, &maxVal);
+
+        cv::Scalar meanValue, stdDevValue;
+        cv::meanStdDev(analysisMat, meanValue, stdDevValue);
+        double mean = meanValue[0];
+        double stddev = stdDevValue[0];
+
+        resultLog += tr("\n--- Basic Radiometric Stats ---\n");
+        resultLog += tr("Minimum Value: %1\n").arg(minVal);
+        resultLog += tr("Maximum Value: %1\n").arg(maxVal);
+        resultLog += tr("Dynamic Range (Max - Min): %1\n").arg(maxVal - minVal);
+        resultLog += tr("Mean Value (μ): %1\n").arg(mean);
+        resultLog += tr("Standard Deviation (σ): %1\n").arg(stddev);
+
+        resultLog += tr("\nNote: Standard deviation provides an estimate of noise/texture level. Dynamic range indicates the spread of intensity values.");
+        // Could add ENOB estimate if reasonable: e.g., log2((maxVal - minVal) / stddev)
+
+        overviewResult += tr("Range=%1, StdDev=%2")
+                             .arg(QString::number(maxVal - minVal, 'g', 3))
+                             .arg(QString::number(stddev, 'g', 3));
+        logMessage(tr("Radiometric stats calculated: Min=%1, Max=%2, Mean=%3, StdDev=%4")
+                        .arg(minVal).arg(maxVal).arg(mean).arg(stddev));
+
+    } catch (const cv::Exception& e) {
+        resultLog += tr("\nError during radiometric calculation: %1")
+                       .arg(QString::fromStdString(e.msg));
+        overviewResult += tr("Error - Calculation Failed");
+        logMessage(tr("OpenCV Error during Radiometric calculation: %1")
+                     .arg(QString::fromStdString(e.msg)));
+    }
+
+
+  ui->method4ResultsTextEdit->setText(resultLog);
+  ui->overviewResultsTextEdit->append(overviewResult);
 }
 
 void MainWindow::performGLCMAnalysis() {
-  // TODO: 实现灰度共生矩阵 (GLCM) 计算
-  // 1. 计算图像的 GLCM (可能需要选择方向和距离)
-  // 2. 从 GLCM 计算纹理特征 (对比度，相关性，能量，熵/均匀性等)
-  // 3. 将结果显示在 ui->method5ResultsTextEdit
-  QString result = tr("GLCM calculation placeholder.\n");
-  result += tr("Requires calculating GLCM and deriving texture features "
-               "(Contrast, Correlation, Energy, Homogeneity...).");
-  ui->method5ResultsTextEdit->setText(result);
-  // 更新 Overview tab
-  ui->overviewResultsTextEdit->append(
-      tr("GLCM Features: Pending Implementation"));
+  QString resultLog = tr("GLCM Analysis Results:\n");
+  QString overviewResult = tr("GLCM: ");
+
+  if (currentImage.empty()) {
+    resultLog = tr("Error: No image loaded.");
+    ui->method5ResultsTextEdit->setText(resultLog);
+    ui->overviewResultsTextEdit->append(overviewResult + tr("Error - No Image"));
+    logMessage(resultLog);
+    return;
+  }
+
+  // 1. Prepare 8-bit single channel image
+  QString prepareLog;
+  cv::Mat glcmInputMat = prepareImageForGLCM(currentImage, prepareLog);
+  resultLog += prepareLog;
+  logMessage(tr("Preparing image for GLCM..."));
+
+  if (glcmInputMat.empty() || glcmInputMat.type() != CV_8UC1) {
+      resultLog += tr("\nError: Failed to prepare 8-bit single channel image for GLCM.");
+      ui->method5ResultsTextEdit->setText(resultLog);
+      ui->overviewResultsTextEdit->append(overviewResult + tr("Error - Prep Failed"));
+      logMessage(resultLog);
+      return;
+  }
+
+  // 2. Define GLCM parameters
+  int levels = 256; // For CV_8U image
+  // Define offsets (e.g., 0 degrees, 1 pixel distance)
+  int dx = 1;
+  int dy = 0;
+  // Could compute for multiple directions/distances and average, but start simple
+  resultLog += tr("\nCalculating GLCM with offset (dx=%1, dy=%2), levels=%3, symmetric=true\n")
+                   .arg(dx).arg(dy).arg(levels);
+  logMessage(tr("Calculating GLCM with offset dx=%1, dy=%2...").arg(dx).arg(dy));
+
+
+  try {
+        // 3. Compute GLCM
+        cv::Mat glcm;
+        computeGLCM(glcmInputMat, glcm, dx, dy, levels, true, true); // Symmetric, Normalized
+
+        // 4. Calculate features
+        double contrast = 0.0, correlation = 0.0, energy = 0.0, homogeneity = 0.0;
+        calculateGLCMFeatures(glcm, levels, contrast, energy, homogeneity, correlation);
+
+        resultLog += tr("\n--- Texture Features (Offset dx=%1, dy=%2) ---\n").arg(dx).arg(dy);
+        resultLog += tr("Contrast: %1\n").arg(contrast);
+        resultLog += tr("Correlation: %1\n").arg(correlation);
+        resultLog += tr("Energy (ASM): %1\n").arg(energy);
+        resultLog += tr("Homogeneity (IDM): %1\n").arg(homogeneity);
+
+        // Format overview string
+        overviewResult += tr("Contr=%1, Corr=%2, Ener=%3, Homo=%4")
+                             .arg(QString::number(contrast, 'f', 3))
+                             .arg(QString::number(correlation, 'f', 3))
+                             .arg(QString::number(energy, 'f', 3))
+                             .arg(QString::number(homogeneity, 'f', 3));
+
+        logMessage(tr("GLCM features calculated: Contrast=%1, Correlation=%2, Energy=%3, Homogeneity=%4")
+                    .arg(contrast).arg(correlation).arg(energy).arg(homogeneity));
+
+
+  } catch (const cv::Exception& e) {
+        resultLog += tr("\nError during GLCM calculation or feature extraction: %1")
+                       .arg(QString::fromStdString(e.msg));
+        overviewResult += tr("Error - Calculation Failed");
+        logMessage(tr("OpenCV Error during GLCM analysis: %1")
+                     .arg(QString::fromStdString(e.msg)));
+  }
+
+  // 5. Update UI
+  ui->method5ResultsTextEdit->setText(resultLog);
+  ui->overviewResultsTextEdit->append(overviewResult);
 }
 
-void MainWindow::performPointTargetAnalysis() {
-  // TODO: 实现点目标分析
-  // 1. 可能需要用户选择点目标区域
-  // 2. 对点目标区域进行过采样
-  // 3. 分析点目标响应函数 (PSF/IPR)，计算峰值旁瓣比 (PSLR)、积分旁瓣比
-  // (ISLR)、分辨率等
-  // 4. 将结果显示在 ui->method6ResultsTextEdit
-  QString result = tr("Point Target Analysis placeholder.\n");
-  result += tr("Requires selection of point target, oversampling, and analysis "
-               "of PSF/IPR (PSLR, ISLR, Resolution...).");
-  ui->method6ResultsTextEdit->setText(result);
-  // 更新 Overview tab
-  ui->overviewResultsTextEdit->append(
-      tr("Point Target Analysis: Pending Implementation"));
+// Helper function to prepare image for GLCM (single channel, 8-bit)
+cv::Mat MainWindow::prepareImageForGLCM(const cv::Mat& inputImage, QString& log)
+{
+    cv::Mat analysisMat;
+    log = ""; // Clear log for this function
+
+    // 1. Get single channel image (Magnitude for complex, Grayscale for color, direct for mono)
+    if (inputImage.channels() == 2) {
+        log += tr("Input is complex (2-channel), calculating magnitude.\n");
+        std::vector<cv::Mat> channels;
+        cv::split(inputImage, channels);
+        if (channels[0].depth() != CV_32F && channels[0].depth() != CV_64F) {
+            log += tr("Converting complex channels to CV_32F for magnitude.\n");
+            channels[0].convertTo(channels[0], CV_32F);
+            channels[1].convertTo(channels[1], CV_32F);
+        }
+        cv::magnitude(channels[0], channels[1], analysisMat);
+    } else if (inputImage.channels() > 1) {
+         log += tr("Input is multi-channel (%1), converting to grayscale.\n").arg(inputImage.channels());
+         cv::Mat sourceForCvt = inputImage;
+         if (inputImage.depth() != CV_8U && inputImage.depth() != CV_16U && inputImage.depth() != CV_32F) {
+             log += tr("Converting multi-channel image to CV_8U before grayscale.\n");
+             // Simple conversion, might lose precision but needed for cvtColor often
+              double minVal, maxVal;
+              cv::minMaxLoc(inputImage, &minVal, &maxVal); // Estimate range loosely
+              if (maxVal > minVal)
+                inputImage.convertTo(sourceForCvt, CV_8U, 255.0/(maxVal-minVal), -minVal*255.0/(maxVal-minVal));
+              else
+                inputImage.convertTo(sourceForCvt, CV_8U);
+         }
+         // Assuming BGR(A) for color conversion, otherwise fallback
+         if (sourceForCvt.channels() >= 3) {
+              try {
+                cv::cvtColor(sourceForCvt, analysisMat, cv::COLOR_BGR2GRAY);
+              } catch (...) { // Catch potential errors if not BGR
+                 log += tr("Grayscale conversion failed, using first channel.\n");
+                 std::vector<cv::Mat> channels;
+                 cv::split(sourceForCvt, channels);
+                 analysisMat = channels[0];
+              }
+         } else {
+            log += tr("Non-standard multi-channel, using first channel.\n");
+            std::vector<cv::Mat> channels;
+            cv::split(sourceForCvt, channels);
+            analysisMat = channels[0];
+         }
+    } else if (inputImage.channels() == 1) {
+        log += tr("Input is single-channel.\n");
+        analysisMat = inputImage.clone();
+    } else {
+         log += tr("Error: Input image has 0 channels.\n");
+        return cv::Mat(); // Return empty Mat on error
+    }
+
+    // 2. Convert to 8-bit unsigned integer (CV_8U)
+    cv::Mat outputMat;
+    if (analysisMat.depth() != CV_8U) {
+        log += tr("Normalizing single-channel image (type: %1) to 8-bit for GLCM.\n")
+                   .arg(cv::typeToString(analysisMat.type()));
+        double minVal, maxVal;
+        cv::minMaxLoc(analysisMat, &minVal, &maxVal);
+        if (maxVal > minVal) {
+            analysisMat.convertTo(outputMat, CV_8U, 255.0 / (maxVal - minVal), -minVal * 255.0 / (maxVal - minVal));
+        } else {
+            analysisMat.convertTo(outputMat, CV_8U); // Constant value image
+            log += tr("Image has constant value.\n");
+        }
+    } else {
+         log += tr("Image is already 8-bit single-channel.\n");
+        outputMat = analysisMat; // Already CV_8U
+    }
+
+    return outputMat;
+}
+
+// Helper function to compute GLCM
+// img: Input CV_8UC1 image
+// glcm: Output GLCM matrix (levels x levels, CV_64F)
+// dx, dy: Offset (e.g., dx=1, dy=0 for 0 degrees, dx=1, dy=1 for 45 degrees)
+// levels: Number of gray levels (usually 256 for CV_8U)
+// symmetric: If true, counts both (i, j) and (j, i) pairs. Recommended.
+// normalize: If true, normalizes the GLCM so that sum is 1.0.
+void MainWindow::computeGLCM(const cv::Mat& img, cv::Mat& glcm, int dx, int dy, int levels, bool symmetric /* = true */, bool normalize /* = true */) {
+    CV_Assert(img.type() == CV_8UC1);
+    CV_Assert(levels > 0 && levels <= 256);
+
+    glcm = cv::Mat::zeros(levels, levels, CV_64F); // Use double for accumulation
+    double totalPairs = 0;
+
+    for (int y = 0; y < img.rows; ++y) {
+        for (int x = 0; x < img.cols; ++x) {
+            int nx = x + dx;
+            int ny = y + dy;
+
+            // Check if neighbor is inside image bounds
+            if (nx >= 0 && nx < img.cols && ny >= 0 && ny < img.rows) {
+                uchar i = img.at<uchar>(y, x);
+                uchar j = img.at<uchar>(ny, nx);
+
+                glcm.at<double>(i, j)++;
+                totalPairs++;
+
+                if (symmetric) {
+                    glcm.at<double>(j, i)++; // Count the symmetric pair
+                     totalPairs++; // Count symmetric pair as well if normalization is based on symmetric count
+                }
+            }
+        }
+    }
+
+    // Normalization is slightly different if symmetric is true vs false regarding the denominator
+    // Here we normalize by the number of pairs counted.
+    if (normalize && totalPairs > 0) {
+        glcm /= totalPairs; // Normalize to get probabilities P_ij
+    } else if (normalize && symmetric && totalPairs == 0) {
+        // Handle case of empty image or no valid pairs, avoid division by zero
+         glcm = cv::Mat::zeros(levels, levels, CV_64F);
+    }
+    // If not symmetric and normalize=true, the sum of glcm might not be 1.0
+    // if pairs were only counted in one direction. Standard practice usually
+    // implies symmetric=true or normalization handles the pair counting implicitly.
+    // For simplicity, we use totalPairs as counted.
+}
+
+// Helper function to calculate GLCM features
+// glcm: Input normalized GLCM (levels x levels, CV_64F, sum should be ~1.0)
+// levels: Number of gray levels used to compute GLCM
+// contrast, correlation, energy, homogeneity: Output features
+void MainWindow::calculateGLCMFeatures(const cv::Mat& glcm, int levels,
+                           double& contrast, double& energy, double& homogeneity, double& correlation)
+{
+    CV_Assert(glcm.type() == CV_64F);
+    CV_Assert(glcm.rows == levels && glcm.cols == levels);
+
+    contrast = 0.0;
+    energy = 0.0; // Also known as Angular Second Moment (ASM)
+    homogeneity = 0.0; // Also known as Inverse Difference Moment (IDM)
+    correlation = 0.0;
+
+    double mean_i = 0.0, mean_j = 0.0;
+    double stddev_i = 0.0, stddev_j = 0.0;
+    double glcmSum = cv::sum(glcm)[0]; // Check sum for normalization factor (should be ~1.0)
+
+
+    // Calculate marginal probabilities (px, py) and means (mean_i, mean_j) first
+    std::vector<double> px(levels, 0.0); // P_x(i) = Sum_j P(i,j)
+    std::vector<double> py(levels, 0.0); // P_y(j) = Sum_i P(i,j)
+
+    for (int i = 0; i < levels; ++i) {
+        for (int j = 0; j < levels; ++j) {
+            double p_ij = glcm.at<double>(i, j);
+            px[i] += p_ij;
+            py[j] += p_ij; // Note: if symmetric, px should equal py
+
+            // Features that can be calculated directly
+            contrast += (i - j) * (i - j) * p_ij;
+            energy += p_ij * p_ij;
+            homogeneity += p_ij / (1.0 + std::abs(i - j));
+        }
+        mean_i += i * px[i];
+        mean_j += i * py[i]; // Use 'i' as index for py sum as well
+    }
+
+
+    // Calculate standard deviations (stddev_i, stddev_j)
+    for (int i = 0; i < levels; ++i) {
+        stddev_i += (i - mean_i) * (i - mean_i) * px[i];
+        stddev_j += (i - mean_j) * (i - mean_j) * py[i];
+    }
+    // Convert sum of squares to standard deviation
+    stddev_i = std::sqrt(stddev_i);
+    stddev_j = std::sqrt(stddev_j);
+
+    // Calculate correlation
+    // Correlation = Sum_i Sum_j [ (i - mean_i)(j - mean_j) * P(i,j) ] / (stddev_i * stddev_j)
+    if (stddev_i > 1e-6 && stddev_j > 1e-6) { // Avoid division by zero
+         for (int i = 0; i < levels; ++i) {
+            for (int j = 0; j < levels; ++j) {
+                correlation += (i - mean_i) * (j - mean_j) * glcm.at<double>(i, j);
+            }
+        }
+        correlation /= (stddev_i * stddev_j);
+    } else {
+        correlation = std::numeric_limits<double>::quiet_NaN(); // Indicate undefined
+    }
+
+
+    // Optional: Check for GLCM sum ~ 1.0 if normalization was expected
+    // if (std::abs(glcmSum - 1.0) > 1e-5) {
+    //     logMessage(QString("Warning: GLCM sum is %1, expected ~1.0. Features might be scaled.").arg(glcmSum));
+    // }
+
 }
 
 // 添加缺失的槽函数实现

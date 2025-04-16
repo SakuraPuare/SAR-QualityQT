@@ -66,6 +66,13 @@ private:
   void performClarityAnalysis();
   void performRadiometricAnalysis();
   void performGLCMAnalysis();
-  void performPointTargetAnalysis(); // 对应 UI 中的点目标分析
+
+  // --- GLCM 辅助函数 ---
+  cv::Mat prepareImageForGLCM(const cv::Mat& inputImage, QString& log);
+  void computeGLCM(const cv::Mat& img, cv::Mat& glcm, int dx, int dy, int levels, bool symmetric = true, bool normalize = true);
+  void calculateGLCMFeatures(const cv::Mat& glcm, int levels,
+                             double& contrast, double& energy, double& homogeneity, double& correlation);
+
+  // 信息量计算
 };
 #endif // MAINWINDOW_H

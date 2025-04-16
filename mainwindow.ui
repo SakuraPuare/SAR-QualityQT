@@ -187,16 +187,6 @@
                                                 </widget>
                                             </item>
                                             <item>
-                                                <widget class="QCheckBox" name="checkBoxPointTarget">
-                                                    <property name="text">
-                                                        <string>点目标分析</string>
-                                                    </property>
-                                                    <property name="checked">
-                                                        <bool>true</bool>
-                                                    </property>
-                                                </widget>
-                                            </item>
-                                            <item>
                                                 <widget class="Line" name="line">
                                                     <property name="orientation">
                                                         <enum>Qt::Horizontal</enum>
@@ -371,24 +361,6 @@
                                         <property name="placeholderText">
                                             <string>Detailed results for Method 5 (GLCM: Contrast,
                                                 Energy, Entropy, Correlation...)</string>
-                                        </property>
-                                    </widget>
-                                </item>
-                            </layout>
-                        </widget>
-                        <widget class="QWidget" name="tabMethod6">
-                            <attribute name="title">
-                                <string>Method 6 (Point Target)</string>
-                            </attribute>
-                            <layout class="QVBoxLayout" name="verticalLayout_TabMethod6">
-                                <item>
-                                    <widget class="QTextEdit" name="method6ResultsTextEdit">
-                                        <property name="readOnly">
-                                            <bool>true</bool>
-                                        </property>
-                                        <property name="placeholderText">
-                                            <string>Detailed results for Method 6 (Point Target
-                                                Analysis)</string>
                                         </property>
                                     </widget>
                                 </item>
