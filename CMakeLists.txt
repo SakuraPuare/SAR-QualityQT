@@ -23,7 +23,11 @@ file(GLOB PROJECT_H_SOURCES "src/include/*.h")
 file(GLOB PROJECT_UI_SOURCES "resources/*.ui")
 
 # 查找翻译文件
-file(GLOB TS_FILES "i18n/*.ts")
+# file(GLOB TS_FILES "i18n/*.ts") # 不再使用 GLOB，改为明确指定
+set(TS_FILES
+    i18n/SAR-QualityQT_zh_CN.ts # 目标语言：中文
+    i18n/SAR-QualityQT_en.ts    # 源语言/基础语言：英文
+)
 
 include_directories(src/include)
 
@@ -41,6 +45,7 @@ qt_add_executable(SAR-QualityQT
     # 直接使用组合后的变量
     ${PROJECT_SOURCES}
 )
+# 确保 TS_FILES 变量包含所有需要的 .ts 文件路径
 qt_add_translations(SAR-QualityQT TS_FILES ${TS_FILES})
 
 # Define target properties for Android with Qt 6 as:
@@ -74,3 +79,12 @@ install(TARGETS SAR-QualityQT
 
 # 始终为 Qt6 调用 finalize
 qt_finalize_executable(SAR-QualityQT)
+
+# 添加一个自定义目标来运行 lupdate
+add_custom_target(update_translations ALL
+    # 确保 -ts 参数后面跟着所有需要更新的 .ts 文件
+    COMMAND lupdate -extensions cpp,h,ui ${PROJECT_SOURCES} -ts ${TS_FILES}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Updating translation source files (.ts)..."
+    VERBATIM
+)

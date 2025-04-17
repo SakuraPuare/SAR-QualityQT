@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<TS version="2.1" language="en">
 <context>
     <name>Analysis</name>
     <message>
@@ -978,6 +978,21 @@ Error during mean/standard deviation calculation: %1</source>
 <context>
     <name>MainWindow</name>
     <message>
+        <location filename="../src/mainwindow.cpp" line="39"/>
+        <source>Application started. GDAL initialized. Drag &amp; Drop enabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="44"/>
+        <location filename="../src/mainwindow.cpp" line="45"/>
+        <location filename="../src/mainwindow.cpp" line="46"/>
+        <location filename="../src/mainwindow.cpp" line="90"/>
+        <location filename="../src/mainwindow.cpp" line="91"/>
+        <location filename="../src/mainwindow.cpp" line="92"/>
+        <source>N/A</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/mainwindow.cpp" line="47"/>
         <location filename="../src/mainwindow.cpp" line="95"/>
         <source>Image Display Area</source>
@@ -1024,8 +1039,18 @@ Error during mean/standard deviation calculation: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="123"/>
+        <source>Drag entered with supported file: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/mainwindow.cpp" line="126"/>
         <source>Drag entered with unsupported file type: .%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="140"/>
+        <source>File dropped: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1127,6 +1152,11 @@ Please check file integrity, permissions, and see logs for details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="292"/>
+        <source>Please select at least one analysis method.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/mainwindow.cpp" line="293"/>
         <source>Analysis stopped: No methods were selected.</source>
         <translation type="unfinished"></translation>
@@ -1151,6 +1181,11 @@ Please check file integrity, permissions, and see logs for details.</source>
         <location filename="../src/mainwindow.cpp" line="317"/>
         <source>
 Analysis complete. Check individual tabs for detailed results.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="320"/>
+        <source>Analysis Complete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1186,41 +1221,6 @@ Analysis complete. Check individual tabs for detailed results.</source>
     <message>
         <location filename="../src/mainwindow.cpp" line="349"/>
         <source>Image opening via File menu cancelled by user.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="44"/>
-        <location filename="../src/mainwindow.cpp" line="45"/>
-        <location filename="../src/mainwindow.cpp" line="46"/>
-        <location filename="../src/mainwindow.cpp" line="90"/>
-        <location filename="../src/mainwindow.cpp" line="91"/>
-        <location filename="../src/mainwindow.cpp" line="92"/>
-        <source>N/A</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="39"/>
-        <source>Application started. GDAL initialized. Drag &amp; Drop enabled.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="123"/>
-        <source>Drag entered with supported file: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="140"/>
-        <source>File dropped: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="292"/>
-        <source>Please select at least one analysis method.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/mainwindow.cpp" line="320"/>
-        <source>Analysis Complete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
