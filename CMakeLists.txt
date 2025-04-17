@@ -16,16 +16,16 @@ find_package(GDAL CONFIG REQUIRED)
 
 # --- 使用 GLOB 查找源文件和头文件 ---
 # 查找当前目录下的 .cpp 文件
-file(GLOB PROJECT_CPP_SOURCES "*.cpp")
+file(GLOB PROJECT_CPP_SOURCES "src/*.cpp")
 # 查找当前目录下的 .h 文件
-file(GLOB PROJECT_H_SOURCES "*.h")
+file(GLOB PROJECT_H_SOURCES "src/include/*.h")
 # 查找当前目录下的 .ui 文件
-file(GLOB PROJECT_UI_SOURCES "*.ui")
+file(GLOB PROJECT_UI_SOURCES "resources/*.ui")
 
 # 查找翻译文件
-set(TS_FILES SAR-QualityQT_zh_CN.ts)
-# 可以在这里也使用 GLOB 如果需要
-# file(GLOB TS_FILES "*.ts")
+file(GLOB TS_FILES "i18n/*.ts")
+
+include_directories(src/include)
 
 # 组合所有源文件类型 (CMake 能自动处理头文件和 UI 文件与 AUTOMOC/AUTOUIC 的关系)
 set(PROJECT_SOURCES
