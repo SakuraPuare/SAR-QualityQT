@@ -127,8 +127,8 @@ AnalysisResult performRadiometricAnalysis(const cv::Mat &inputImage) {
     result.overviewSummary =
         overviewPrefix +
         QCoreApplication::translate("Analysis", "Range=%1, StdDev=%2")
-            .arg(QString::number(maxVal - minVal, 'g', 4))
-            .arg(QString::number(stddev, 'g', 4));
+            .arg(maxVal - minVal, 0, 'g', 4)
+            .arg(stddev, 0, 'g', 4);
     result.detailedLog +=
         QCoreApplication::translate(
             "Analysis", "Internal Log: Radiometric stats calculated: Min=%1, "

@@ -74,8 +74,8 @@ AnalysisResult performClarityAnalysis(const cv::Mat &inputImage) {
                     "sharper details or more texture/noise.");
 
     result.overviewSummary =
-        overviewPrefix + QCoreApplication::translate("Analysis", "%1")
-                             .arg(QString::number(averageGradient, 'f', 2));
+        overviewPrefix +
+        QCoreApplication::translate("Analysis", "%1").arg(averageGradient, 0, 'f', 2);
     result.detailedLog +=
         QCoreApplication::translate(
             "Analysis", "Internal Log: Clarity analysis completed: %1\n")

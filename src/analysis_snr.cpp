@@ -128,9 +128,9 @@ AnalysisResult performSNRAnalysis(const cv::Mat &inputImage) {
 
       result.overviewSummary =
           overviewPrefix +
-          QCoreApplication::translate("Analysis", "SNR=%.2f, ENL=%.2f")
-              .arg(snr)
-              .arg(enl);
+          QCoreApplication::translate("Analysis", "SNR=%1, ENL=%2")
+              .arg(snr, 0, 'f', 2)
+              .arg(enl, 0, 'f', 2);
       result.detailedLog +=
           QCoreApplication::translate("Analysis",
                                       "Internal Log: SNR/ENL calculated: "

@@ -207,7 +207,7 @@ AnalysisResult performInfoContentAnalysis(const cv::Mat &inputImage) {
 
     result.overviewSummary =
         overviewPrefix +
-        QCoreApplication::translate("Analysis", "%.4f bits/pixel").arg(entropy);
+        QCoreApplication::translate("Analysis", "%1 bits/pixel").arg(entropy, 0, 'f', 4);
     result.detailedLog +=
         QCoreApplication::translate(
             "Analysis",

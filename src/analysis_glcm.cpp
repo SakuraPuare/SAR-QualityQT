@@ -92,11 +92,11 @@ AnalysisResult performGLCMAnalysis(const cv::Mat &inputImage) {
     result.overviewSummary =
         overviewPrefix +
         QCoreApplication::translate(
-            "Analysis", "Contr=%.3f, Corr=%.3f, Ener=%.3f, Homo=%.3f")
-            .arg(contrast)
-            .arg(correlation)
-            .arg(energy)
-            .arg(homogeneity);
+            "Analysis", "Contr=%1, Corr=%2, Ener=%3, Homo=%4")
+            .arg(contrast, 0, 'f', 3)
+            .arg(correlation, 0, 'f', 3)
+            .arg(energy, 0, 'f', 3)
+            .arg(homogeneity, 0, 'f', 3);
 
     result.detailedLog +=
         QCoreApplication::translate(
