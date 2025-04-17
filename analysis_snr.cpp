@@ -4,123 +4,107 @@
 #include <opencv2/imgproc.hpp> // (可能需要，如果用到其他处理)
 #include <vector> // std::vector
 #include <cmath> // std::abs, std::sqrt
+#include "analysis_utils.h" // 包含新的头文件
+#include <QString>          // 需要 QString
+#include <QCoreApplication> // For translate()
 
-// 实现 SNR (信噪比) 和 ENL (等效视数) 分析
-// 注意：这些指标通常在均匀区域计算才有意义。全局计算可能受场景内容影响。
-void MainWindow::performSNRAnalysis(const cv::Mat& inputImage) {
-  QString resultLog = tr("SNR/ENL Analysis Results (Global):\n");
-  QString overviewResult = tr("SNR/ENL (Global): "); // 指明是全局计算
+// 独立的 SNR/ENL 分析函数
+AnalysisResult performSNRAnalysis(const cv::Mat& inputImage) {
+    AnalysisResult result;
+    result.analysisName = QCoreApplication::translate("Analysis", "SNR/ENL"); // 设置分析名称
+    result.detailedLog = QCoreApplication::translate("Analysis", "SNR/ENL Analysis Results (Global):\n");
+    QString overviewPrefix = QCoreApplication::translate("Analysis", "SNR/ENL (Global): ");
 
-  if (inputImage.empty()) {
-    resultLog = tr("Error: No valid image data provided for SNR/ENL analysis.");
-    ui->method1ResultsTextEdit->setText(resultLog);
-    ui->overviewResultsTextEdit->append(overviewResult + tr("Error - No Data"));
-    logMessage(resultLog);
-    return;
-  }
-
-  cv::Mat analysisMat; // 用于分析的单通道浮点图像 (幅度或强度)
-
-  // 1. 准备用于分析的单通道浮点图像
-  logMessage(tr("Preparing single-channel float image for SNR/ENL analysis..."));
-  if (inputImage.channels() == 2) {
-    // 处理复数数据：计算幅度
-    logMessage(tr("Input is complex (2-channel), calculating magnitude."));
-    std::vector<cv::Mat> channels;
-    cv::split(inputImage, channels);
-    // 确保通道是浮点类型
-    if (channels[0].depth() != CV_32F && channels[0].depth() != CV_64F) {
-        logMessage(tr("Converting complex channels to CV_32F for magnitude calculation."));
-        channels[0].convertTo(channels[0], CV_32F);
-        channels[1].convertTo(channels[1], CV_32F);
+    if (inputImage.empty()) {
+        result.detailedLog += QCoreApplication::translate("Analysis", "\nError: No valid image data provided.");
+        result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "Error - No Data");
+        result.success = false;
+        return result;
     }
-    cv::magnitude(channels[0], channels[1], analysisMat); // 幅度图是单通道浮点型
-    resultLog += tr("Using magnitude image calculated from complex data.\n");
-  } else if (inputImage.channels() == 1) {
-    // 输入已经是单通道（例如强度图像）
-    logMessage(tr("Input is single-channel."));
-    analysisMat = inputImage.clone(); // 克隆以防修改
-    // 确保是浮点类型，因为 SNR/ENL 计算涉及除法，需要精度
-    if (analysisMat.depth() != CV_32F && analysisMat.depth() != CV_64F) {
-        logMessage(tr("Converting single-channel image (type: %1) to 32-bit float (CV_32F) for analysis.")
-                       .arg(cv::typeToString(analysisMat.type())));
-        analysisMat.convertTo(analysisMat, CV_32F);
-        resultLog += tr("Converted input to floating-point type (CV_32F).\n");
+
+    cv::Mat analysisMat;
+    QString prepLog; // 用于准备步骤的日志
+
+    // 1. 准备单通道浮点图像
+    prepLog += QCoreApplication::translate("Analysis", "Preparing single-channel float image...\n");
+    if (inputImage.channels() == 2) {
+        prepLog += QCoreApplication::translate("Analysis", "Input is complex (2-channel), calculating magnitude.\n");
+        std::vector<cv::Mat> channels;
+        cv::split(inputImage, channels);
+        if (channels[0].depth() != CV_32F && channels[0].depth() != CV_64F) {
+            prepLog += QCoreApplication::translate("Analysis", "Converting complex channels to CV_32F for magnitude calculation.\n");
+            channels[0].convertTo(channels[0], CV_32F);
+            channels[1].convertTo(channels[1], CV_32F);
+        }
+        cv::magnitude(channels[0], channels[1], analysisMat);
+        prepLog += QCoreApplication::translate("Analysis", "Using magnitude image.\n");
+    } else if (inputImage.channels() == 1) {
+        prepLog += QCoreApplication::translate("Analysis", "Input is single-channel.\n");
+        analysisMat = inputImage.clone();
+        if (analysisMat.depth() != CV_32F && analysisMat.depth() != CV_64F) {
+            prepLog += QCoreApplication::translate("Analysis", "Converting single-channel image (type: %1) to CV_32F.\n").arg(cv::typeToString(analysisMat.type()));
+            analysisMat.convertTo(analysisMat, CV_32F);
+            prepLog += QCoreApplication::translate("Analysis", "Converted input to floating-point type (CV_32F).\n");
+        } else {
+            prepLog += QCoreApplication::translate("Analysis", "Using existing single-channel floating-point data.\n");
+        }
     } else {
-         resultLog += tr("Using existing single-channel floating-point data.\n");
+        result.detailedLog += QCoreApplication::translate("Analysis", "\nError: Unsupported channel count (%1). Expected 1 or 2.").arg(inputImage.channels());
+        result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "Error - Unsupported Channels");
+        result.success = false;
+        return result;
     }
-  } else {
-    // 不支持其他通道数的输入进行此分析
-     resultLog = tr("Error: Unsupported channel count (%1) for SNR/ENL analysis. Expected 1 (intensity/magnitude) or 2 (complex).")
-                .arg(inputImage.channels());
-     ui->method1ResultsTextEdit->setText(resultLog);
-     ui->overviewResultsTextEdit->append(overviewResult + tr("Error - Unsupported Channels"));
-     logMessage(resultLog);
-     return;
-  }
 
-   // 检查准备步骤是否成功
-   if (analysisMat.empty() || analysisMat.channels() != 1 || (analysisMat.depth() != CV_32F && analysisMat.depth() != CV_64F)) {
-       logMessage(tr("Error: Failed to prepare a valid single-channel float image for SNR/ENL analysis."));
-       resultLog += tr("\nError: Failed to prepare suitable data for analysis.");
-       ui->method1ResultsTextEdit->setText(resultLog);
-       ui->overviewResultsTextEdit->append(overviewResult + tr("Error - Prep Failed"));
-       return;
-   }
+    result.detailedLog += prepLog; // 将准备日志添加到详细日志
 
-  // 2. 计算全局均值和标准差
-  cv::Scalar meanValue, stdDevValue;
-  try {
-      logMessage(tr("Calculating global mean and standard deviation..."));
-      // 计算整个图像的均值和标准差
-      cv::meanStdDev(analysisMat, meanValue, stdDevValue);
+    if (analysisMat.empty() || analysisMat.channels() != 1 || (analysisMat.depth() != CV_32F && analysisMat.depth() != CV_64F)) {
+        result.detailedLog += QCoreApplication::translate("Analysis", "\nError: Failed to prepare a valid single-channel float image.");
+        result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "Error - Prep Failed");
+        result.success = false;
+        return result;
+    }
 
-      double mean = meanValue[0];   // 均值 μ
-      double stddev = stdDevValue[0]; // 标准差 σ
+    // 2. 计算全局均值和标准差
+    cv::Scalar meanValue, stdDevValue;
+    try {
+        result.detailedLog += QCoreApplication::translate("Analysis", "Calculating global mean and standard deviation...\n");
+        cv::meanStdDev(analysisMat, meanValue, stdDevValue);
 
-      resultLog += tr("\n--- Global Statistics ---\n");
-      resultLog += tr("Mean (μ): %1\n").arg(mean);
-      resultLog += tr("Standard Deviation (σ): %1\n").arg(stddev);
+        double mean = meanValue[0];
+        double stddev = stdDevValue[0];
 
-      // 3. 计算 SNR 和 ENL
-      // SNR = μ / σ  (信号均值 / 噪声标准差)
-      // ENL = (μ / σ)^2 = SNR^2 (等效视数，衡量相干斑抑制程度)
-      if (stddev > 1e-9) { // 避免除以零或非常小的标准差导致结果无意义或溢出
-          double snr = mean / stddev;
-          double enl = snr * snr; // 或 (mean * mean) / (stddev * stddev)
+        result.detailedLog += QCoreApplication::translate("Analysis", "\n--- Global Statistics ---\n");
+        result.detailedLog += QCoreApplication::translate("Analysis", "Mean (μ): %1\n").arg(mean);
+        result.detailedLog += QCoreApplication::translate("Analysis", "Standard Deviation (σ): %1\n").arg(stddev);
 
-          resultLog += tr("\n--- Quality Metrics (Global) ---\n");
-          resultLog += tr("Signal-to-Noise Ratio (SNR = μ/σ): %1\n").arg(snr);
-          resultLog += tr("Equivalent Number of Looks (ENL = (μ/σ)²): %1\n").arg(enl);
+        // 3. 计算 SNR 和 ENL
+        if (stddev > 1e-9) {
+            double snr = mean / stddev;
+            double enl = snr * snr;
 
-          // 格式化概览结果
-          overviewResult += tr("SNR=%.2f, ENL=%.2f")
-                               .arg(snr)
-                               .arg(enl);
-          logMessage(tr("SNR/ENL calculated (Global): Mean=%1, StdDev=%2, SNR=%3, ENL=%4")
-                         .arg(mean).arg(stddev).arg(snr).arg(enl));
-      } else {
-          // 标准差接近零，通常发生在图像值恒定的情况下
-          resultLog += tr("\nWarning: Standard deviation is close to zero (σ = %1). Cannot calculate SNR/ENL reliably.").arg(stddev);
-          overviewResult += tr("N/A (σ ≈ 0)");
-          logMessage(tr("SNR/ENL calculation skipped: Standard deviation is near zero."));
-      }
+            result.detailedLog += QCoreApplication::translate("Analysis", "\n--- Quality Metrics (Global) ---\n");
+            result.detailedLog += QCoreApplication::translate("Analysis", "Signal-to-Noise Ratio (SNR = μ/σ): %1\n").arg(snr);
+            result.detailedLog += QCoreApplication::translate("Analysis", "Equivalent Number of Looks (ENL = (μ/σ)²): %1\n").arg(enl);
 
-       resultLog += tr("\n\nNote: These metrics are calculated globally across the entire image. "
-                       "For more meaningful assessment of speckle noise characteristics, "
-                       "it is recommended to calculate SNR/ENL over a statistically homogeneous region "
-                       "(e.g., calm water body, flat field).");
+            result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "SNR=%.2f, ENL=%.2f").arg(snr).arg(enl);
+            result.detailedLog += QCoreApplication::translate("Analysis", "Internal Log: SNR/ENL calculated: Mean=%1, StdDev=%2, SNR=%3, ENL=%4\n")
+                                     .arg(mean).arg(stddev).arg(snr).arg(enl);
+        } else {
+            result.detailedLog += QCoreApplication::translate("Analysis", "\nWarning: Standard deviation is close to zero (σ = %1). Cannot calculate SNR/ENL reliably.\n").arg(stddev);
+            result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "N/A (σ ≈ 0)");
+             result.detailedLog += QCoreApplication::translate("Analysis", "Internal Log: SNR/ENL calculation skipped: Standard deviation is near zero.\n");
+        }
 
-  } catch (const cv::Exception& e) {
-      resultLog += tr("\nError during mean/standard deviation calculation: %1")
-                       .arg(QString::fromStdString(e.what()));
-      overviewResult += tr("Error - Calculation Failed");
-      logMessage(tr("OpenCV Error during SNR/ENL (meanStdDev) calculation: %1")
-                     .arg(QString::fromStdString(e.what())));
-  }
+        result.detailedLog += QCoreApplication::translate("Analysis", "\n\nNote: These metrics are calculated globally. For more meaningful assessment, calculate over a statistically homogeneous region.");
+        result.success = true; // 标记成功
 
+    } catch (const cv::Exception& e) {
+        result.detailedLog += QCoreApplication::translate("Analysis", "\nError during mean/standard deviation calculation: %1")
+                                 .arg(QString::fromStdString(e.what()));
+        result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "Error - Calculation Failed");
+         result.detailedLog += QCoreApplication::translate("Analysis", "Internal Log: OpenCV Error during meanStdDev: %1\n").arg(QString::fromStdString(e.what()));
+        result.success = false;
+    }
 
-  // 4. 更新 UI
-  ui->method1ResultsTextEdit->setText(resultLog);
-  ui->overviewResultsTextEdit->append(overviewResult);
+    return result;
 }

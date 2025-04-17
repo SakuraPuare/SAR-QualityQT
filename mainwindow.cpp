@@ -23,6 +23,9 @@
 // Keep GDAL includes only for GDALAllRegister
 #include "gdal_priv.h" // For GDALAllRegister, GDALClose(if needed), GDALDataTypeIsComplex etc. might be needed by analysis functions if not refactored.
 
+// Include analysis utilities header
+#include "analysis_utils.h"
+
 // Constructor
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -196,19 +199,17 @@ void MainWindow::openImageFile(const QString &filePath) {
 // --- updateImageInfo method is removed ---
 
 
-// Start Analysis Button Clicked (Uses ImageHandler data)
+// Start Analysis Button Clicked (MODIFIED)
 void MainWindow::on_startAnalysisButton_clicked() {
-    // Check if image is valid using ImageHandler
     if (!m_imageHandler.isValid()) {
         QMessageBox::warning(this, tr("Analysis Not Started"), tr("Please open a valid image file before starting the analysis."));
-        logMessage(tr("Analysis button clicked, but no valid image is loaded via ImageHandler."));
+        logMessage(tr("Analysis button clicked, but no valid image is loaded."));
         return;
     }
 
     logMessage(tr("Analysis process started by user."));
     ui->progressBar->setValue(0);
 
-    // Clear previous results (no change)
     ui->overviewResultsTextEdit->clear();
     ui->method1ResultsTextEdit->clear();
     ui->method2ResultsTextEdit->clear();
@@ -216,43 +217,79 @@ void MainWindow::on_startAnalysisButton_clicked() {
     ui->method4ResultsTextEdit->clear();
     ui->method5ResultsTextEdit->clear();
 
-    // --- IMPORTANT: Get the image data from ImageHandler ---
+    // --- Get image data from ImageHandler ---
     const cv::Mat& imageData = m_imageHandler.getImageData();
-    // --- Analysis calls are now updated to accept 'imageData' ---
 
+    // --- Define analysis tasks using standalone functions ---
     int totalSteps = 0;
-    std::vector<std::function<void()>> analysisTasks;
-    std::vector<QWidget*> resultTabs;
+    // Store pairs of { Task Function, Result UI Update Function }
+    std::vector<std::pair<std::function<AnalysisResult()>, std::function<void(const AnalysisResult&)>>> analysisPipeline;
+    std::vector<QWidget*> resultTabs; // Keep track of tabs to switch focus
 
-    // Capture imageData by reference in the lambdas
+    // Capture necessary variables for lambdas
+    auto updateUI = [this](QTextEdit* detailEdit, const AnalysisResult& res) {
+        logMessage(tr("Analysis '%1' finished. Success: %2").arg(res.analysisName).arg(res.success ? "Yes" : "No"));
+        // Log the internal details first
+        if (!res.detailedLog.contains("Internal Log:")) { // Avoid double logging if internal log is already part of detailed log
+             logMessage(tr("Details for %1:\n%2").arg(res.analysisName, res.detailedLog));
+        } else {
+             logMessage(tr("Detailed log for %1 already contains internal messages.").arg(res.analysisName));
+             // Optional: Extract and log only the 'Internal Log' parts if desired
+        }
+
+
+        detailEdit->setText(res.detailedLog); // Display full log in details tab
+        ui->overviewResultsTextEdit->append(res.overviewSummary); // Append summary to overview
+    };
+
+
     if (ui->checkBoxSNR->isChecked()) {
         totalSteps++;
-        analysisTasks.push_back([this, &imageData](){ this->performSNRAnalysis(imageData); });
+        analysisPipeline.push_back({
+            // Task function: Call standalone analysis
+            [&imageData](){ return performSNRAnalysis(imageData); },
+            // UI update function: Update relevant UI elements
+            [this, updateUI](const AnalysisResult& res){ updateUI(ui->method1ResultsTextEdit, res); }
+        });
         resultTabs.push_back(ui->tabMethod1);
     }
      if (ui->checkBoxInfoContent->isChecked()) {
         totalSteps++;
-        analysisTasks.push_back([this, &imageData](){ this->performInfoContentAnalysis(imageData); });
-        resultTabs.push_back(ui->tabMethod2);
+         analysisPipeline.push_back({
+            [&imageData](){ return performInfoContentAnalysis(imageData); },
+            [this, updateUI](const AnalysisResult& res){ updateUI(ui->method2ResultsTextEdit, res); }
+        });
+         resultTabs.push_back(ui->tabMethod2);
     }
     if (ui->checkBoxClarity->isChecked()) {
         totalSteps++;
-        analysisTasks.push_back([this, &imageData](){ this->performClarityAnalysis(imageData); });
+         analysisPipeline.push_back({
+            [&imageData](){ return performClarityAnalysis(imageData); },
+            [this, updateUI](const AnalysisResult& res){ updateUI(ui->method3ResultsTextEdit, res); }
+        });
          resultTabs.push_back(ui->tabMethod3);
     }
     if (ui->checkBoxRadiometricAccuracy->isChecked()) {
         totalSteps++;
-        analysisTasks.push_back([this, &imageData](){ this->performRadiometricAnalysis(imageData); });
+         analysisPipeline.push_back({
+            [&imageData](){ return performRadiometricAnalysis(imageData); },
+            [this, updateUI](const AnalysisResult& res){ updateUI(ui->method4ResultsTextEdit, res); }
+        });
         resultTabs.push_back(ui->tabMethod4);
     }
      if (ui->checkBoxGLCM->isChecked()) {
         totalSteps++;
-        analysisTasks.push_back([this, &imageData](){ this->performGLCMAnalysis(imageData); });
+         analysisPipeline.push_back({
+            [&imageData](){ return performGLCMAnalysis(imageData); },
+            [this, updateUI](const AnalysisResult& res){ updateUI(ui->method5ResultsTextEdit, res); }
+        });
         resultTabs.push_back(ui->tabMethod5);
     }
+    // ... Add other analysis methods similarly ...
+
 
     if (totalSteps == 0) {
-        QMessageBox::information(this, tr("No Analysis Selected"), tr("Please select at least one analysis method using the checkboxes."));
+        QMessageBox::information(this, tr("No Analysis Selected"), tr("Please select at least one analysis method."));
         logMessage(tr("Analysis stopped: No methods were selected."));
         return;
     }
@@ -261,15 +298,19 @@ void MainWindow::on_startAnalysisButton_clicked() {
     ui->overviewResultsTextEdit->setText(tr("Starting selected analyses...\n"));
 
     int currentStep = 0;
-    for (size_t i = 0; i < analysisTasks.size(); ++i) {
+    for (size_t i = 0; i < analysisPipeline.size(); ++i) {
         logMessage(tr("Performing analysis step %1 of %2...").arg(currentStep + 1).arg(totalSteps));
-        analysisTasks[i](); // Execute analysis task
+        QCoreApplication::processEvents(); // Update UI before starting analysis
+
+        AnalysisResult result = analysisPipeline[i].first(); // Execute analysis task
+        analysisPipeline[i].second(result); // Update UI with results
+
         currentStep++;
         ui->progressBar->setValue(currentStep);
         if (resultTabs[i]) {
             ui->resultsTabWidget->setCurrentWidget(resultTabs[i]);
         }
-        QCoreApplication::processEvents();
+        QCoreApplication::processEvents(); // Update UI after analysis
     }
 
     logMessage(tr("All selected analyses finished."));
@@ -277,7 +318,7 @@ void MainWindow::on_startAnalysisButton_clicked() {
     ui->resultsTabWidget->setCurrentWidget(ui->tabOverview);
 
     QMessageBox::information(this, tr("Analysis Complete"),
-        tr("Selected image analyses have finished. You can view the detailed results in the corresponding tabs."));
+        tr("Selected image analyses have finished."));
 
 }
 
@@ -310,17 +351,5 @@ void MainWindow::on_actionOpenImage_triggered() {
 }
 
 
-// --- Remove the analysis function definitions from mainwindow.cpp ---
-// --- The definitions now solely exist in their respective analysis_*.cpp files ---
-
-// void MainWindow::performSNRAnalysis(const cv::Mat& imageData) { ... } // REMOVED
-// void MainWindow::performInfoContentAnalysis(const cv::Mat& imageData) { ... } // REMOVED
-// void MainWindow::performClarityAnalysis(const cv::Mat& imageData) { ... } // REMOVED
-// void MainWindow::performRadiometricAnalysis(const cv::Mat& imageData) { ... } // REMOVED
-// void MainWindow::performGLCMAnalysis(const cv::Mat& imageData) { ... } // REMOVED
-
-// --- Remove GLCM helper function definitions from mainwindow.cpp ---
-
-// cv::Mat MainWindow::prepareImageForGLCM(const cv::Mat& inputImage, QString& log) { ... } // REMOVED
-// void MainWindow::computeGLCM(const cv::Mat& img, cv::Mat& glcm, int dx, int dy, int levels, bool symmetric, bool normalize) { ... } // REMOVED
-// void MainWindow::calculateGLCMFeatures(const cv::Mat& glcm, int levels, double& contrast, double& energy, double& homogeneity, double& correlation) { ... } // REMOVED
+// --- Member function definitions for analysis are removed from here ---
+// --- They now exist as standalone functions in analysis_*.cpp files ---

@@ -9,11 +9,11 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-// Forward declare cv::Mat - needed for analysis function signatures
-namespace cv { class Mat; }
-
 // Include the new ImageHandler header
 #include "imagehandler.h" // Include ImageHandler definition
+
+// Include the analysis utilities header
+#include "analysis_utils.h" // <--- 添加这一行
 
 // Forward declare event classes
 class QDragEnterEvent;
@@ -57,17 +57,16 @@ private:
    */
   void openImageFile(const QString &filePath); // Keep declaration
 
-  // --- 分析方法 (实现需要修改以接受 const cv::Mat&) ---
-  void performSNRAnalysis(const cv::Mat& imageData);
-  void performInfoContentAnalysis(const cv::Mat& imageData);
-  void performClarityAnalysis(const cv::Mat& imageData);
-  void performRadiometricAnalysis(const cv::Mat& imageData);
-  void performGLCMAnalysis(const cv::Mat& imageData);
+  // --- 移除旧的成员函数声明 ---
+  // void performSNRAnalysis(const cv::Mat& imageData); // REMOVED
+  // void performInfoContentAnalysis(const cv::Mat& imageData); // REMOVED
+  // void performClarityAnalysis(const cv::Mat& imageData); // REMOVED
+  // void performRadiometricAnalysis(const cv::Mat& imageData); // REMOVED
+  // void performGLCMAnalysis(const cv::Mat& imageData); // REMOVED
 
-  // --- GLCM 辅助函数 (实现需要修改以接受 const cv::Mat&) ---
-  cv::Mat prepareImageForGLCM(const cv::Mat& inputImage, QString& log);
-  void computeGLCM(const cv::Mat& img, cv::Mat& glcm, int dx, int dy, int levels, bool symmetric /* = true */, bool normalize /* = true */);
-  void calculateGLCMFeatures(const cv::Mat& glcm, int levels,
-                             double& contrast, double& energy, double& homogeneity, double& correlation);
+  // --- 移除旧的 GLCM 辅助函数声明 ---
+  // cv::Mat prepareImageForGLCM(const cv::Mat& inputImage, QString& log); // REMOVED
+  // void computeGLCM(const cv::Mat& img, cv::Mat& glcm, int dx, int dy, int levels, bool symmetric, bool normalize); // REMOVED (签名也已更改)
+  // void calculateGLCMFeatures(const cv::Mat& glcm, int levels, double& contrast, double& energy, double& homogeneity, double& correlation); // REMOVED (签名也已更改)
 };
 #endif // MAINWINDOW_H

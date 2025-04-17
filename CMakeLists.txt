@@ -9,31 +9,36 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 仅查找 Qt6
+# 查找 Qt6, OpenCV, GDAL
 find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools Core)
 find_package(OpenCV REQUIRED)
 find_package(GDAL CONFIG REQUIRED)
 
-set(TS_FILES SAR-QualityQT_zh_CN.ts)
+# --- 使用 GLOB 查找源文件和头文件 ---
+# 查找当前目录下的 .cpp 文件
+file(GLOB PROJECT_CPP_SOURCES "*.cpp")
+# 查找当前目录下的 .h 文件
+file(GLOB PROJECT_H_SOURCES "*.h")
+# 查找当前目录下的 .ui 文件
+file(GLOB PROJECT_UI_SOURCES "*.ui")
 
-# 定义基础源文件
+# 查找翻译文件
+set(TS_FILES SAR-QualityQT_zh_CN.ts)
+# 可以在这里也使用 GLOB 如果需要
+# file(GLOB TS_FILES "*.ts")
+
+# 组合所有源文件类型 (CMake 能自动处理头文件和 UI 文件与 AUTOMOC/AUTOUIC 的关系)
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-        imagehandler.cpp
-        imagehandler.h
-        analysis_snr.cpp
-        analysis_infocontent.cpp
-        analysis_clarity.cpp
-        analysis_radiometric.cpp
-        analysis_glcm.cpp
-)
+    ${PROJECT_CPP_SOURCES}
+    ${PROJECT_H_SOURCES}
+    ${PROJECT_UI_SOURCES}
+    )
+# ---------------------------------------
 
 # 使用 Qt6 的方式添加可执行文件和翻译
 qt_add_executable(SAR-QualityQT
     MANUAL_FINALIZATION
+    # 直接使用组合后的变量
     ${PROJECT_SOURCES}
 )
 qt_add_translations(SAR-QualityQT TS_FILES ${TS_FILES})
@@ -69,14 +74,3 @@ install(TARGETS SAR-QualityQT
 
 # 始终为 Qt6 调用 finalize
 qt_finalize_executable(SAR-QualityQT)
-
-target_sources(SAR-QualityQT PRIVATE
-    main.cpp
-    mainwindow.cpp
-    imagehandler.cpp
-    analysis_snr.cpp
-    analysis_infocontent.cpp
-    analysis_clarity.cpp
-    analysis_radiometric.cpp
-    analysis_glcm.cpp
-)
