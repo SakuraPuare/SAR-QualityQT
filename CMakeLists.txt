@@ -19,8 +19,6 @@ find_package(GDAL CONFIG REQUIRED)
 file(GLOB PROJECT_CPP_SOURCES "src/*.cpp")
 # 查找当前目录下的 .h 文件
 file(GLOB PROJECT_H_SOURCES "src/include/*.h")
-# 查找当前目录下的 .ui 文件
-file(GLOB PROJECT_UI_SOURCES "resources/*.ui")
 
 # 查找翻译文件
 # file(GLOB TS_FILES "i18n/*.ts") # 不再使用 GLOB，改为明确指定
@@ -35,7 +33,6 @@ include_directories(src/include)
 set(PROJECT_SOURCES
     ${PROJECT_CPP_SOURCES}
     ${PROJECT_H_SOURCES}
-    ${PROJECT_UI_SOURCES}
     )
 # ---------------------------------------
 

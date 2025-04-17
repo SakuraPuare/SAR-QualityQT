@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 
   // Load Qt standard translations for the current locale
   QString qtTranslationsPath =
-      QLibraryInfo::location(QLibraryInfo::TranslationsPath);
+      QLibraryInfo::path(QLibraryInfo::TranslationsPath);
   qDebug() << "Looking for Qt standard translations in:" << qtTranslationsPath;
   if (qtTranslator.load(locale, "qtbase", "_", qtTranslationsPath)) {
     qDebug() << "Loaded Qt standard translations:" << qtTranslator.filePath();
