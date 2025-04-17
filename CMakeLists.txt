@@ -9,10 +9,11 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 查找 Qt6, OpenCV, GDAL
+# 查找 Qt6, OpenCV, GDAL, GTest
 find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools Core)
 find_package(OpenCV REQUIRED)
 find_package(GDAL CONFIG REQUIRED)
+find_package(GTest REQUIRED)
 
 # --- 使用 GLOB 查找源文件和头文件 ---
 # 查找当前目录下的 .cpp 文件
@@ -85,3 +86,46 @@ add_custom_target(update_translations ALL
     COMMENT "Updating translation source files (.ts)..."
     VERBATIM
 )
+
+# --- 配置测试 ---
+enable_testing() # <--- 启用 CTest
+
+# 添加测试可执行文件
+add_executable(analysis_tests ${TEST_SOURCES})
+
+# 链接测试可执行文件
+target_link_libraries(analysis_tests PRIVATE
+    SARQualityLib        # 链接核心库以测试其功能
+    Qt6::Widgets         # 测试代码中的 Test Fixture 使用了 QApplication
+    GTest::gtest         # Google Test 库
+    GTest::gtest_main    # Google Test main 函数
+    # GDAL 和 OpenCV 由 SARQualityLib 间接链接
+)
+
+include(GoogleTest) # <--- 包含 GoogleTest 模块
+
+# 1. 明确将测试可执行文件添加为 CTest 测试
+#    CTest 将在构建目录下查找并运行 'analysis_tests'
+add_test(NAME AnalysisTestsCommand COMMAND analysis_tests)
+
+# 2. 告诉 gtest_discover_tests 去检查哪个 CTest 测试 (通过 COMMAND 匹配)
+#    它将运行 'analysis_tests --gtest_list_tests' 来发现具体的测试用例
+#    并将它们添加到 CTest 中。
+gtest_discover_tests(analysis_tests)
+
+# --- 创建核心静态库 ---
+add_library(SARQualityLib STATIC
+    ${CORE_LIB_CPP_SOURCES}
+    ${CORE_LIB_H_SOURCES}
+)
+
+# 为核心库设置包含目录 (PUBLIC 以便链接它的目标也能访问)
+target_include_directories(SARQualityLib PUBLIC src/include)
+
+# 链接核心库的依赖 (使用 PUBLIC)
+target_link_libraries(SARQualityLib PUBLIC # <--- Changed from PRIVATE to PUBLIC
+    Qt6::Core       # ImageHandler 和 analysis* 使用 QString, QCoreApplication
+    GDAL::GDAL      # ImageHandler 使用
+    ${OpenCV_LIBS}  # ImageHandler 和 analysis* 使用
+)
+# -------------------------
