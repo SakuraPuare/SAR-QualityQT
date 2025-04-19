@@ -9,6 +9,14 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# --- Conditionally add Qt path on Windows ---
+if(WIN32)
+  # 如果是 Windows 系统，将手动安装的 Qt 路径添加到查找路径
+  # 请确保这个路径是正确的 Qt MinGW 64 位安装目录
+  list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.9.0/mingw_64")
+endif()
+# -----------------------------------------
+
 # 查找 Qt6, OpenCV, GDAL, GTest
 find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools Core)
 find_package(OpenCV REQUIRED)
