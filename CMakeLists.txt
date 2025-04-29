@@ -9,13 +9,18 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# --- Conditionally add Qt path on Windows ---
+# --- Conditionally add Qt path and MSVC options ---
 if(WIN32)
-  # 如果是 Windows 系统，将手动安装的 Qt 路径添加到查找路径
-  # 请确保这个路径是正确的 Qt MinGW 64 位安装目录
-  list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.9.0/mingw_64")
+  if(MSVC)
+    # Windows + MSVC: Add MSVC Qt path and required flag
+    list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.9.0/msvc2022_64") # <-- 使用你的 MSVC Qt 路径
+    add_compile_options(/Zc:__cplusplus)
+  else()
+    # Windows + Other (e.g., MinGW): Add MinGW Qt path
+    list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.9.0/mingw_64")
+  endif()
 endif()
-# -----------------------------------------
+# -------------------------------------------------
 
 # 查找 Qt6, OpenCV, GDAL, GTest
 find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools Core)
@@ -87,13 +92,13 @@ install(TARGETS SAR-QualityQT
 qt_finalize_executable(SAR-QualityQT)
 
 # 添加一个自定义目标来运行 lupdate
-add_custom_target(update_translations ALL
-    # 确保 -ts 参数后面跟着所有需要更新的 .ts 文件
-    COMMAND lupdate -extensions cpp,h,ui ${PROJECT_SOURCES} -ts ${TS_FILES}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Updating translation source files (.ts)..."
-    VERBATIM
-)
+# add_custom_target(run_lupdate ALL
+#     # 确保 -ts 参数后面跟着所有需要更新的 .ts 文件
+#     COMMAND lupdate -extensions cpp,h,ui ${PROJECT_SOURCES} -ts ${TS_FILES}
+#     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#     COMMENT "Updating translation source files (.ts)..."
+#     VERBATIM
+# )
 
 # --- 配置测试 ---
 enable_testing() # <--- 启用 CTest
