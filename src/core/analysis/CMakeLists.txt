@@ -18,7 +18,6 @@ set(ANALYSIS_SOURCES
         snr.cpp
         snr.h
         analysis_utils.h
-        snr_clarity_analysis.cpp
 )
 
 # 创建分析库
