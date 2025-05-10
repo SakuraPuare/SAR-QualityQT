@@ -16,6 +16,34 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QUrl>
+
+// 添加ImageHandler头文件
+#include "imagehandler.h"
+
+// 自定义GraphicsView类支持拖放
+class DragDropGraphicsView : public QGraphicsView
+{
+    Q_OBJECT
+    
+public:
+    explicit DragDropGraphicsView(QWidget *parent = nullptr) : QGraphicsView(parent) {
+        setAcceptDrops(true);
+    }
+    
+protected:
+    void dragEnterEvent(QDragEnterEvent *event) override {
+        emit dragEnterReceived(event);
+    }
+    
+    void dropEvent(QDropEvent *event) override {
+        emit dropReceived(event);
+    }
+    
+signals:
+    void dragEnterReceived(QDragEnterEvent *event);
+    void dropReceived(QDropEvent *event);
+};
 
 namespace Ui {
 class MainWindow;
@@ -67,16 +95,23 @@ private slots:
     void log(const QString &message);
     void onAnalysisProgress(int progress, const QString &message);
     void onAnalysisComplete();
+    
+    // 拖放相关槽函数
+    void handleViewDragEnter(QDragEnterEvent *event);
+    void handleViewDrop(QDropEvent *event);
 
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *imageScene;
-    QGraphicsView *imageView;
+    DragDropGraphicsView *imageView; // 更改为自定义视图类
     QString currentImagePath;
     bool hasSelectedRegion;
     QRect selectedRegion;
     QStringList loadedImages;
     QMap<QString, QString> imageResults;
+    
+    // 添加ImageHandler成员变量，用于GDAL图像处理
+    SAR::Core::ImageHandler *imageHandler;
     
     void setupImageViewer();
     void setupConnections();

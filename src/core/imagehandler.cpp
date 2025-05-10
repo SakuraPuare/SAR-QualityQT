@@ -275,37 +275,44 @@ QPixmap ImageHandler::getDisplayPixmap(const QSize &targetSize) const {
     if (!isValid()) {
         // 使用 QCoreApplication::translate
         log(QCoreApplication::translate("ImageHandler", "Error: getDisplayPixmap called when image is not valid."));
-        return QPixmap(); // 返回空的 QPixmap
+        return QPixmap(); // 返回空 QPixmap
     }
-
-    // 准备用于显示的 8 位单通道 Mat
+    
+    // 准备用于显示的Mat
     cv::Mat displayMat = prepareDisplayMat();
     if (displayMat.empty()) {
-        // 使用 QCoreApplication::translate
-        log(QCoreApplication::translate("ImageHandler", "Error: Failed to prepare CV_8UC1 Mat for display."));
+        log(QCoreApplication::translate("ImageHandler", "Error: Failed to prepare display Mat."));
         return QPixmap();
     }
-
-    // 将 CV_8UC1 Mat 转换为 QImage (Format_Grayscale8)
-    QImage qimg(displayMat.data, displayMat.cols, displayMat.rows,
-                  static_cast<int>(displayMat.step), QImage::Format_Grayscale8);
-
-    // 需要创建深拷贝，因为 qimg 共享 displayMat 的数据，而 displayMat 是局部变量
-    QImage qimg_deep = qimg.copy();
-
-    if (qimg_deep.isNull()) {
-        // 使用 QCoreApplication::translate
-        log(QCoreApplication::translate("ImageHandler", "Error: QImage conversion resulted in a null image."));
-        return QPixmap();
-    }
-
-    // 从 QImage 创建 QPixmap 并进行缩放
-    QPixmap pixmap = QPixmap::fromImage(qimg_deep);
-    if (targetSize.isValid()) { // 仅当 targetSize 有效时才缩放
-        return pixmap.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    
+    // 将OpenCV的Mat转换为QImage
+    QImage image;
+    if (displayMat.channels() == 1) {
+        // 单通道（灰度图）
+        image = QImage(displayMat.data, displayMat.cols, displayMat.rows, 
+                       static_cast<int>(displayMat.step), QImage::Format_Grayscale8);
+    } else if (displayMat.channels() == 3) {
+        // 三通道（彩色图）- 需要将BGR转为RGB
+        cv::Mat rgbMat;
+        cv::cvtColor(displayMat, rgbMat, cv::COLOR_BGR2RGB);
+        image = QImage(rgbMat.data, rgbMat.cols, rgbMat.rows, 
+                      static_cast<int>(rgbMat.step), QImage::Format_RGB888);
     } else {
-        return pixmap; // 如果尺寸无效，返回原始大小的 pixmap
+        log(QCoreApplication::translate("ImageHandler", "Error: Unsupported number of channels for conversion to QImage."));
+        return QPixmap();
     }
+    
+    // 创建一个副本，避免在displayMat释放后出现问题
+    QImage imageCopy = image.copy();
+    
+    // 缩放图像（如果需要）
+    if (!targetSize.isEmpty() && targetSize.isValid() && 
+        (imageCopy.width() > targetSize.width() || imageCopy.height() > targetSize.height())) {
+        imageCopy = imageCopy.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
+    
+    // 转换为QPixmap
+    return QPixmap::fromImage(imageCopy);
 }
 
 } // namespace Core

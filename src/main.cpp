@@ -3,6 +3,7 @@
 #include <QTranslator>
 #include <QLibraryInfo>
 #include "ui/include/mainwindow.h"
+#include <gdal_priv.h>
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +13,10 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("SAR");
     QCoreApplication::setApplicationName("SAR-QualityQT");
     QCoreApplication::setApplicationVersion("1.0");
+    
+    // 初始化GDAL，注册所有驱动
+    GDALAllRegister();
+    qDebug() << "已初始化GDAL并注册所有驱动程序";
     
     // 加载翻译文件
     QTranslator translator;
