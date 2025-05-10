@@ -51,7 +51,6 @@ enable_testing()
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
     add_subdirectory(tests)
 endif ()
-
 # 安装配置
 include(GNUInstallDirs)
 install(TARGETS SAR-QualityQT

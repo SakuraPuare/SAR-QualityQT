@@ -80,6 +80,7 @@ private:
     
     void setupImageViewer();
     void setupConnections();
+    void configureAnalysisOptions(); // 添加配置分析选项方法声明
     void enableAnalysisButtons(bool enable);
     void clearResults();
     bool loadImage(const QString &filePath);

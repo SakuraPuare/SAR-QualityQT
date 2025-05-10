@@ -6,12 +6,29 @@
 #include <map>
 #include <memory>
 
-// 包含各种分析模块的头文件
+// 包含配置文件
+#include "analysis_config.h"
+
+// 根据配置条件包含各种分析模块的头文件
+#if CONFIG_ENABLE_CLARITY
 #include "clarity.h"
+#endif
+
+#if CONFIG_ENABLE_GLCM
 #include "glcm.h"
-#include "radiometric.h"
+#endif
+
+#if CONFIG_ENABLE_SNR || CONFIG_ENABLE_NESZ
 #include "snr.h"
+#endif
+
+#if CONFIG_ENABLE_RADIOMETRIC_ACC || CONFIG_ENABLE_RADIOMETRIC_RES || CONFIG_ENABLE_ENL
+#include "radiometric.h"
+#endif
+
+#if CONFIG_ENABLE_INFO_CONTENT
 #include "infocontent.h"
+#endif
 
 namespace SAR {
 namespace Analysis {
@@ -37,35 +54,53 @@ public:
      */
     bool runAllAnalysis();
 
+#if CONFIG_ENABLE_CLARITY
     /**
      * @brief 运行清晰度分析
      * @return 是否成功
      */
     bool runClarityAnalysis();
+#endif
 
+#if CONFIG_ENABLE_GLCM
     /**
      * @brief 运行GLCM分析
      * @return 是否成功
      */
     bool runGLCMAnalysis();
+#endif
 
+#if CONFIG_ENABLE_RADIOMETRIC_ACC || CONFIG_ENABLE_RADIOMETRIC_RES || CONFIG_ENABLE_ENL
     /**
      * @brief 运行辐射度分析
      * @return 是否成功
      */
     bool runRadiometricAnalysis();
+#endif
 
+#if CONFIG_ENABLE_SNR
     /**
      * @brief 运行SNR分析
      * @return 是否成功
      */
     bool runSNRAnalysis();
+#endif
 
+#if CONFIG_ENABLE_INFO_CONTENT
     /**
      * @brief 运行信息内容分析
      * @return 是否成功
      */
     bool runInfoContentAnalysis();
+#endif
+
+#if CONFIG_ENABLE_NESZ
+    /**
+     * @brief 运行噪声等效后向散射系数分析
+     * @return 是否成功
+     */
+    bool runNESZAnalysis();
+#endif
 
     /**
      * @brief 获取分析结果摘要
@@ -91,12 +126,26 @@ private:
     cv::Mat inputImage;
     bool imageSet;
 
-    // 各个分析模块的实例
+    // 各个分析模块的实例，根据配置条件定义
+#if CONFIG_ENABLE_CLARITY
     std::unique_ptr<Clarity> clarityAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_GLCM
     std::unique_ptr<GLCM> glcmAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_RADIOMETRIC_ACC || CONFIG_ENABLE_RADIOMETRIC_RES || CONFIG_ENABLE_ENL
     std::unique_ptr<Radiometric> radiometricAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_SNR || CONFIG_ENABLE_NESZ
     std::unique_ptr<SNR> snrAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_INFO_CONTENT
     std::unique_ptr<InfoContent> infoContentAnalyzer;
+#endif
 
     // 分析结果
     std::map<QString, std::map<QString, double>> results;

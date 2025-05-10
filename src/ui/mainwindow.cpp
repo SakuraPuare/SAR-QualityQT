@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "analysis_config.h"
 #include <QDateTime>
 #include <QFileInfo>
 #include <QTextStream>
@@ -20,6 +21,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setupImageViewer();
     setupConnections();
+    
+    // 根据配置显示/隐藏分析选项
+    configureAnalysisOptions();
     
     // 初始状态下禁用分析按钮
     enableAnalysisButtons(false);
@@ -50,7 +54,7 @@ void MainWindow::setupImageViewer()
     imageView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     
     // 启用图像视图接受拖放
-    imageView->setAcceptDrops(false); // 禁用GraphicsView自身的拖放，使用MainWindow的拖放处理
+    imageView->setAcceptDrops(false); // 禁用 GraphicsView 自身的拖放，使用 MainWindow 的拖放处理
     
     // 替换 UI 中的占位符
     QLayout* layout = ui->verticalLayout_image_display;
@@ -66,19 +70,43 @@ void MainWindow::setupConnections()
 {
     // 复选框连接
     connect(ui->checkBoxSelectAll, &QCheckBox::toggled, [this](bool checked) {
-        // 当"全选"被勾选或取消时，设置所有其他复选框的状态
+        // 当"全选"被勾选或取消时，设置所有可见/启用的其他复选框的状态
+#if CONFIG_ENABLE_ISLR
         ui->checkBoxISLR->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_PSLR
         ui->checkBoxPSLR->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_RANGE_RES
         ui->checkBoxRangeResolution->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_AZIMUTH_RES
         ui->checkBoxAzimuthResolution->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_SNR
         ui->checkBoxSNR->setChecked(checked);
-        ui->checkBoxInfoContent->setChecked(checked);
-        ui->checkBoxClarity->setChecked(checked);
-        ui->checkBoxRadiometricAccuracy->setChecked(checked);
-        ui->checkBoxGLCM->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_NESZ
         ui->checkBoxNESZ->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_RADIOMETRIC_ACC
+        ui->checkBoxRadiometricAccuracy->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_RADIOMETRIC_RES
         ui->checkBoxRadiometricResolution->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_ENL
         ui->checkBoxENL->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_CLARITY
+        ui->checkBoxClarity->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_GLCM
+        ui->checkBoxGLCM->setChecked(checked);
+#endif
+#if CONFIG_ENABLE_INFO_CONTENT
+        ui->checkBoxInfoContent->setChecked(checked);
+#endif
     });
     
     // 当有图像加载时启用分析按钮
@@ -269,19 +297,41 @@ void MainWindow::on_startAnalysisButton_clicked()
     
     QStringList selectedMethods;
     
-    // 收集选中的分析方法
+    // 根据配置收集选中的分析方法
+#if CONFIG_ENABLE_ISLR
     if (ui->checkBoxISLR->isChecked()) selectedMethods << "ISLR";
+#endif
+#if CONFIG_ENABLE_PSLR
     if (ui->checkBoxPSLR->isChecked()) selectedMethods << "PSLR";
+#endif
+#if CONFIG_ENABLE_RANGE_RES
     if (ui->checkBoxRangeResolution->isChecked()) selectedMethods << "RangeResolution";
+#endif
+#if CONFIG_ENABLE_AZIMUTH_RES
     if (ui->checkBoxAzimuthResolution->isChecked()) selectedMethods << "AzimuthResolution";
     if (ui->checkBoxSNR->isChecked()) selectedMethods << "SNR";
+#endif
+#if CONFIG_ENABLE_INFO_CONTENT
     if (ui->checkBoxInfoContent->isChecked()) selectedMethods << "InfoContent";
+#endif
+#if CONFIG_ENABLE_CLARITY
     if (ui->checkBoxClarity->isChecked()) selectedMethods << "Clarity";
+#endif
+#if CONFIG_ENABLE_RADIOMETRIC_ACC
     if (ui->checkBoxRadiometricAccuracy->isChecked()) selectedMethods << "RadiometricAccuracy";
+#endif
+#if CONFIG_ENABLE_GLCM
     if (ui->checkBoxGLCM->isChecked()) selectedMethods << "GLCM";
+#endif
+#if CONFIG_ENABLE_NESZ
     if (ui->checkBoxNESZ->isChecked()) selectedMethods << "NESZ";
+#endif
+#if CONFIG_ENABLE_RADIOMETRIC_RES
     if (ui->checkBoxRadiometricResolution->isChecked()) selectedMethods << "RadiometricResolution";
+#endif
+#if CONFIG_ENABLE_ENL
     if (ui->checkBoxENL->isChecked()) selectedMethods << "ENL";
+#endif
     
     if (selectedMethods.isEmpty()) {
         QMessageBox::warning(this, tr("错误"), tr("请至少选择一个分析方法"));
@@ -405,20 +455,66 @@ void MainWindow::onAnalysisComplete()
     overview += tr("图像：%1\n").arg(QFileInfo(currentImagePath).fileName());
     overview += tr("评估时间：%1\n\n").arg(getCurrentDateTime());
     
+    // 根据配置条件显示分析结果
+#if CONFIG_ENABLE_SNR
     if (imageResults.contains("SNR"))
         overview += tr("信噪比：12.5 dB\n");
+#endif
+
+#if CONFIG_ENABLE_INFO_CONTENT
     if (imageResults.contains("InfoContent"))
         overview += tr("信息熵：7.85\n");
+#endif
+
+#if CONFIG_ENABLE_CLARITY
     if (imageResults.contains("Clarity"))
         overview += tr("清晰度指标：0.83\n");
+#endif
+
+#if CONFIG_ENABLE_ISLR
     if (imageResults.contains("ISLR"))
         overview += tr("积分旁瓣比：-13.2 dB\n");
+#endif
+
+#if CONFIG_ENABLE_PSLR
     if (imageResults.contains("PSLR"))
         overview += tr("峰值旁瓣比：-18.5 dB\n");
+#endif
+
+#if CONFIG_ENABLE_RANGE_RES
     if (imageResults.contains("RangeResolution"))
         overview += tr("距离模糊度：1.2 m\n");
+#endif
+
+#if CONFIG_ENABLE_AZIMUTH_RES
     if (imageResults.contains("AzimuthResolution"))
         overview += tr("方位模糊度：1.5 m\n");
+#endif
+
+#if CONFIG_ENABLE_NESZ
+    if (imageResults.contains("NESZ"))
+        overview += tr("噪声等效后向散射系数：-25 dB\n");
+#endif
+
+#if CONFIG_ENABLE_RADIOMETRIC_RES
+    if (imageResults.contains("RadiometricResolution"))
+        overview += tr("辐射分辨率：1.8 dB\n");
+#endif
+
+#if CONFIG_ENABLE_ENL
+    if (imageResults.contains("ENL"))
+        overview += tr("等效视数：8.5\n");
+#endif
+
+#if CONFIG_ENABLE_RADIOMETRIC_ACC
+    if (imageResults.contains("RadiometricAccuracy"))
+        overview += tr("辐射精度：0.5 dB\n");
+#endif
+
+#if CONFIG_ENABLE_GLCM
+    if (imageResults.contains("GLCM"))
+        overview += tr("GLCM 特征：对比度 12.4, 相关性 0.78\n");
+#endif
     
     ui->overviewResultsTextEdit->setText(overview);
     
@@ -500,8 +596,72 @@ void MainWindow::generateReport(const QString &format)
             
         // 绘制结果
         yPos += 100;
-        QMap<QString, QString>::const_iterator i = imageResults.constBegin();
-        while (i != imageResults.constEnd()) {
+        
+        // 仅导出已启用的分析方法结果
+        QMap<QString, QString> filteredResults;
+        
+#if CONFIG_ENABLE_SNR
+        if (imageResults.contains("SNR"))
+            filteredResults.insert("SNR", imageResults["SNR"]);
+#endif
+
+#if CONFIG_ENABLE_INFO_CONTENT
+        if (imageResults.contains("InfoContent"))
+            filteredResults.insert("InfoContent", imageResults["InfoContent"]);
+#endif
+
+#if CONFIG_ENABLE_CLARITY
+        if (imageResults.contains("Clarity"))
+            filteredResults.insert("Clarity", imageResults["Clarity"]);
+#endif
+
+#if CONFIG_ENABLE_RADIOMETRIC_ACC
+        if (imageResults.contains("RadiometricAccuracy"))
+            filteredResults.insert("RadiometricAccuracy", imageResults["RadiometricAccuracy"]);
+#endif
+
+#if CONFIG_ENABLE_GLCM
+        if (imageResults.contains("GLCM"))
+            filteredResults.insert("GLCM", imageResults["GLCM"]);
+#endif
+
+#if CONFIG_ENABLE_ISLR
+        if (imageResults.contains("ISLR"))
+            filteredResults.insert("ISLR", imageResults["ISLR"]);
+#endif
+
+#if CONFIG_ENABLE_PSLR
+        if (imageResults.contains("PSLR"))
+            filteredResults.insert("PSLR", imageResults["PSLR"]);
+#endif
+
+#if CONFIG_ENABLE_RANGE_RES
+        if (imageResults.contains("RangeResolution"))
+            filteredResults.insert("RangeResolution", imageResults["RangeResolution"]);
+#endif
+
+#if CONFIG_ENABLE_AZIMUTH_RES
+        if (imageResults.contains("AzimuthResolution"))
+            filteredResults.insert("AzimuthResolution", imageResults["AzimuthResolution"]);
+#endif
+
+#if CONFIG_ENABLE_NESZ
+        if (imageResults.contains("NESZ"))
+            filteredResults.insert("NESZ", imageResults["NESZ"]);
+#endif
+
+#if CONFIG_ENABLE_RADIOMETRIC_RES
+        if (imageResults.contains("RadiometricResolution"))
+            filteredResults.insert("RadiometricResolution", imageResults["RadiometricResolution"]);
+#endif
+
+#if CONFIG_ENABLE_ENL
+        if (imageResults.contains("ENL"))
+            filteredResults.insert("ENL", imageResults["ENL"]);
+#endif
+        
+        QMap<QString, QString>::const_iterator i = filteredResults.constBegin();
+        while (i != filteredResults.constEnd()) {
             QString methodName;
             if (i.key() == "SNR") methodName = tr("信噪比");
             else if (i.key() == "InfoContent") methodName = tr("信息熵");
@@ -562,8 +722,71 @@ void MainWindow::generateReport(const QString &format)
         out << tr("评估时间：%1").arg(getCurrentDateTime()) << "\n\n";
         
         // 写入结果
-        QMap<QString, QString>::const_iterator i = imageResults.constBegin();
-        while (i != imageResults.constEnd()) {
+        // 仅导出已启用的分析方法结果
+        QMap<QString, QString> filteredResults;
+        
+#if CONFIG_ENABLE_SNR
+        if (imageResults.contains("SNR"))
+            filteredResults.insert("SNR", imageResults["SNR"]);
+#endif
+
+#if CONFIG_ENABLE_INFO_CONTENT
+        if (imageResults.contains("InfoContent"))
+            filteredResults.insert("InfoContent", imageResults["InfoContent"]);
+#endif
+
+#if CONFIG_ENABLE_CLARITY
+        if (imageResults.contains("Clarity"))
+            filteredResults.insert("Clarity", imageResults["Clarity"]);
+#endif
+
+#if CONFIG_ENABLE_RADIOMETRIC_ACC
+        if (imageResults.contains("RadiometricAccuracy"))
+            filteredResults.insert("RadiometricAccuracy", imageResults["RadiometricAccuracy"]);
+#endif
+
+#if CONFIG_ENABLE_GLCM
+        if (imageResults.contains("GLCM"))
+            filteredResults.insert("GLCM", imageResults["GLCM"]);
+#endif
+
+#if CONFIG_ENABLE_ISLR
+        if (imageResults.contains("ISLR"))
+            filteredResults.insert("ISLR", imageResults["ISLR"]);
+#endif
+
+#if CONFIG_ENABLE_PSLR
+        if (imageResults.contains("PSLR"))
+            filteredResults.insert("PSLR", imageResults["PSLR"]);
+#endif
+
+#if CONFIG_ENABLE_RANGE_RES
+        if (imageResults.contains("RangeResolution"))
+            filteredResults.insert("RangeResolution", imageResults["RangeResolution"]);
+#endif
+
+#if CONFIG_ENABLE_AZIMUTH_RES
+        if (imageResults.contains("AzimuthResolution"))
+            filteredResults.insert("AzimuthResolution", imageResults["AzimuthResolution"]);
+#endif
+
+#if CONFIG_ENABLE_NESZ
+        if (imageResults.contains("NESZ"))
+            filteredResults.insert("NESZ", imageResults["NESZ"]);
+#endif
+
+#if CONFIG_ENABLE_RADIOMETRIC_RES
+        if (imageResults.contains("RadiometricResolution"))
+            filteredResults.insert("RadiometricResolution", imageResults["RadiometricResolution"]);
+#endif
+
+#if CONFIG_ENABLE_ENL
+        if (imageResults.contains("ENL"))
+            filteredResults.insert("ENL", imageResults["ENL"]);
+#endif
+        
+        QMap<QString, QString>::const_iterator i = filteredResults.constBegin();
+        while (i != filteredResults.constEnd()) {
             QString methodName;
             if (i.key() == "SNR") methodName = tr("信噪比");
             else if (i.key() == "InfoContent") methodName = tr("信息熵");
@@ -639,10 +862,10 @@ bool MainWindow::isSupportedImageFormat(const QString &filePath)
             suffix == "jpeg" || suffix == "png" || suffix == "bmp");
 }
 
-// 修改dragEnterEvent方法使用新方法
+// 修改 dragEnterEvent 方法使用新方法
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
-    // 检查拖拽的数据是否包含URL（文件路径）
+    // 检查拖拽的数据是否包含 URL（文件路径）
     if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls = event->mimeData()->urls();
         for (const QUrl &url : urls) {
@@ -678,7 +901,7 @@ void MainWindow::dropEvent(QDropEvent *event)
     }
 }
 
-// 修改handleDroppedFile方法使用新方法
+// 修改 handleDroppedFile 方法使用新方法
 void MainWindow::handleDroppedFile(const QString &filePath)
 {
     if (isSupportedImageFormat(filePath)) {
@@ -702,6 +925,95 @@ void MainWindow::handleDroppedFile(const QString &filePath)
     } else {
         QFileInfo fileInfo(filePath);
         QMessageBox::warning(this, tr("不支持的文件格式"),
-            tr("无法加载文件：%1\n只支持图像文件格式（tif, jpg, png等）").arg(fileInfo.fileName()));
+            tr("无法加载文件：%1\n只支持图像文件格式（tif, jpg, png 等）").arg(fileInfo.fileName()));
     }
+}
+
+// 添加配置分析选项方法
+void MainWindow::configureAnalysisOptions()
+{
+    // 根据配置显示或隐藏分析选项
+#if !CONFIG_ENABLE_ISLR
+    ui->checkBoxISLR->setVisible(false);
+    ui->checkBoxISLR->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 6) // 积分旁瓣比结果选项卡
+        ui->resultsTabWidget->setTabVisible(6, false);
+#endif
+
+#if !CONFIG_ENABLE_PSLR
+    ui->checkBoxPSLR->setVisible(false);
+    ui->checkBoxPSLR->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 7) // 峰值旁瓣比结果选项卡
+        ui->resultsTabWidget->setTabVisible(7, false);
+#endif
+
+#if !CONFIG_ENABLE_RANGE_RES
+    ui->checkBoxRangeResolution->setVisible(false);
+    ui->checkBoxRangeResolution->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 8) // 距离模糊度结果选项卡
+        ui->resultsTabWidget->setTabVisible(8, false);
+#endif
+
+#if !CONFIG_ENABLE_AZIMUTH_RES
+    ui->checkBoxAzimuthResolution->setVisible(false);
+    ui->checkBoxAzimuthResolution->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 9) // 方位模糊度结果选项卡
+        ui->resultsTabWidget->setTabVisible(9, false);
+#endif
+
+#if !CONFIG_ENABLE_SNR
+    ui->checkBoxSNR->setVisible(false);
+    ui->checkBoxSNR->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 1) // 信噪比结果选项卡
+        ui->resultsTabWidget->setTabVisible(1, false);
+#endif
+
+#if !CONFIG_ENABLE_NESZ
+    ui->checkBoxNESZ->setVisible(false);
+    ui->checkBoxNESZ->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 10) // NESZ 结果选项卡
+        ui->resultsTabWidget->setTabVisible(10, false);
+#endif
+
+#if !CONFIG_ENABLE_RADIOMETRIC_ACC
+    ui->checkBoxRadiometricAccuracy->setVisible(false);
+    ui->checkBoxRadiometricAccuracy->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 4) // 辐射精度结果选项卡
+        ui->resultsTabWidget->setTabVisible(4, false);
+#endif
+
+#if !CONFIG_ENABLE_RADIOMETRIC_RES
+    ui->checkBoxRadiometricResolution->setVisible(false);
+    ui->checkBoxRadiometricResolution->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 11) // 辐射分辨率结果选项卡
+        ui->resultsTabWidget->setTabVisible(11, false);
+#endif
+
+#if !CONFIG_ENABLE_ENL
+    ui->checkBoxENL->setVisible(false);
+    ui->checkBoxENL->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 12) // 等效视数结果选项卡
+        ui->resultsTabWidget->setTabVisible(12, false);
+#endif
+
+#if !CONFIG_ENABLE_CLARITY
+    ui->checkBoxClarity->setVisible(false);
+    ui->checkBoxClarity->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 3) // 清晰度结果选项卡
+        ui->resultsTabWidget->setTabVisible(3, false);
+#endif
+
+#if !CONFIG_ENABLE_GLCM
+    ui->checkBoxGLCM->setVisible(false);
+    ui->checkBoxGLCM->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 5) // GLCM 结果选项卡
+        ui->resultsTabWidget->setTabVisible(5, false);
+#endif
+
+#if !CONFIG_ENABLE_INFO_CONTENT
+    ui->checkBoxInfoContent->setVisible(false);
+    ui->checkBoxInfoContent->setEnabled(false);
+    if (ui->resultsTabWidget->count() > 2) // 信息内容结果选项卡
+        ui->resultsTabWidget->setTabVisible(2, false);
+#endif
 }

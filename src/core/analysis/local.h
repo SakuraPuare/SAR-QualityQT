@@ -7,11 +7,29 @@
 #include <map>
 #include <memory>
 
+// 包含配置文件
+#include "analysis_config.h"
+
+// 根据配置条件包含各种分析模块的头文件
+#if CONFIG_ENABLE_CLARITY
 #include "clarity.h"
+#endif
+
+#if CONFIG_ENABLE_GLCM
 #include "glcm.h"
-#include "radiometric.h"
+#endif
+
+#if CONFIG_ENABLE_SNR || CONFIG_ENABLE_NESZ
 #include "snr.h"
+#endif
+
+#if CONFIG_ENABLE_RADIOMETRIC_ACC || CONFIG_ENABLE_RADIOMETRIC_RES || CONFIG_ENABLE_ENL
+#include "radiometric.h"
+#endif
+
+#if CONFIG_ENABLE_INFO_CONTENT
 #include "infocontent.h"
+#endif
 
 namespace SAR {
 namespace Analysis {
@@ -94,12 +112,26 @@ private:
     bool imageSet;
     std::vector<cv::Rect> regions;
 
-    // 各个分析模块的实例
+    // 各个分析模块的实例，根据配置条件定义
+#if CONFIG_ENABLE_CLARITY
     std::unique_ptr<Clarity> clarityAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_GLCM
     std::unique_ptr<GLCM> glcmAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_RADIOMETRIC_ACC || CONFIG_ENABLE_RADIOMETRIC_RES || CONFIG_ENABLE_ENL
     std::unique_ptr<Radiometric> radiometricAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_SNR || CONFIG_ENABLE_NESZ
     std::unique_ptr<SNR> snrAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_INFO_CONTENT
     std::unique_ptr<InfoContent> infoContentAnalyzer;
+#endif
 
     // 分析结果，以 ROI 索引为键
     std::map<size_t, std::map<QString, std::map<QString, double>>> results;
