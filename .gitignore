@@ -84,3 +84,6 @@ CMakeLists.txt.user*
 .vscode
 .cache
 .idea
+
+vcpkg_installed
+CMakeFiles

@@ -16,6 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 条件添加 Qt 路径
 if (WIN32)
+    set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake")
     if (MSVC)
         # Windows + MSVC
         list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.9.0/msvc2022_64")
@@ -51,6 +52,7 @@ enable_testing()
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
     add_subdirectory(tests)
 endif ()
+
 # 安装配置
 include(GNUInstallDirs)
 install(TARGETS SAR-QualityQT
