@@ -83,3 +83,4 @@ CMakeLists.txt.user*
 
 .vscode
 .cache
+.idea
