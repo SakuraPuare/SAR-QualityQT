@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(SAR-QualityQT VERSION 0.1 LANGUAGES CXX)
 
-# 设置CMake策略
+# 设置 CMake 策略
 if(POLICY CMP0074)
     cmake_policy(SET CMP0074 NEW)
 endif()
@@ -14,7 +14,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 条件添加Qt路径
+# 条件添加 Qt 路径
 if(WIN32)
     if(MSVC)
         # Windows + MSVC
@@ -26,16 +26,16 @@ if(WIN32)
     endif()
 endif()
 
-# 查找Qt组件
+# 查找 Qt 组件
 find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools Core PrintSupport)
 
-# 查找OpenCV
+# 查找 OpenCV
 find_package(OpenCV REQUIRED)
 
-# 查找GDAL
+# 查找 GDAL
 find_package(GDAL CONFIG REQUIRED)
 
-# 查找GTest
+# 查找 GTest
 find_package(GTest REQUIRED)
 
 # 创建资源文件目录
@@ -48,7 +48,9 @@ add_subdirectory(src)
 
 # 启用测试
 enable_testing()
-add_subdirectory(tests)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
+  add_subdirectory(tests)
+endif()
 
 # 安装配置
 include(GNUInstallDirs)
@@ -57,6 +59,3 @@ install(TARGETS SAR-QualityQT
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-# 完成Qt可执行文件设置
-qt_finalize_executable(SAR-QualityQT)

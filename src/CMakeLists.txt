@@ -1,79 +1,37 @@
-# 源代码主要构建配置
+# src/CMakeLists.txt
+cmake_minimum_required(VERSION 3.16)
 
-# 设置核心库的源文件
-set(CORE_SOURCES
-    core/imagehandler.cpp
-    core/imagehandler.h
-    core/analysis/clarity.cpp
-    core/analysis/clarity.h
-    core/analysis/glcm.cpp
-    core/analysis/glcm.h
-    # 添加其他核心文件
-)
+# 添加核心库
+add_subdirectory(core)
 
-# 设置UI的源文件
-set(UI_SOURCES
-    ui/mainwindow.cpp
-    ui/mainwindow.h
-    ui/mainwindow.ui
-    # 添加其他UI文件
-)
+# 添加界面
+add_subdirectory(ui)
 
-# 设置主程序源文件
-set(MAIN_SOURCES
+# 主应用程序
+qt_add_executable(SAR-QualityQT
     main.cpp
 )
 
-# 设置所有源文件
-set(PROJECT_SOURCES
-    ${CORE_SOURCES}
-    ${UI_SOURCES}
-    ${MAIN_SOURCES}
+# 链接核心库和 UI 库
+target_link_libraries(SAR-QualityQT PRIVATE 
+    SARCore
+    SARUI
 )
 
-# 设置包含目录
-include_directories(
+# 添加包含目录
+target_include_directories(SAR-QualityQT PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/include
 )
 
-# 创建核心库
-add_library(SARQualityLib STATIC
-    ${CORE_SOURCES}
-)
-
-# 为核心库设置包含目录
-target_include_directories(SARQualityLib PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-# 链接核心库的依赖
-target_link_libraries(SARQualityLib PUBLIC
-    Qt6::Core
-    Qt6::Widgets
-    GDAL::GDAL
-    ${OpenCV_LIBS}
-)
-
-# 创建可执行文件
-qt_add_executable(SAR-QualityQT
-    MANUAL_FINALIZATION
-    ${UI_SOURCES}
-    ${MAIN_SOURCES}
-)
-
-# 自动处理UI文件
+# 设置属性
 set_target_properties(SAR-QualityQT PROPERTIES
-    AUTOUIC ON
-    AUTOMOC ON
-    AUTORCC ON
-)
-
-# 链接可执行文件的依赖
-target_link_libraries(SAR-QualityQT PRIVATE
-    SARQualityLib
-    Qt6::Widgets
-    Qt6::Core
-    Qt6::PrintSupport
+    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.SAR-QualityQT
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
 )
 
 # 翻译文件处理
@@ -88,4 +46,4 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../i18n")
     qt_add_translations(SAR-QualityQT
         TS_FILES ${TS_FILES}
     )
-endif() 
+endif()

@@ -17,240 +17,295 @@
 namespace SAR {
 namespace Core {
 
-ImageHandler::ImageHandler()
-    : m_dataset(nullptr)
-{
-    initGDAL();
+ImageHandler::ImageHandler(std::function<void(const QString &)> logger)
+    : m_logger(logger) {}
+
+ImageHandler::~ImageHandler() {
+    // 确保在析构时关闭图像，防止资源泄漏
+    closeImage();
 }
 
-ImageHandler::~ImageHandler()
-{
-    if (m_dataset) {
-        GDALClose(m_dataset);
-        m_dataset = nullptr;
-    }
+void ImageHandler::setLogger(std::function<void(const QString &)> logger) {
+    m_logger = logger;
 }
 
-void ImageHandler::initGDAL()
-{
-    // 初始化GDAL
-    static bool initialized = false;
-    if (!initialized) {
-        GDALAllRegister();
-        initialized = true;
+void ImageHandler::log(const QString &message) const {
+    if (m_logger) {
+        m_logger(message);
+    } else {
+        // 如果没有设置日志记录器，可以考虑输出到 qDebug 或不记录
+        // qDebug() << message;
     }
 }
 
-bool ImageHandler::loadImage(const QString& filePath)
-{
-    // 关闭之前打开的图像
-    if (m_dataset) {
-        GDALClose(m_dataset);
-        m_dataset = nullptr;
+void ImageHandler::closeImage() {
+    if (poDataset != nullptr) {
+        QString filename_copy = currentFilename;
+        GDALClose(poDataset);
+        poDataset = nullptr;
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Closed GDAL dataset: %1").arg(filename_copy));
     }
-    
-    m_image = cv::Mat();
-    m_filePath.clear();
-    
-    // 尝试使用GDAL加载
-    if (loadWithGDAL(filePath)) {
-        m_filePath = filePath;
-        return true;
+    if (!currentImage.empty()) {
+        currentImage.release();
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Released cv::Mat memory."));
     }
-    
-    // 尝试使用OpenCV加载
-    if (loadWithOpenCV(filePath)) {
-        m_filePath = filePath;
-        return true;
-    }
-    
-    return false;
+    currentFilename.clear();
+    isComplex = false;
+    // 注意：这里不重置 UI 元素，因为 ImageHandler 不应该知道 UI
 }
 
-bool ImageHandler::loadWithGDAL(const QString& filePath)
-{
-    m_dataset = (GDALDataset*)GDALOpen(filePath.toUtf8().constData(), GA_ReadOnly);
-    if (!m_dataset) {
+bool ImageHandler::loadImage(const QString &filePath) {
+    if (filePath.isEmpty()) {
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Error: Invalid (empty) file path provided to loadImage."));
         return false;
     }
-    
-    // 获取图像基本信息
-    int width = m_dataset->GetRasterXSize();
-    int height = m_dataset->GetRasterYSize();
-    int bands = m_dataset->GetRasterCount();
-    
-    if (width <= 0 || height <= 0 || bands <= 0) {
-        GDALClose(m_dataset);
-        m_dataset = nullptr;
+
+    // 使用 QCoreApplication::translate
+    log(QCoreApplication::translate("ImageHandler", "ImageHandler: Attempting to load image: %1").arg(filePath));
+
+    closeImage(); // Close previous before opening new
+
+    poDataset = (GDALDataset *)GDALOpen(filePath.toUtf8().constData(), GA_ReadOnly);
+
+    if (poDataset == nullptr) {
+        QString gdalErrorMsg = CPLGetLastErrorMsg();
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Error: Could not open image file '%1' with GDAL. Error: %2")
+                .arg(filePath, gdalErrorMsg));
+        // 注意：这里不显示 QMessageBox，只记录日志
         return false;
     }
-    
-    // 确定OpenCV数据类型
-    GDALDataType dataType = m_dataset->GetRasterBand(1)->GetRasterDataType();
-    int cvType = CV_8U;
-    
+
+    currentFilename = QFileInfo(filePath).fileName();
+    // 使用 QCoreApplication::translate
+    log(QCoreApplication::translate("ImageHandler", "ImageHandler: Successfully opened dataset: %1").arg(currentFilename));
+
+    int width = poDataset->GetRasterXSize();
+    int height = poDataset->GetRasterYSize();
+    int numBands = poDataset->GetRasterCount();
+
+    if (width <= 0 || height <= 0 || numBands < 1) {
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Error: Image has invalid dimensions (%1x%2) or zero bands (%3).")
+                .arg(width)
+                .arg(height)
+                .arg(numBands));
+        closeImage(); // 清理已打开的 GDAL 数据集
+        return false;
+    }
+
+    // 仅处理第一个波段
+    GDALRasterBand *poBand = poDataset->GetRasterBand(1);
+    if (poBand == nullptr) {
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Error: Could not access raster band 1."));
+        closeImage();
+        return false;
+    }
+
+    GDALDataType dataType = poBand->GetRasterDataType();
+    // 使用 QCoreApplication::translate
+    log(QCoreApplication::translate("ImageHandler", "ImageHandler: Properties: %1x%2 pixels, %3 bands, Data type: %4")
+            .arg(width)
+            .arg(height)
+            .arg(numBands)
+            .arg(GDALGetDataTypeName(dataType)));
+
+    int cvType = -1;
+    isComplex = GDALDataTypeIsComplex(dataType); // 更新成员变量
+
+    // GDAL 类型到 OpenCV 类型的映射 (与 MainWindow 中类似)
     switch (dataType) {
-        case GDT_Byte:
-            cvType = CV_8U;
-            break;
-        case GDT_UInt16:
-        case GDT_Int16:
-            cvType = CV_16U;
-            break;
-        case GDT_UInt32:
-        case GDT_Int32:
-            cvType = CV_32S;
-            break;
-        case GDT_Float32:
-            cvType = CV_32F;
-            break;
-        case GDT_Float64:
-            cvType = CV_64F;
-            break;
+        case GDT_Byte:    cvType = CV_8U; break;
+        case GDT_UInt16:  cvType = CV_16U; break;
+        case GDT_Int16:   cvType = CV_16S; break;
+        case GDT_UInt32:  cvType = CV_32S; break; // Map to CV_32S
+        case GDT_Int32:   cvType = CV_32S; break;
+        case GDT_Float32: cvType = CV_32F; break;
+        case GDT_Float64: cvType = CV_64F; break;
+        case GDT_CInt16:   cvType = CV_16S; break;
+        case GDT_CInt32:   cvType = CV_32S; break;
+        case GDT_CFloat32: cvType = CV_32F; break;
+        case GDT_CFloat64: cvType = CV_64F; break;
         default:
-            // 不支持的类型
-            GDALClose(m_dataset);
-            m_dataset = nullptr;
+            // 使用 QCoreApplication::translate
+            log(QCoreApplication::translate("ImageHandler", "Error: Unsupported GDAL data type for reading: %1")
+                    .arg(GDALGetDataTypeName(dataType)));
+            closeImage();
             return false;
     }
-    
-    // 创建OpenCV矩阵
-    m_image.create(height, width, CV_MAKETYPE(cvType, bands));
-    
-    // 读取数据
-    for (int b = 0; b < bands; b++) {
-        GDALRasterBand* band = m_dataset->GetRasterBand(b + 1);
-        if (band) {
-            // 计算读取的数据大小
-            size_t pixelSize = GDALGetDataTypeSize(dataType) / 8;
-            size_t rowSize = width * pixelSize;
-            
-            // 读取数据
-            for (int row = 0; row < height; row++) {
-                void* rowBuffer = m_image.ptr(row) + b * pixelSize;
-                CPLErr error = band->RasterIO(GF_Read, 0, row, width, 1, 
-                                              rowBuffer, width, 1, 
-                                              dataType, 0, 0);
-                if (error != CE_None) {
-                    // 读取失败
-                    m_image = cv::Mat();
-                    GDALClose(m_dataset);
-                    m_dataset = nullptr;
-                    return false;
-                }
-            }
-        }
+
+    // 分配 OpenCV Mat 内存
+    int cvChannels = isComplex ? 2 : 1;
+    currentImage.create(height, width, CV_MAKETYPE(cvType, cvChannels));
+
+    // 使用 RasterIO 读取数据
+    CPLErr err = poBand->RasterIO(
+        GF_Read, 0, 0, width, height,
+        currentImage.ptr(), width, height,
+        dataType,
+        isComplex ? GDALGetDataTypeSizeBytes(dataType) : 0, // 像素间距
+        isComplex ? GDALGetDataTypeSizeBytes(dataType) * width : 0 // 行间距
+    );
+
+    if (err != CE_None) {
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Error reading raster data using RasterIO. GDAL Error: %1")
+                .arg(CPLGetLastErrorMsg()));
+        closeImage();
+        return false;
     }
-    
+
+    std::string typeStr = "Unknown";
+    try {
+        typeStr = cv::typeToString(currentImage.type());
+    } catch (...) {
+        log(QCoreApplication::translate("ImageHandler", "Exception getting type string for cv::Mat"));
+    }
+
+    // 使用 QCoreApplication::translate
+    log(QCoreApplication::translate("ImageHandler", "ImageHandler: Image data successfully read into cv::Mat. Type: %1, Channels: %2")
+            .arg(QString::fromStdString(typeStr))
+            .arg(currentImage.channels()));
+
+    // 加载成功
     return true;
 }
 
-bool ImageHandler::loadWithOpenCV(const QString& filePath)
-{
-    m_image = cv::imread(filePath.toStdString(), cv::IMREAD_UNCHANGED);
-    return !m_image.empty();
+bool ImageHandler::isValid() const {
+    // 有效条件：GDAL 数据集已打开且 OpenCV Mat 不为空
+    return poDataset != nullptr && !currentImage.empty();
 }
 
-cv::Mat ImageHandler::getImage() const
-{
-    return m_image;
+QString ImageHandler::getFilename() const {
+    return currentFilename;
 }
 
-QImage ImageHandler::cvMatToQImage(const cv::Mat& cvImage)
-{
-    if (cvImage.empty()) {
-        return QImage();
+QString ImageHandler::getDimensionsString() const {
+    if (poDataset) {
+        return QString("%1 x %2")
+            .arg(poDataset->GetRasterXSize())
+            .arg(poDataset->GetRasterYSize());
     }
-    
-    QImage qImage;
-    
-    switch (cvImage.type()) {
-        case CV_8UC1:
-            // 单通道8位图像
-            qImage = QImage(cvImage.data, cvImage.cols, cvImage.rows, 
-                           cvImage.step, QImage::Format_Grayscale8);
-            break;
-            
-        case CV_8UC3:
-            // BGR格式的3通道8位图像
-            qImage = QImage(cvImage.data, cvImage.cols, cvImage.rows, 
-                           cvImage.step, QImage::Format_RGB888).rgbSwapped();
-            break;
-            
-        case CV_8UC4:
-            // BGRA格式的4通道8位图像
-            qImage = QImage(cvImage.data, cvImage.cols, cvImage.rows, 
-                           cvImage.step, QImage::Format_ARGB32).rgbSwapped();
-            break;
-            
-        default:
-            // 其他格式：转换为8位三通道
-            cv::Mat temp;
-            if (cvImage.channels() == 1) {
-                cv::cvtColor(cvImage, temp, cv::COLOR_GRAY2BGR);
-            } else {
-                cvImage.convertTo(temp, CV_8U);
-            }
-            
-            if (temp.channels() == 3) {
-                qImage = QImage(temp.data, temp.cols, temp.rows, 
-                               temp.step, QImage::Format_RGB888).rgbSwapped();
-            } else if (temp.channels() == 4) {
-                qImage = QImage(temp.data, temp.cols, temp.rows, 
-                               temp.step, QImage::Format_ARGB32).rgbSwapped();
-            }
-            
-            break;
-    }
-    
-    return qImage.copy(); // 创建深拷贝，避免原始数据释放导致问题
+    // 返回需要翻译的字符串
+    return QCoreApplication::translate("ImageHandler", "N/A");
 }
 
-cv::Mat ImageHandler::extractROI(const cv::Rect& rect) const
-{
-    if (m_image.empty() || 
-        rect.x < 0 || rect.y < 0 || 
-        rect.width <= 0 || rect.height <= 0 ||
-        rect.x + rect.width > m_image.cols || 
-        rect.y + rect.height > m_image.rows) {
-        return cv::Mat();
-    }
-    
-    return m_image(rect).clone();
-}
-
-QString ImageHandler::getMetadata() const
-{
-    if (!m_dataset) {
-        return QString();
-    }
-    
-    QString metadata;
-    metadata += QString("文件名: %1\n").arg(QFileInfo(m_filePath).fileName());
-    metadata += QString("维度: %1 x %2\n").arg(m_image.cols).arg(m_image.rows);
-    metadata += QString("通道数: %1\n").arg(m_image.channels());
-    
-    // 获取GDAL元数据
-    char** mdList = m_dataset->GetMetadata();
-    if (mdList != nullptr) {
-        metadata += "\nGDAL元数据:\n";
-        for (int i = 0; mdList[i] != nullptr; i++) {
-            metadata += QString("%1\n").arg(mdList[i]);
+QString ImageHandler::getDataTypeString() const {
+    if (poDataset) {
+        GDALRasterBand *poBand = poDataset->GetRasterBand(1);
+        if (poBand) {
+            return GDALGetDataTypeName(poBand->GetRasterDataType());
+        } else {
+             log(QCoreApplication::translate("ImageHandler", "Warning: Could not get band 1 to retrieve data type string."));
+             return QCoreApplication::translate("ImageHandler", "Error");
         }
     }
-    
-    return metadata;
+    return QCoreApplication::translate("ImageHandler", "N/A");
 }
 
-bool ImageHandler::saveImage(const QString& filePath, const cv::Mat& image)
-{
-    cv::Mat saveImage = image.empty() ? m_image : image;
-    
-    if (saveImage.empty()) {
-        return false;
+const cv::Mat &ImageHandler::getImageData() const {
+    // 返回对内部 Mat 的常量引用
+    // 调用者不应修改返回的 Mat
+    return currentImage;
+}
+
+cv::Mat ImageHandler::prepareDisplayMat() const {
+    if (!isValid()) {
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Error: prepareDisplayMat called when image is not valid."));
+        return cv::Mat(); // 返回空 Mat
     }
-    
-    return cv::imwrite(filePath.toStdString(), saveImage);
+
+    cv::Mat sourceMat;
+    if (isComplex) {
+        // 计算幅度图
+        log(QCoreApplication::translate("ImageHandler", "ImageHandler: Calculating magnitude from complex data for display."));
+        std::vector<cv::Mat> channels;
+        cv::split(currentImage, channels);
+        // 转换为浮点数进行幅度计算，如果需要
+        if (channels[0].depth() != CV_32F && channels[0].depth() != CV_64F) {
+            log(QCoreApplication::translate("ImageHandler", "ImageHandler: Converting complex channels to CV_32F for magnitude calculation."));
+            channels[0].convertTo(channels[0], CV_32F);
+            channels[1].convertTo(channels[1], CV_32F);
+        }
+        cv::magnitude(channels[0], channels[1], sourceMat);
+    } else {
+        // 直接使用单通道实数图像
+        sourceMat = currentImage;
+    }
+
+    // 归一化到 8 位灰度图 (0-255)
+    cv::Mat displayMat;
+    if (sourceMat.depth() == CV_8U) {
+        displayMat = sourceMat.clone(); // 已经是 8U，直接复制
+        log(QCoreApplication::translate("ImageHandler", "ImageHandler: Display source is already CV_8U."));
+    } else {
+        double minVal, maxVal;
+        cv::minMaxLoc(sourceMat, &minVal, &maxVal);
+        log(QCoreApplication::translate("ImageHandler", "ImageHandler: Normalizing display source. Original range: [%1, %2]").arg(minVal).arg(maxVal));
+        if (maxVal > minVal) {
+            sourceMat.convertTo(displayMat, CV_8U, 255.0 / (maxVal - minVal), -minVal * 255.0 / (maxVal - minVal));
+        } else {
+            // 处理常量图像
+            sourceMat.convertTo(displayMat, CV_8U); // 转换为 0 或 255
+             log(QCoreApplication::translate("ImageHandler", "ImageHandler: Display source has constant value. Converted to uniform gray."));
+        }
+    }
+
+    // 确保结果是 CV_8UC1
+    if (displayMat.type() != CV_8UC1) {
+        log(QCoreApplication::translate("ImageHandler", "Error: prepareDisplayMat resulted in unexpected type: %1").arg(cv::typeToString(displayMat.type())));
+        // 尝试转换或返回空 Mat
+        if (displayMat.channels() > 1) {
+            cv::cvtColor(displayMat, displayMat, cv::COLOR_BGR2GRAY); // 假设 BGR，如果不是会出错
+        }
+        if (displayMat.type() != CV_8UC1) {
+             return cv::Mat(); // 转换失败，返回空 Mat
+        }
+    }
+
+    return displayMat;
+}
+
+QPixmap ImageHandler::getDisplayPixmap(const QSize &targetSize) const {
+    if (!isValid()) {
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Error: getDisplayPixmap called when image is not valid."));
+        return QPixmap(); // 返回空的 QPixmap
+    }
+
+    // 准备用于显示的 8 位单通道 Mat
+    cv::Mat displayMat = prepareDisplayMat();
+    if (displayMat.empty()) {
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Error: Failed to prepare CV_8UC1 Mat for display."));
+        return QPixmap();
+    }
+
+    // 将 CV_8UC1 Mat 转换为 QImage (Format_Grayscale8)
+    QImage qimg(displayMat.data, displayMat.cols, displayMat.rows,
+                  static_cast<int>(displayMat.step), QImage::Format_Grayscale8);
+
+    // 需要创建深拷贝，因为 qimg 共享 displayMat 的数据，而 displayMat 是局部变量
+    QImage qimg_deep = qimg.copy();
+
+    if (qimg_deep.isNull()) {
+        // 使用 QCoreApplication::translate
+        log(QCoreApplication::translate("ImageHandler", "Error: QImage conversion resulted in a null image."));
+        return QPixmap();
+    }
+
+    // 从 QImage 创建 QPixmap 并进行缩放
+    QPixmap pixmap = QPixmap::fromImage(qimg_deep);
+    if (targetSize.isValid()) { // 仅当 targetSize 有效时才缩放
+        return pixmap.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    } else {
+        return pixmap; // 如果尺寸无效，返回原始大小的 pixmap
+    }
 }
 
 } // namespace Core

@@ -13,6 +13,13 @@
 // #include <gdal_priv.h>
 class GDALDataset; // 使用前向声明，需要在 cpp 文件中包含 gdal_priv.h
 
+namespace SAR {
+namespace Core {
+
+/**
+ * @brief 图像处理类
+ * 提供SAR图像加载、处理和转换功能
+ */
 class ImageHandler {
 public:
   // 构造函数，可选接收一个日志记录器函数
@@ -59,5 +66,8 @@ private:
 
   std::function<void(const QString &)> m_logger; // 日志记录器函数对象
 };
+
+} // namespace Core
+} // namespace SAR
 
 #endif // IMAGEHANDLER_H 

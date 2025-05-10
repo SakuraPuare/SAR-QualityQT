@@ -1,91 +1,69 @@
 #include "clarity.h"
 #include <opencv2/imgproc.hpp>
+#include <stdexcept>
 
 namespace SAR {
 namespace Analysis {
 
-double ClarityAnalysis::calculateClarity(const cv::Mat& image) {
-    // 实现从原来的analysis_clarity.cpp移植
-    // ...原有的计算清晰度的代码...
-    
-    // 这里是简化示例
-    return calculateGradientEnergy(image);
+Clarity::Clarity() : lastClarityScore(0.0), lastEdgeStrength(0.0) {
 }
 
-double ClarityAnalysis::calculateGradientEnergy(const cv::Mat& image) {
-    cv::Mat gray;
-    if (image.channels() > 1) {
-        cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
-    } else {
-        gray = image.clone();
+double Clarity::calculateClarityScore(const cv::Mat& image) {
+    if (image.empty()) {
+        throw std::invalid_argument("输入图像为空");
     }
-    
-    // 使用Sobel算子计算梯度
-    cv::Mat grad_x, grad_y;
-    cv::Sobel(gray, grad_x, CV_64F, 1, 0, 3);
-    cv::Sobel(gray, grad_y, CV_64F, 0, 1, 3);
-    
-    // 计算梯度平方和
-    cv::Mat grad_pow = grad_x.mul(grad_x) + grad_y.mul(grad_y);
-    
-    // 计算梯度能量
-    double energy = cv::sum(grad_pow)[0];
-    
-    return energy / (gray.rows * gray.cols);
+
+    // 将图像转换为32位浮点类型进行处理
+    cv::Mat floatImage;
+    if (image.type() != CV_32F) {
+        image.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = image.clone();
+    }
+
+    // 计算拉普拉斯算子响应
+    cv::Mat laplacian;
+    cv::Laplacian(floatImage, laplacian, CV_32F);
+
+    // 计算清晰度得分（使用拉普拉斯响应的方差）
+    cv::Scalar mean, stdDev;
+    cv::meanStdDev(laplacian, mean, stdDev);
+
+    lastClarityScore = stdDev[0] * stdDev[0];
+    return lastClarityScore;
 }
 
-double ClarityAnalysis::calculateTenengradVariance(const cv::Mat& image) {
-    cv::Mat gray;
-    if (image.channels() > 1) {
-        cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
-    } else {
-        gray = image.clone();
+double Clarity::calculateEdgeStrength(const cv::Mat& image) {
+    if (image.empty()) {
+        throw std::invalid_argument("输入图像为空");
     }
-    
-    // 使用Sobel算子计算梯度
-    cv::Mat grad_x, grad_y;
-    cv::Sobel(gray, grad_x, CV_64F, 1, 0, 3);
-    cv::Sobel(gray, grad_y, CV_64F, 0, 1, 3);
-    
-    // 计算梯度平方和
-    cv::Mat grad_pow = grad_x.mul(grad_x) + grad_y.mul(grad_y);
-    
-    // 计算Tenengrad方差
-    cv::Scalar mean, stddev;
-    cv::meanStdDev(grad_pow, mean, stddev);
-    
-    return stddev[0];
+
+    // 将图像转换为32位浮点类型进行处理
+    cv::Mat floatImage;
+    if (image.type() != CV_32F) {
+        image.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = image.clone();
+    }
+
+    // 计算Sobel梯度
+    cv::Mat gradX, gradY;
+    cv::Sobel(floatImage, gradX, CV_32F, 1, 0);
+    cv::Sobel(floatImage, gradY, CV_32F, 0, 1);
+
+    // 计算梯度幅值
+    cv::Mat gradMagnitude;
+    cv::magnitude(gradX, gradY, gradMagnitude);
+
+    // 计算平均梯度幅值作为边缘强度
+    lastEdgeStrength = cv::mean(gradMagnitude)[0];
+    return lastEdgeStrength;
 }
 
-double ClarityAnalysis::calculateEntropy(const cv::Mat& image) {
-    cv::Mat gray;
-    if (image.channels() > 1) {
-        cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
-    } else {
-        gray = image.clone();
-    }
-    
-    // 计算直方图
-    int histSize = 256;
-    float range[] = { 0, 256 };
-    const float* histRange = { range };
-    cv::Mat hist;
-    cv::calcHist(&gray, 1, 0, cv::Mat(), hist, 1, &histSize, &histRange);
-    
-    // 归一化直方图
-    double total = gray.rows * gray.cols;
-    hist /= total;
-    
-    // 计算熵
-    double entropy = 0;
-    for (int i = 0; i < hist.rows; i++) {
-        double p = hist.at<float>(i);
-        if (p > 0) {
-            entropy -= p * log2(p);
-        }
-    }
-    
-    return entropy;
+QString Clarity::getResultDescription() const {
+    return QString("清晰度得分: %1, 边缘强度: %2")
+        .arg(lastClarityScore, 0, 'f', 2)
+        .arg(lastEdgeStrength, 0, 'f', 2);
 }
 
 } // namespace Analysis

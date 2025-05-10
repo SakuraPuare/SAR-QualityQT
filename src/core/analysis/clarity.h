@@ -1,47 +1,47 @@
-#ifndef CLARITY_ANALYSIS_H
-#define CLARITY_ANALYSIS_H
+#ifndef CLARITY_H
+#define CLARITY_H
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
 #include <QString>
 
 namespace SAR {
 namespace Analysis {
 
 /**
- * @brief 图像清晰度分析功能
+ * @brief 清晰度分析类
+ * 提供用于分析SAR图像清晰度的方法
  */
-class ClarityAnalysis {
+class Clarity {
 public:
+    Clarity();
+
     /**
-     * @brief 计算图像清晰度指标
+     * @brief 计算图像的清晰度得分
      * @param image 输入图像
-     * @return 清晰度指标值
+     * @return 清晰度得分
      */
-    static double calculateClarity(const cv::Mat& image);
-    
+    double calculateClarityScore(const cv::Mat& image);
+
     /**
-     * @brief 计算图像的梯度能量
+     * @brief 计算图像的边缘强度
      * @param image 输入图像
-     * @return 梯度能量值
+     * @return 边缘强度值
      */
-    static double calculateGradientEnergy(const cv::Mat& image);
-    
+    double calculateEdgeStrength(const cv::Mat& image);
+
     /**
-     * @brief 计算Tenengrad方差
-     * @param image 输入图像
-     * @return Tenengrad方差值
+     * @brief 获取分析结果的描述
+     * @return 分析结果描述
      */
-    static double calculateTenengradVariance(const cv::Mat& image);
-    
-    /**
-     * @brief 计算图像熵
-     * @param image 输入图像
-     * @return 熵值
-     */
-    static double calculateEntropy(const cv::Mat& image);
+    QString getResultDescription() const;
+
+private:
+    // 私有成员变量和辅助方法
+    double lastClarityScore;
+    double lastEdgeStrength;
 };
 
 } // namespace Analysis
 } // namespace SAR
 
-#endif // CLARITY_ANALYSIS_H 
+#endif // CLARITY_H
