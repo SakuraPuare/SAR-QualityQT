@@ -31,6 +31,22 @@
 #include "infocontent.h"
 #endif
 
+#if CONFIG_ENABLE_ISLR
+#include "islr.h"
+#endif
+
+#if CONFIG_ENABLE_PSLR
+#include "pslr.h"
+#endif
+
+#if CONFIG_ENABLE_RANGE_RES
+#include "range_resolution.h"
+#endif
+
+#if CONFIG_ENABLE_AZIMUTH_RES
+#include "azimuth_resolution.h"
+#endif
+
 namespace SAR {
 namespace Analysis {
 

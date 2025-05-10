@@ -4,6 +4,8 @@
 #include <opencv2/core.hpp>    // minMaxLoc, meanStdDev
 #include <opencv2/imgproc.hpp> // magnitude, split
 #include <vector>
+#include "radiometric.h"
+#include <cmath>
 
 // 独立的 Radiometric Analysis (Basic Statistics) 函数
 AnalysisResult performRadiometricAnalysis(const cv::Mat &inputImage) {
@@ -157,3 +159,272 @@ AnalysisResult performRadiometricAnalysis(const cv::Mat &inputImage) {
 
   return result;
 }
+
+namespace SAR {
+namespace Analysis {
+
+Radiometric::Radiometric() : lastResults() {
+}
+
+double Radiometric::calculateMeanIntensity(const cv::Mat& image) {
+    if (image.empty()) {
+        return 0.0;
+    }
+
+    // 将图像转换为 32 位浮点类型进行处理
+    cv::Mat floatImage;
+    if (image.type() != CV_32F) {
+        image.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = image.clone();
+    }
+
+    // 计算图像的平均强度
+    cv::Scalar meanValue = cv::mean(floatImage);
+    double meanIntensity = meanValue[0];
+    
+    // 保存结果
+    lastResults["MeanIntensity"] = meanIntensity;
+    
+    return meanIntensity;
+}
+
+double Radiometric::calculateContrast(const cv::Mat& image) {
+    if (image.empty()) {
+        return 0.0;
+    }
+
+    // 将图像转换为 32 位浮点类型进行处理
+    cv::Mat floatImage;
+    if (image.type() != CV_32F) {
+        image.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = image.clone();
+    }
+
+    // 计算图像的标准差和均值
+    cv::Scalar meanValue, stdDevValue;
+    cv::meanStdDev(floatImage, meanValue, stdDevValue);
+    
+    // 计算对比度 (使用变异系数：标准差/均值)
+    double contrast = 0.0;
+    if (meanValue[0] > 1e-10) {
+        contrast = stdDevValue[0] / meanValue[0];
+    }
+    
+    // 保存结果
+    lastResults["Contrast"] = contrast;
+    
+    return contrast;
+}
+
+double Radiometric::calculateDynamicRange(const cv::Mat& image) {
+    if (image.empty()) {
+        return 0.0;
+    }
+
+    // 将图像转换为 32 位浮点类型进行处理
+    cv::Mat floatImage;
+    if (image.type() != CV_32F) {
+        image.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = image.clone();
+    }
+
+    // 找到图像的最小值和最大值
+    double minVal, maxVal;
+    cv::minMaxLoc(floatImage, &minVal, &maxVal);
+    
+    // 计算动态范围 (dB)
+    double dynamicRange = 0.0;
+    if (minVal > 1e-10) {
+        dynamicRange = 20.0 * std::log10(maxVal / minVal);
+    } else {
+        // 如果最小值接近 0，使用一个小的替代值
+        dynamicRange = 20.0 * std::log10(maxVal / 1e-10);
+    }
+    
+    // 保存结果
+    lastResults["DynamicRange"] = dynamicRange;
+    
+    return dynamicRange;
+}
+
+double Radiometric::calculateRMS(const cv::Mat& image) {
+    if (image.empty()) {
+        return 0.0;
+    }
+
+    // 将图像转换为 32 位浮点类型进行处理
+    cv::Mat floatImage;
+    if (image.type() != CV_32F) {
+        image.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = image.clone();
+    }
+
+    // 计算平方
+    cv::Mat squaredImage;
+    cv::multiply(floatImage, floatImage, squaredImage);
+    
+    // 计算平均值
+    cv::Scalar meanValue = cv::mean(squaredImage);
+    
+    // 计算 RMS (均方根)
+    double rms = std::sqrt(meanValue[0]);
+    
+    // 保存结果
+    lastResults["RMS"] = rms;
+    
+    return rms;
+}
+
+// 辐射精度计算
+double Radiometric::calculateRadiometricAccuracy(const cv::Mat& image, const cv::Mat& reference) {
+    if (image.empty() || reference.empty() || 
+        image.size() != reference.size()) {
+        return 0.0;
+    }
+
+    // 将图像转换为 32 位浮点类型进行处理
+    cv::Mat floatImage, floatReference;
+    if (image.type() != CV_32F) {
+        image.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = image.clone();
+    }
+    
+    if (reference.type() != CV_32F) {
+        reference.convertTo(floatReference, CV_32F);
+    } else {
+        floatReference = reference.clone();
+    }
+
+    // 计算两个图像的差异
+    cv::Mat diffImage;
+    cv::absdiff(floatImage, floatReference, diffImage);
+    
+    // 计算均方根误差
+    cv::Scalar meanValue = cv::mean(diffImage.mul(diffImage));
+    double rmse = std::sqrt(meanValue[0]);
+    
+    // 保存结果（单位为 dB）
+    double radiometricAccuracy = -20.0 * std::log10(rmse);
+    lastResults["RadiometricAccuracy"] = radiometricAccuracy;
+    
+    return radiometricAccuracy;
+}
+
+// 辐射分辨率计算
+double Radiometric::calculateRadiometricResolution(const cv::Mat& image) {
+    if (image.empty()) {
+        return 0.0;
+    }
+
+    // 将图像转换为 32 位浮点类型进行处理
+    cv::Mat floatImage;
+    if (image.type() != CV_32F) {
+        image.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = image.clone();
+    }
+
+    // 计算图像的均值和标准差
+    cv::Scalar meanValue, stdDevValue;
+    cv::meanStdDev(floatImage, meanValue, stdDevValue);
+    
+    // 计算辐射分辨率（信噪比的倒数，单位为 dB）
+    double radiometricResolution = 0.0;
+    if (meanValue[0] > 1e-10) {
+        double snr = meanValue[0] / stdDevValue[0];
+        radiometricResolution = 20.0 * std::log10(1.0 / snr);
+    }
+    
+    // 保存结果
+    lastResults["RadiometricResolution"] = radiometricResolution;
+    
+    return radiometricResolution;
+}
+
+// 等效视数 (ENL) 计算
+double Radiometric::calculateENL(const cv::Mat& image) {
+    if (image.empty()) {
+        return 0.0;
+    }
+
+    // 将图像转换为 32 位浮点类型进行处理
+    cv::Mat floatImage;
+    if (image.type() != CV_32F) {
+        image.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = image.clone();
+    }
+
+    // 计算图像的均值和标准差
+    cv::Scalar meanValue, stdDevValue;
+    cv::meanStdDev(floatImage, meanValue, stdDevValue);
+    
+    // 计算 ENL (均值的平方 / 方差)
+    double enl = 0.0;
+    if (stdDevValue[0] > 1e-10) {
+        enl = (meanValue[0] * meanValue[0]) / (stdDevValue[0] * stdDevValue[0]);
+    }
+    
+    // 保存结果
+    lastResults["ENL"] = enl;
+    
+    return enl;
+}
+
+std::map<QString, double> Radiometric::getAllFeatures(const cv::Mat& image) {
+    // 清除之前的结果
+    lastResults.clear();
+    
+    // 计算所有辐射特征
+    calculateMeanIntensity(image);
+    calculateContrast(image);
+    calculateDynamicRange(image);
+    calculateRMS(image);
+    calculateRadiometricResolution(image);
+    calculateENL(image);
+    
+    return lastResults;
+}
+
+QString Radiometric::getResultDescription() const {
+    QString description = QString("辐射度分析结果：\n");
+    
+    // 添加各指标的结果描述
+    if (lastResults.find("MeanIntensity") != lastResults.end()) {
+        description += QString("平均强度：%1\n").arg(lastResults.at("MeanIntensity"), 0, 'f', 2);
+    }
+    
+    if (lastResults.find("Contrast") != lastResults.end()) {
+        description += QString("对比度：%1\n").arg(lastResults.at("Contrast"), 0, 'f', 2);
+    }
+    
+    if (lastResults.find("DynamicRange") != lastResults.end()) {
+        description += QString("动态范围：%1 dB\n").arg(lastResults.at("DynamicRange"), 0, 'f', 2);
+    }
+    
+    if (lastResults.find("RMS") != lastResults.end()) {
+        description += QString("均方根值：%1\n").arg(lastResults.at("RMS"), 0, 'f', 2);
+    }
+    
+    if (lastResults.find("RadiometricAccuracy") != lastResults.end()) {
+        description += QString("辐射精度：%1 dB\n").arg(lastResults.at("RadiometricAccuracy"), 0, 'f', 2);
+    }
+    
+    if (lastResults.find("RadiometricResolution") != lastResults.end()) {
+        description += QString("辐射分辨率：%1 dB\n").arg(lastResults.at("RadiometricResolution"), 0, 'f', 2);
+    }
+    
+    if (lastResults.find("ENL") != lastResults.end()) {
+        description += QString("等效视数 (ENL): %1\n").arg(lastResults.at("ENL"), 0, 'f', 2);
+    }
+    
+    return description;
+}
+
+} // namespace Analysis
+} // namespace SAR

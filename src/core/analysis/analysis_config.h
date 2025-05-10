@@ -10,7 +10,7 @@ namespace Analysis {
  * 可以通过修改此处的定义或通过CMake参数控制
  */
 
-// 默认启用所有分析方法
+// 启用所有分析方法
 #ifndef CONFIG_ENABLE_ISLR
 #define CONFIG_ENABLE_ISLR 1           // 积分旁瓣比
 #endif
@@ -47,17 +47,17 @@ namespace Analysis {
 #define CONFIG_ENABLE_ENL 1            // 等效视数
 #endif
 
-// 禁用其他分析方法
+// 启用其他分析方法
 #ifndef CONFIG_ENABLE_CLARITY
-#define CONFIG_ENABLE_CLARITY 0        // 清晰度分析
+#define CONFIG_ENABLE_CLARITY 1        // 清晰度分析
 #endif
 
 #ifndef CONFIG_ENABLE_GLCM
-#define CONFIG_ENABLE_GLCM 0           // GLCM纹理分析
+#define CONFIG_ENABLE_GLCM 1           // GLCM纹理分析
 #endif
 
 #ifndef CONFIG_ENABLE_INFO_CONTENT
-#define CONFIG_ENABLE_INFO_CONTENT 0   // 信息内容分析
+#define CONFIG_ENABLE_INFO_CONTENT 1   // 信息内容分析
 #endif
 
 } // namespace Analysis

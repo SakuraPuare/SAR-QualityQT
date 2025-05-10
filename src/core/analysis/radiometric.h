@@ -45,6 +45,28 @@ public:
     double calculateRMS(const cv::Mat& image);
 
     /**
+     * @brief 计算图像的辐射精度
+     * @param image 输入图像
+     * @param reference 参考图像
+     * @return 辐射精度值(dB)
+     */
+    double calculateRadiometricAccuracy(const cv::Mat& image, const cv::Mat& reference);
+
+    /**
+     * @brief 计算图像的辐射分辨率
+     * @param image 输入图像
+     * @return 辐射分辨率值(dB)
+     */
+    double calculateRadiometricResolution(const cv::Mat& image);
+
+    /**
+     * @brief 计算图像的等效视数
+     * @param image 输入图像
+     * @return ENL值
+     */
+    double calculateENL(const cv::Mat& image);
+
+    /**
      * @brief 获取所有辐射度特征
      * @param image 输入图像
      * @return 包含所有特征的映射表

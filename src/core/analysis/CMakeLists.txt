@@ -11,9 +11,9 @@ option(ENABLE_NESZ "启用噪声等效后向散射系数分析" ON)
 option(ENABLE_RADIOMETRIC_ACC "启用辐射精度分析" ON)
 option(ENABLE_RADIOMETRIC_RES "启用辐射分辨率分析" ON)
 option(ENABLE_ENL "启用等效视数分析" ON)
-option(ENABLE_CLARITY "启用清晰度分析" OFF)
-option(ENABLE_GLCM "启用 GLCM 纹理分析" OFF)
-option(ENABLE_INFO_CONTENT "启用信息内容分析" OFF)
+option(ENABLE_CLARITY "启用清晰度分析" ON)
+option(ENABLE_GLCM "启用 GLCM 纹理分析" ON)
+option(ENABLE_INFO_CONTENT "启用信息内容分析" ON)
 
 # 根据选项设置编译定义
 if(ENABLE_ISLR)
@@ -106,6 +106,16 @@ set(ANALYSIS_SOURCES
         snr.h
         analysis_utils.h
         analysis_config.h
+        islr.cpp
+        islr.h
+        pslr.cpp
+        pslr.h
+        range_resolution.cpp
+        range_resolution.h
+        azimuth_resolution.cpp
+        azimuth_resolution.h
+        nesz.cpp
+        nesz.h
 )
 
 # 创建分析库
@@ -126,3 +136,18 @@ target_link_libraries(SARAnalysis PUBLIC
 
 # 设置编译选项
 target_compile_features(SARAnalysis PUBLIC cxx_std_17) 
+
+# 显示启用的分析方法
+message(STATUS "以下 SAR 分析方法配置状态：")
+message(STATUS "  积分旁瓣比分析 (ISLR): ${ENABLE_ISLR}")
+message(STATUS "  峰值旁瓣比分析 (PSLR): ${ENABLE_PSLR}")
+message(STATUS "  距离模糊度分析：${ENABLE_RANGE_RES}")
+message(STATUS "  方位模糊度分析：${ENABLE_AZIMUTH_RES}")
+message(STATUS "  信噪比分析 (SNR): ${ENABLE_SNR}")
+message(STATUS "  噪声等效后向散射系数分析 (NESZ): ${ENABLE_NESZ}")
+message(STATUS "  辐射精度分析：${ENABLE_RADIOMETRIC_ACC}")
+message(STATUS "  辐射分辨率分析：${ENABLE_RADIOMETRIC_RES}")
+message(STATUS "  等效视数分析 (ENL): ${ENABLE_ENL}")
+message(STATUS "  清晰度分析：${ENABLE_CLARITY}")
+message(STATUS "  GLCM 纹理分析：${ENABLE_GLCM}")
+message(STATUS "  信息内容分析：${ENABLE_INFO_CONTENT}")

@@ -18,10 +18,12 @@
 #include <QMimeData>
 #include <QUrl>
 
-// 添加ImageHandler头文件
+// 添加 ImageHandler 头文件
 #include "imagehandler.h"
+// 添加 Logger 头文件
+#include "logger.h"
 
-// 自定义GraphicsView类支持拖放
+// 自定义 GraphicsView 类支持拖放
 class DragDropGraphicsView : public QGraphicsView
 {
     Q_OBJECT
@@ -99,6 +101,11 @@ private slots:
     // 拖放相关槽函数
     void handleViewDragEnter(QDragEnterEvent *event);
     void handleViewDrop(QDropEvent *event);
+    
+    // 日志系统相关槽
+    void onNewLogMessage(const QString &message);
+    void clearLog();
+    void saveLog();
 
 private:
     Ui::MainWindow *ui;
@@ -110,11 +117,12 @@ private:
     QStringList loadedImages;
     QMap<QString, QString> imageResults;
     
-    // 添加ImageHandler成员变量，用于GDAL图像处理
+    // 添加 ImageHandler 成员变量，用于 GDAL 图像处理
     SAR::Core::ImageHandler *imageHandler;
     
     void setupImageViewer();
     void setupConnections();
+    void setupLogSystem(); // 设置日志系统
     void configureAnalysisOptions(); // 添加配置分析选项方法声明
     void enableAnalysisButtons(bool enable);
     void clearResults();

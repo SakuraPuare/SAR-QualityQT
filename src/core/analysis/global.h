@@ -30,6 +30,26 @@
 #include "infocontent.h"
 #endif
 
+#if CONFIG_ENABLE_ISLR
+#include "islr.h"
+#endif
+
+#if CONFIG_ENABLE_PSLR
+#include "pslr.h"
+#endif
+
+#if CONFIG_ENABLE_RANGE_RES
+#include "range_resolution.h"
+#endif
+
+#if CONFIG_ENABLE_AZIMUTH_RES
+#include "azimuth_resolution.h"
+#endif
+
+#if CONFIG_ENABLE_NESZ
+#include "nesz.h"
+#endif
+
 namespace SAR {
 namespace Analysis {
 
@@ -102,6 +122,38 @@ public:
     bool runNESZAnalysis();
 #endif
 
+#if CONFIG_ENABLE_ISLR
+    /**
+     * @brief 运行积分旁瓣比分析
+     * @return 是否成功
+     */
+    bool runISLRAnalysis();
+#endif
+
+#if CONFIG_ENABLE_PSLR
+    /**
+     * @brief 运行峰值旁瓣比分析
+     * @return 是否成功
+     */
+    bool runPSLRAnalysis();
+#endif
+
+#if CONFIG_ENABLE_RANGE_RES
+    /**
+     * @brief 运行距离分辨率分析
+     * @return 是否成功
+     */
+    bool runRangeResolutionAnalysis();
+#endif
+
+#if CONFIG_ENABLE_AZIMUTH_RES
+    /**
+     * @brief 运行方位分辨率分析
+     * @return 是否成功
+     */
+    bool runAzimuthResolutionAnalysis();
+#endif
+
     /**
      * @brief 获取分析结果摘要
      * @return 包含所有分析结果的映射表
@@ -139,12 +191,32 @@ private:
     std::unique_ptr<Radiometric> radiometricAnalyzer;
 #endif
 
-#if CONFIG_ENABLE_SNR || CONFIG_ENABLE_NESZ
+#if CONFIG_ENABLE_SNR
     std::unique_ptr<SNR> snrAnalyzer;
 #endif
 
 #if CONFIG_ENABLE_INFO_CONTENT
     std::unique_ptr<InfoContent> infoContentAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_NESZ
+    std::unique_ptr<NESZ> neszAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_ISLR
+    std::unique_ptr<ISLR> islrAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_PSLR
+    std::unique_ptr<PSLR> pslrAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_RANGE_RES
+    std::unique_ptr<RangeResolution> rangeResolutionAnalyzer;
+#endif
+
+#if CONFIG_ENABLE_AZIMUTH_RES
+    std::unique_ptr<AzimuthResolution> azimuthResolutionAnalyzer;
 #endif
 
     // 分析结果

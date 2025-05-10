@@ -1,6 +1,9 @@
 # src/core/CMakeLists.txt
 cmake_minimum_required(VERSION 3.16)
 
+# 查找glog库
+find_package(glog REQUIRED)
+
 # 包含分析模块
 add_subdirectory(analysis)
 
@@ -8,6 +11,8 @@ add_subdirectory(analysis)
 set(CORE_SOURCES
         imagehandler.cpp
         include/imagehandler.h
+        logger.cpp
+        include/logger.h
 )
 
 # 创建核心库
@@ -27,6 +32,7 @@ target_link_libraries(SARCore PUBLIC
         Qt6::Widgets
         GDAL::GDAL
         ${OpenCV_LIBS}
+        glog::glog
 )
 
 # 设置编译选项
