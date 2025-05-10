@@ -5,31 +5,31 @@ find_package(GTest REQUIRED)
 include(GoogleTest)
 
 # SNR 分析测试
-add_executable(analysis_tests 
-    analysis_tests.cpp
+add_executable(analysis_tests
+        analysis_tests.cpp
 )
 
 target_link_libraries(analysis_tests
-    PRIVATE
-    SARAnalysis
-    SARCore
-    GTest::GTest
-    GTest::Main
-    ${OpenCV_LIBS}
+        PRIVATE
+        SARAnalysis
+        SARCore
+        GTest::GTest
+        GTest::Main
+        ${OpenCV_LIBS}
 )
 
 # 图像处理测试
 add_executable(core_tests
-    core_tests.cpp
+        core_tests.cpp
 )
 
 target_link_libraries(core_tests
-    PRIVATE
-    SARCore
-    GTest::GTest
-    GTest::Main
-    ${OpenCV_LIBS}
-    GDAL::GDAL
+        PRIVATE
+        SARCore
+        GTest::GTest
+        GTest::Main
+        ${OpenCV_LIBS}
+        GDAL::GDAL
 )
 
 # 添加测试
