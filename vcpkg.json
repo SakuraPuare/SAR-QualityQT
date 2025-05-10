@@ -2,6 +2,7 @@
   "dependencies": [
     "opencv",
     "gdal",
-    "gtest"
+    "gtest",
+    "glog"
   ]
 }
