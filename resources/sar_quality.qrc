@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RCC>
+    <qresource prefix="/">
+        <file>icons/open.png</file>
+        <file>icons/save.png</file>
+        <file>icons/export.png</file>
+        <file>icons/analyze.png</file>
+        <file>icons/roi.png</file>
+        <file>icons/app_icon.png</file>
+    </qresource>
+    <qresource prefix="/i18n">
+        <file>../i18n/SAR-QualityQT_zh_CN.qm</file>
+        <file>../i18n/SAR-QualityQT_en.qm</file>
+    </qresource>
+</RCC> 
