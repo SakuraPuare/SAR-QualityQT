@@ -52,8 +52,8 @@ public:
 private:
     // 私有成员变量
     double lastRangeResolution;
-    double wavelength;    // 雷达波长(m)
-    double bandwidth;     // 信号带宽(Hz)
+    double wavelength;    // 雷达波长 (m)
+    double bandwidth;     // 信号带宽 (Hz)
     bool hasParameters;   // 是否设置了所需参数
 
     // 私有辅助方法

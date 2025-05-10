@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     SAR::Core::Logger::init(argv[0], true, logDir.toStdString().c_str());
     
     // 记录应用程序启动日志
-    LOG_INFO(QString("SAR-QualityQT 应用程序启动，版本: %1")
+    LOG_INFO(QString("SAR-QualityQT 应用程序启动，版本：%1")
         .arg(QCoreApplication::applicationVersion()));
     
     // 初始化 GDAL，注册所有驱动

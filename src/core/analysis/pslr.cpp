@@ -13,7 +13,7 @@ double PSLR::calculatePSLR(const cv::Mat& image) {
         return 0.0;
     }
 
-    // 将图像转换为32位浮点类型进行处理
+    // 将图像转换为 32 位浮点类型进行处理
     cv::Mat floatImage;
     if (image.type() != CV_32F) {
         image.convertTo(floatImage, CV_32F);
@@ -21,7 +21,7 @@ double PSLR::calculatePSLR(const cv::Mat& image) {
         floatImage = image.clone();
     }
 
-    // 计算点扩散函数(PSF)
+    // 计算点扩散函数 (PSF)
     cv::Mat psf = calculatePointSpreadFunction(floatImage);
 
     // 找到主瓣峰值位置
@@ -44,15 +44,15 @@ double PSLR::calculatePSLRInROI(const cv::Mat& image, const cv::Rect& roi) {
         return 0.0;
     }
 
-    // 将ROI区域提取出来
+    // 将 ROI 区域提取出来
     cv::Mat roiImage = image(roi).clone();
     
-    // 计算ROI区域的PSLR
+    // 计算 ROI 区域的 PSLR
     return calculatePSLR(roiImage);
 }
 
 QString PSLR::getResultDescription() const {
-    return QString("峰值旁瓣比(PSLR): %1 dB")
+    return QString("峰值旁瓣比 (PSLR): %1 dB")
         .arg(lastPSLR, 0, 'f', 2);
 }
 
@@ -87,7 +87,7 @@ cv::Mat PSLR::calculatePointSpreadFunction(const cv::Mat& image) {
 }
 
 cv::Point PSLR::findPeakLocation(const cv::Mat& psf) {
-    // 找到PSF的峰值位置
+    // 找到 PSF 的峰值位置
     double minVal, maxVal;
     cv::Point minLoc, maxLoc;
     cv::minMaxLoc(psf, &minVal, &maxVal, &minLoc, &maxLoc);
@@ -105,7 +105,7 @@ cv::Point PSLR::findMaxSidelobePeak(const cv::Mat& psf, const cv::Point& mainPea
     // 创建主瓣掩码
     cv::circle(mainLobeMask, mainPeakLoc, mainLobeRadius, cv::Scalar(255), -1);
     
-    // 创建PSF的副本并掩盖主瓣区域
+    // 创建 PSF 的副本并掩盖主瓣区域
     cv::Mat psfWithoutMainLobe = psf.clone();
     psfWithoutMainLobe.setTo(0, mainLobeMask);
     
@@ -124,7 +124,7 @@ double PSLR::computePSLRFromPSF(const cv::Mat& psf, const cv::Point& mainPeakLoc
     // 获取最大旁瓣峰值
     float sidelobePeakValue = psf.at<float>(sidelobePeakLoc.y, sidelobePeakLoc.x);
     
-    // 计算峰值旁瓣比并转换为dB
+    // 计算峰值旁瓣比并转换为 dB
     if (mainPeakValue > 1e-10) {
         return 20.0 * std::log10(sidelobePeakValue / mainPeakValue);
     } else {

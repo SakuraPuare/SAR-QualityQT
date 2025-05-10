@@ -48,9 +48,9 @@ public:
 private:
     // 私有成员变量
     double lastNESZ;
-    double transmitPower;  // 发射功率(W)
-    double antennaGain;    // 天线增益(dB)
-    double systemLoss;     // 系统损耗(dB)
+    double transmitPower;  // 发射功率 (W)
+    double antennaGain;    // 天线增益 (dB)
+    double systemLoss;     // 系统损耗 (dB)
     bool hasParameters;    // 是否设置了所需参数
 
     // 私有辅助方法

@@ -278,21 +278,21 @@ QPixmap ImageHandler::getDisplayPixmap(const QSize &targetSize) const {
         return QPixmap(); // 返回空 QPixmap
     }
     
-    // 准备用于显示的Mat
+    // 准备用于显示的 Mat
     cv::Mat displayMat = prepareDisplayMat();
     if (displayMat.empty()) {
         log(QCoreApplication::translate("ImageHandler", "Error: Failed to prepare display Mat."));
         return QPixmap();
     }
     
-    // 将OpenCV的Mat转换为QImage
+    // 将 OpenCV 的 Mat 转换为 QImage
     QImage image;
     if (displayMat.channels() == 1) {
         // 单通道（灰度图）
         image = QImage(displayMat.data, displayMat.cols, displayMat.rows, 
                        static_cast<int>(displayMat.step), QImage::Format_Grayscale8);
     } else if (displayMat.channels() == 3) {
-        // 三通道（彩色图）- 需要将BGR转为RGB
+        // 三通道（彩色图）- 需要将 BGR 转为 RGB
         cv::Mat rgbMat;
         cv::cvtColor(displayMat, rgbMat, cv::COLOR_BGR2RGB);
         image = QImage(rgbMat.data, rgbMat.cols, rgbMat.rows, 
@@ -302,7 +302,7 @@ QPixmap ImageHandler::getDisplayPixmap(const QSize &targetSize) const {
         return QPixmap();
     }
     
-    // 创建一个副本，避免在displayMat释放后出现问题
+    // 创建一个副本，避免在 displayMat 释放后出现问题
     QImage imageCopy = image.copy();
     
     // 缩放图像（如果需要）
@@ -311,7 +311,7 @@ QPixmap ImageHandler::getDisplayPixmap(const QSize &targetSize) const {
         imageCopy = imageCopy.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
     
-    // 转换为QPixmap
+    // 转换为 QPixmap
     return QPixmap::fromImage(imageCopy);
 }
 

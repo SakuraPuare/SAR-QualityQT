@@ -13,7 +13,7 @@ double SNR::calculateSNR(const cv::Mat& image) {
         return 0.0;
     }
 
-    // 将图像转换为32位浮点类型进行处理
+    // 将图像转换为 32 位浮点类型进行处理
     cv::Mat floatImage;
     if (image.type() != CV_32F) {
         image.convertTo(floatImage, CV_32F);
@@ -57,7 +57,7 @@ double SNR::calculateSNRWithROI(const cv::Mat& image, const cv::Rect& signalROI,
         return 0.0;
     }
 
-    // 将图像转换为32位浮点类型进行处理
+    // 将图像转换为 32 位浮点类型进行处理
     cv::Mat floatImage;
     if (image.type() != CV_32F) {
         image.convertTo(floatImage, CV_32F);
@@ -95,7 +95,7 @@ double SNR::estimateNoiseLevel(const cv::Mat& image) {
         return 0.0;
     }
 
-    // 将图像转换为32位浮点类型进行处理
+    // 将图像转换为 32 位浮点类型进行处理
     cv::Mat floatImage;
     if (image.type() != CV_32F) {
         image.convertTo(floatImage, CV_32F);
@@ -119,7 +119,7 @@ double SNR::estimateNoiseLevel(const cv::Mat& image) {
 }
 
 QString SNR::getResultDescription() const {
-    return QString("信噪比: %1 dB, 噪声水平: %2")
+    return QString("信噪比：%1 dB, 噪声水平：%2")
         .arg(lastSNR, 0, 'f', 2)
         .arg(lastNoiseLevel, 0, 'f', 2);
 }

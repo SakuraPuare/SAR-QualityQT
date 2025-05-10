@@ -14,7 +14,7 @@ AnalysisResult performNESZAnalysis(const cv::Mat &inputImage) {
   QString overviewPrefix = QCoreApplication::translate("Analysis", "NESZ: ");
 
   if (inputImage.empty()) {
-    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误: 未提供有效的图像数据。");
+    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误：未提供有效的图像数据。");
     result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "错误 - 无数据");
     result.success = false;
     return result;
@@ -38,14 +38,14 @@ AnalysisResult performNESZAnalysis(const cv::Mat &inputImage) {
         analysisMat.convertTo(analysisMat, CV_32F);
       }
     } else {
-      result.detailedLog += QCoreApplication::translate("Analysis", "\n错误: 不支持的通道数量 (%1)。需要单通道或双通道图像。").arg(inputImage.channels());
+      result.detailedLog += QCoreApplication::translate("Analysis", "\n错误：不支持的通道数量 (%1)。需要单通道或双通道图像。").arg(inputImage.channels());
       result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "错误 - 不支持的格式");
       result.success = false;
       return result;
     }
 
     // 计算均匀区域的噪声水平
-    // 方法1: 通过标准差估计
+    // 方法 1: 通过标准差估计
     cv::Mat stdMap;
     cv::Mat meanMap;
     
@@ -85,8 +85,8 @@ AnalysisResult performNESZAnalysis(const cv::Mat &inputImage) {
     double neszDB = 10 * std::log10(nesz);
     
     result.detailedLog += QCoreApplication::translate("Analysis", "\n--- 噪声等效后向散射系数分析 ---\n");
-    result.detailedLog += QCoreApplication::translate("Analysis", "噪声区域均值: %1\n").arg(noiseMean[0]);
-    result.detailedLog += QCoreApplication::translate("Analysis", "全局最大值: %1\n").arg(maxVal);
+    result.detailedLog += QCoreApplication::translate("Analysis", "噪声区域均值：%1\n").arg(noiseMean[0]);
+    result.detailedLog += QCoreApplication::translate("Analysis", "全局最大值：%1\n").arg(maxVal);
     result.detailedLog += QCoreApplication::translate("Analysis", "噪声等效后向散射系数 (NESZ): %1\n").arg(nesz);
     result.detailedLog += QCoreApplication::translate("Analysis", "噪声等效后向散射系数 (NESZ, dB): %1 dB\n").arg(neszDB);
     
@@ -100,7 +100,7 @@ AnalysisResult performNESZAnalysis(const cv::Mat &inputImage) {
     result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "%1 dB").arg(neszDB, 0, 'f', 2);
     result.success = true;
   } catch (const cv::Exception &e) {
-    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误: NESZ 分析计算过程中出错: %1").arg(QString::fromStdString(e.what()));
+    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误：NESZ 分析计算过程中出错：%1").arg(QString::fromStdString(e.what()));
     result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "错误 - 计算失败");
     result.success = false;
   }
@@ -113,10 +113,10 @@ AnalysisResult performRadiometricResolutionAnalysis(const cv::Mat &inputImage) {
   AnalysisResult result;
   result.analysisName = QCoreApplication::translate("Analysis", "辐射分辨率");
   result.detailedLog = QCoreApplication::translate("Analysis", "辐射分辨率分析结果:\n");
-  QString overviewPrefix = QCoreApplication::translate("Analysis", "辐射分辨率: ");
+  QString overviewPrefix = QCoreApplication::translate("Analysis", "辐射分辨率：");
 
   if (inputImage.empty()) {
-    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误: 未提供有效的图像数据。");
+    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误：未提供有效的图像数据。");
     result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "错误 - 无数据");
     result.success = false;
     return result;
@@ -140,7 +140,7 @@ AnalysisResult performRadiometricResolutionAnalysis(const cv::Mat &inputImage) {
         analysisMat.convertTo(analysisMat, CV_32F);
       }
     } else {
-      result.detailedLog += QCoreApplication::translate("Analysis", "\n错误: 不支持的通道数量 (%1)。需要单通道或双通道图像。").arg(inputImage.channels());
+      result.detailedLog += QCoreApplication::translate("Analysis", "\n错误：不支持的通道数量 (%1)。需要单通道或双通道图像。").arg(inputImage.channels());
       result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "错误 - 不支持的格式");
       result.success = false;
       return result;
@@ -157,10 +157,10 @@ AnalysisResult performRadiometricResolutionAnalysis(const cv::Mat &inputImage) {
     double radiometricResolution = 10 * std::log10(1 + 1 / std::sqrt(enl));
     
     result.detailedLog += QCoreApplication::translate("Analysis", "\n--- 辐射分辨率分析 ---\n");
-    result.detailedLog += QCoreApplication::translate("Analysis", "均值: %1\n").arg(mean);
-    result.detailedLog += QCoreApplication::translate("Analysis", "标准差: %1\n").arg(stddev);
+    result.detailedLog += QCoreApplication::translate("Analysis", "均值：%1\n").arg(mean);
+    result.detailedLog += QCoreApplication::translate("Analysis", "标准差：%1\n").arg(stddev);
     result.detailedLog += QCoreApplication::translate("Analysis", "估计的等效视数 (ENL): %1\n").arg(enl);
-    result.detailedLog += QCoreApplication::translate("Analysis", "辐射分辨率: %1 dB\n").arg(radiometricResolution);
+    result.detailedLog += QCoreApplication::translate("Analysis", "辐射分辨率：%1 dB\n").arg(radiometricResolution);
     
     result.detailedLog += QCoreApplication::translate(
         "Analysis",
@@ -173,7 +173,7 @@ AnalysisResult performRadiometricResolutionAnalysis(const cv::Mat &inputImage) {
     result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "%1 dB").arg(radiometricResolution, 0, 'f', 2);
     result.success = true;
   } catch (const cv::Exception &e) {
-    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误: 辐射分辨率分析计算过程中出错: %1").arg(QString::fromStdString(e.what()));
+    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误：辐射分辨率分析计算过程中出错：%1").arg(QString::fromStdString(e.what()));
     result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "错误 - 计算失败");
     result.success = false;
   }
@@ -189,7 +189,7 @@ AnalysisResult performENLAnalysis(const cv::Mat &inputImage) {
   QString overviewPrefix = QCoreApplication::translate("Analysis", "ENL: ");
 
   if (inputImage.empty()) {
-    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误: 未提供有效的图像数据。");
+    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误：未提供有效的图像数据。");
     result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "错误 - 无数据");
     result.success = false;
     return result;
@@ -213,18 +213,18 @@ AnalysisResult performENLAnalysis(const cv::Mat &inputImage) {
         analysisMat.convertTo(analysisMat, CV_32F);
       }
     } else {
-      result.detailedLog += QCoreApplication::translate("Analysis", "\n错误: 不支持的通道数量 (%1)。需要单通道或双通道图像。").arg(inputImage.channels());
+      result.detailedLog += QCoreApplication::translate("Analysis", "\n错误：不支持的通道数量 (%1)。需要单通道或双通道图像。").arg(inputImage.channels());
       result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "错误 - 不支持的格式");
       result.success = false;
       return result;
     }
 
-    // 方法1: 全局 ENL 计算
+    // 方法 1: 全局 ENL 计算
     cv::Scalar globalMean, globalStdDev;
     cv::meanStdDev(analysisMat, globalMean, globalStdDev);
     double globalENL = (globalMean[0] * globalMean[0]) / (globalStdDev[0] * globalStdDev[0]);
     
-    // 方法2: 使用滑动窗口计算局部 ENL 并找出最大值（假设为同质区域）
+    // 方法 2: 使用滑动窗口计算局部 ENL 并找出最大值（假设为同质区域）
     int windowSize = 15; // 窗口大小
     double maxLocalENL = 0.0;
     cv::Point maxENLLocation;
@@ -252,10 +252,10 @@ AnalysisResult performENLAnalysis(const cv::Mat &inputImage) {
     }
     
     result.detailedLog += QCoreApplication::translate("Analysis", "\n--- 等效视数分析 ---\n");
-    result.detailedLog += QCoreApplication::translate("Analysis", "全局均值: %1\n").arg(globalMean[0]);
-    result.detailedLog += QCoreApplication::translate("Analysis", "全局标准差: %1\n").arg(globalStdDev[0]);
+    result.detailedLog += QCoreApplication::translate("Analysis", "全局均值：%1\n").arg(globalMean[0]);
+    result.detailedLog += QCoreApplication::translate("Analysis", "全局标准差：%1\n").arg(globalStdDev[0]);
     result.detailedLog += QCoreApplication::translate("Analysis", "全局等效视数 (ENL): %1\n").arg(globalENL);
-    result.detailedLog += QCoreApplication::translate("Analysis", "检测到的最大局部 ENL: %1 (位置: %2, %3)\n")
+    result.detailedLog += QCoreApplication::translate("Analysis", "检测到的最大局部 ENL: %1 (位置：%2, %3)\n")
                               .arg(maxLocalENL)
                               .arg(maxENLLocation.x)
                               .arg(maxENLLocation.y);
@@ -275,7 +275,7 @@ AnalysisResult performENLAnalysis(const cv::Mat &inputImage) {
     result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "%1").arg(reportedENL, 0, 'f', 2);
     result.success = true;
   } catch (const cv::Exception &e) {
-    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误: ENL 分析计算过程中出错: %1").arg(QString::fromStdString(e.what()));
+    result.detailedLog += QCoreApplication::translate("Analysis", "\n错误：ENL 分析计算过程中出错：%1").arg(QString::fromStdString(e.what()));
     result.overviewSummary = overviewPrefix + QCoreApplication::translate("Analysis", "错误 - 计算失败");
     result.success = false;
   }

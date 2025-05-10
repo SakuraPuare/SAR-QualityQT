@@ -77,7 +77,7 @@ namespace SAR {
     }
     
     namespace UI {
-        // UI相关组件
+        // UI 相关组件
         class MainWindow;
         
         namespace Widgets {
@@ -93,9 +93,9 @@ namespace SAR {
 
 ## 构建系统
 
-项目使用CMake构建系统，采用模块化结构：
+项目使用 CMake 构建系统，采用模块化结构：
 
-- 主CMakeLists.txt：定义项目、查找依赖、包含子目录
+- 主 CMakeLists.txt：定义项目、查找依赖、包含子目录
 - src/CMakeLists.txt：组织主程序构建
 - src/core/CMakeLists.txt：构建核心库(SARCore)
 - src/core/analysis/CMakeLists.txt：构建分析库(SARAnalysis)
@@ -104,14 +104,14 @@ namespace SAR {
 
 ## 依赖关系
 
-- SARAnalysis：依赖OpenCV、Qt6::Core
-- SARCore：依赖SARAnalysis、OpenCV、GDAL、Qt6::Core、Qt6::Widgets
-- SARUI：依赖SARCore、Qt6::Widgets、Qt6::PrintSupport
-- SAR-QualityQT (主程序)：依赖SARCore、SARUI
+- SARAnalysis：依赖 OpenCV、Qt6::Core
+- SARCore：依赖 SARAnalysis、OpenCV、GDAL、Qt6::Core、Qt6::Widgets
+- SARUI：依赖 SARCore、Qt6::Widgets、Qt6::PrintSupport
+- SAR-QualityQT (主程序)：依赖 SARCore、SARUI
 
 ## 后续开发建议
 
-1. 使用资源文件(.qrc)管理图标和样式资源
+1. 使用资源文件 (.qrc) 管理图标和样式资源
 2. 完善国际化支持，加载翻译文件
 3. 逐步实现各个功能模块
 4. 为每个模块编写单元测试

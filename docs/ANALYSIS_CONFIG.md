@@ -1,6 +1,6 @@
-# SAR图像分析方法配置指南
+# SAR 图像分析方法配置指南
 
-本文档提供了如何配置SAR-QualityQT中启用的分析方法的说明。通过这些配置选项，您可以选择性地启用或禁用特定的分析方法，以满足您的特定需求。
+本文档提供了如何配置 SAR-QualityQT 中启用的分析方法的说明。通过这些配置选项，您可以选择性地启用或禁用特定的分析方法，以满足您的特定需求。
 
 ## 保留的分析方法
 
@@ -20,9 +20,9 @@
 
 有两种方式可以配置启用的分析方法：
 
-### 1. 通过CMake编译选项
+### 1. 通过 CMake 编译选项
 
-最简单的方法是在编译时通过CMake选项来控制启用的分析方法。
+最简单的方法是在编译时通过 CMake 选项来控制启用的分析方法。
 
 #### 命令行方式
 
@@ -31,11 +31,11 @@
 cmake -DENABLE_ISLR=ON -DENABLE_PSLR=ON -DENABLE_RANGE_RES=OFF -DENABLE_AZIMUTH_RES=OFF -DENABLE_SNR=ON -DENABLE_NESZ=OFF -DENABLE_RADIOMETRIC_ACC=OFF -DENABLE_RADIOMETRIC_RES=OFF -DENABLE_ENL=OFF ..
 ```
 
-#### 在Qt Creator中设置
+#### 在 Qt Creator 中设置
 
 1. 打开项目设置
 2. 转到"构建设置"
-3. 在CMAKE_ARGS中添加所需的选项：
+3. 在 CMAKE_ARGS 中添加所需的选项：
    ```
    -DENABLE_ISLR=ON
    -DENABLE_PSLR=ON
@@ -49,7 +49,7 @@ cmake -DENABLE_ISLR=ON -DENABLE_PSLR=ON -DENABLE_RANGE_RES=OFF -DENABLE_AZIMUTH_
 也可以通过修改源代码来永久性地配置启用的分析方法：
 
 1. 打开 `src/core/analysis/analysis_config.h`
-2. 修改各个分析方法的宏定义值（1为启用，0为禁用）：
+2. 修改各个分析方法的宏定义值（1 为启用，0 为禁用）：
 
 ```cpp
 #ifndef CONFIG_ENABLE_ISLR
@@ -57,7 +57,7 @@ cmake -DENABLE_ISLR=ON -DENABLE_PSLR=ON -DENABLE_RANGE_RES=OFF -DENABLE_AZIMUTH_
 #endif
 
 #ifndef CONFIG_ENABLE_PSLR
-#define CONFIG_ENABLE_PSLR 0           // 峰值旁瓣比，设为0表示禁用
+#define CONFIG_ENABLE_PSLR 0           // 峰值旁瓣比，设为 0 表示禁用
 #endif
 
 // 其他分析方法的配置...
@@ -67,7 +67,7 @@ cmake -DENABLE_ISLR=ON -DENABLE_PSLR=ON -DENABLE_RANGE_RES=OFF -DENABLE_AZIMUTH_
 
 以下是所有可用的配置选项及其含义：
 
-| CMake选项                | 配置宏                         | 描述                      |
+| CMake 选项                | 配置宏                         | 描述                      |
 |-------------------------|--------------------------------|---------------------------|
 | ENABLE_ISLR             | CONFIG_ENABLE_ISLR             | 积分旁瓣比分析              |
 | ENABLE_PSLR             | CONFIG_ENABLE_PSLR             | 峰值旁瓣比分析              |
@@ -79,7 +79,7 @@ cmake -DENABLE_ISLR=ON -DENABLE_PSLR=ON -DENABLE_RANGE_RES=OFF -DENABLE_AZIMUTH_
 | ENABLE_RADIOMETRIC_RES  | CONFIG_ENABLE_RADIOMETRIC_RES  | 辐射分辨率分析              |
 | ENABLE_ENL              | CONFIG_ENABLE_ENL              | 等效视数分析               |
 | ENABLE_CLARITY          | CONFIG_ENABLE_CLARITY          | 清晰度分析（默认禁用）       |
-| ENABLE_GLCM             | CONFIG_ENABLE_GLCM             | GLCM纹理分析（默认禁用）     |
+| ENABLE_GLCM             | CONFIG_ENABLE_GLCM             | GLCM 纹理分析（默认禁用）     |
 | ENABLE_INFO_CONTENT     | CONFIG_ENABLE_INFO_CONTENT     | 信息内容分析（默认禁用）     |
 
 ## 效果
@@ -98,7 +98,7 @@ cmake -DENABLE_ISLR=ON -DENABLE_PSLR=ON -DENABLE_RANGE_RES=OFF -DENABLE_AZIMUTH_
 
 ## 示例：创建精简版本
 
-如果您只需要基本的SAR图像质量分析功能，可以使用以下配置创建一个精简版本：
+如果您只需要基本的 SAR 图像质量分析功能，可以使用以下配置创建一个精简版本：
 
 ```bash
 cmake -DENABLE_ISLR=ON -DENABLE_PSLR=ON -DENABLE_SNR=ON -DENABLE_RANGE_RES=OFF -DENABLE_AZIMUTH_RES=OFF -DENABLE_NESZ=OFF -DENABLE_RADIOMETRIC_ACC=OFF -DENABLE_RADIOMETRIC_RES=OFF -DENABLE_ENL=OFF -DENABLE_CLARITY=OFF -DENABLE_GLCM=OFF -DENABLE_INFO_CONTENT=OFF ..

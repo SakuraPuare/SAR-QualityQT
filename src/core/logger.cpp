@@ -9,7 +9,7 @@ namespace Core {
 Logger* Logger::m_instance = nullptr;
 
 void Logger::init(const char* programName, bool logToConsole, const char* logDir) {
-    // 初始化glog
+    // 初始化 glog
     google::InitGoogleLogging(programName);
     
     // 设置日志目录
@@ -22,7 +22,7 @@ void Logger::init(const char* programName, bool logToConsole, const char* logDir
     }
     
     // 设置日志选项
-    FLAGS_logtostderr = logToConsole;  // 是否输出到stderr
+    FLAGS_logtostderr = logToConsole;  // 是否输出到 stderr
     FLAGS_colorlogtostderr = true;     // 彩色日志
     FLAGS_minloglevel = google::GLOG_INFO;  // 最小日志级别
     FLAGS_logbufsecs = 0;              // 立即刷新

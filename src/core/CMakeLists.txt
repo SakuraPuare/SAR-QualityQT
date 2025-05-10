@@ -1,7 +1,7 @@
 # src/core/CMakeLists.txt
 cmake_minimum_required(VERSION 3.16)
 
-# 查找glog库
+# 查找 glog 库
 find_package(glog REQUIRED)
 
 # 包含分析模块

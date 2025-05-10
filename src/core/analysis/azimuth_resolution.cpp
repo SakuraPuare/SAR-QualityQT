@@ -14,7 +14,7 @@ double AzimuthResolution::calculateAzimuthResolution(const cv::Mat& image) {
         return 0.0;
     }
 
-    // 将图像转换为32位浮点类型进行处理
+    // 将图像转换为 32 位浮点类型进行处理
     cv::Mat floatImage;
     if (image.type() != CV_32F) {
         image.convertTo(floatImage, CV_32F);
@@ -41,10 +41,10 @@ double AzimuthResolution::calculateAzimuthResolutionInROI(const cv::Mat& image, 
         return 0.0;
     }
 
-    // 将ROI区域提取出来
+    // 将 ROI 区域提取出来
     cv::Mat roiImage = image(roi).clone();
     
-    // 计算ROI区域的方位分辨率
+    // 计算 ROI 区域的方位分辨率
     return calculateAzimuthResolution(roiImage);
 }
 
@@ -63,15 +63,15 @@ void AzimuthResolution::setAntennaLength(double antennaLength) {
 }
 
 QString AzimuthResolution::getResultDescription() const {
-    return QString("方位分辨率: %1 米")
+    return QString("方位分辨率：%1 米")
         .arg(lastAzimuthResolution, 0, 'f', 3);
 }
 
 double AzimuthResolution::computeTheoreticalAzimuthResolution() {
-    // 合成孔径雷达方位分辨率计算公式: δa = L/2
-    // 其中L是天线长度
-    // 对于实际的条带式SAR, 方位分辨率δa = L/2，而L = λ/θ，其中θ是方位向波束宽度
-    // 一般SAR方位分辨率约为天线长度的一半
+    // 合成孔径雷达方位分辨率计算公式：δa = L/2
+    // 其中 L 是天线长度
+    // 对于实际的条带式 SAR, 方位分辨率δa = L/2，而 L = λ/θ，其中θ是方位向波束宽度
+    // 一般 SAR 方位分辨率约为天线长度的一半
     return antennaLength / 2.0;
 }
 
@@ -98,10 +98,10 @@ double AzimuthResolution::estimateResolutionFromImage(const cv::Mat& image) {
         rightIndex++;
     }
     
-    // 计算3dB带宽（像素数）
+    // 计算 3dB 带宽（像素数）
     double resolution3dB = rightIndex - leftIndex;
     
-    // 假设图像的一个像素对应的距离为0.5米（根据实际情况可调整）
+    // 假设图像的一个像素对应的距离为 0.5 米（根据实际情况可调整）
     double pixelToMeter = 0.5;
     
     return resolution3dB * pixelToMeter;

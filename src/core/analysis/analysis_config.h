@@ -53,7 +53,7 @@ namespace Analysis {
 #endif
 
 #ifndef CONFIG_ENABLE_GLCM
-#define CONFIG_ENABLE_GLCM 1           // GLCM纹理分析
+#define CONFIG_ENABLE_GLCM 1           // GLCM 纹理分析
 #endif
 
 #ifndef CONFIG_ENABLE_INFO_CONTENT

@@ -85,7 +85,7 @@ private:
     void addToRecentLogs(const QString& message);
 };
 
-// 定义便捷宏，使用类似glog风格的接口
+// 定义便捷宏，使用类似 glog 风格的接口
 #define LOG_INFO(msg) SAR::Core::Logger::instance()->info(msg)
 #define LOG_WARNING(msg) SAR::Core::Logger::instance()->warning(msg)
 #define LOG_ERROR(msg) SAR::Core::Logger::instance()->error(msg)

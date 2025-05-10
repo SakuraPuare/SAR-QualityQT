@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     
-    // 初始化UI组件
+    // 初始化 UI 组件
     setupImageViewer();
     
     // 设置连接
@@ -1029,7 +1029,7 @@ void MainWindow::dropEvent(QDropEvent *event)
     event->ignore();
 }
 
-// 添加setupLogSystem方法实现
+// 添加 setupLogSystem 方法实现
 void MainWindow::setupLogSystem() {
     // 确保日志文本框存在
     if (ui->logTextEdit) {
@@ -1037,7 +1037,7 @@ void MainWindow::setupLogSystem() {
         ui->logTextEdit->setReadOnly(true);
         ui->logTextEdit->setLineWrapMode(QTextEdit::WidgetWidth);
         
-        // 加载最近的日志，最多显示100条
+        // 加载最近的日志，最多显示 100 条
         QStringList recentLogs = SAR::Core::Logger::instance()->getRecentLogs(100);
         for (const QString& logMsg : recentLogs) {
             ui->logTextEdit->append(logMsg);
@@ -1048,7 +1048,7 @@ void MainWindow::setupLogSystem() {
     }
     
     // 记录日志系统初始化完成的消息
-    LOG_INFO("日志系统已初始化并连接到UI");
+    LOG_INFO("日志系统已初始化并连接到 UI");
 }
 
 // 添加响应新日志消息的槽函数
@@ -1080,11 +1080,11 @@ void MainWindow::saveLog() {
             stream << ui->logTextEdit->toPlainText();
             file.close();
             
-            QString message = tr("日志已保存到: %1").arg(filePath);
+            QString message = tr("日志已保存到：%1").arg(filePath);
             LOG_INFO(message);
             updateStatusBar(message);
         } else {
-            QString errorMsg = tr("无法保存日志到: %1").arg(filePath);
+            QString errorMsg = tr("无法保存日志到：%1").arg(filePath);
             LOG_ERROR(errorMsg);
             QMessageBox::critical(this, tr("保存失败"), errorMsg);
         }

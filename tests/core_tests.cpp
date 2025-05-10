@@ -45,13 +45,13 @@ TEST_F(ImageHandlerTest, TestImageLoading) {
     
     // 验证图像属性
     EXPECT_EQ(imageHandler.getFilename(), qtPath) << "加载后文件名应一致";
-    EXPECT_EQ(imageHandler.getDimensionsString(), "256 x 256") << "图像尺寸应为256x256";
+    EXPECT_EQ(imageHandler.getDimensionsString(), "256 x 256") << "图像尺寸应为 256x256";
     
     // 获取图像数据
     const cv::Mat& imageData = imageHandler.getImageData();
     EXPECT_FALSE(imageData.empty()) << "图像数据不应为空";
-    EXPECT_EQ(imageData.rows, 256) << "图像行数应为256";
-    EXPECT_EQ(imageData.cols, 256) << "图像列数应为256";
+    EXPECT_EQ(imageData.rows, 256) << "图像行数应为 256";
+    EXPECT_EQ(imageData.cols, 256) << "图像列数应为 256";
 }
 
 // 测试图像显示
@@ -63,11 +63,11 @@ TEST_F(ImageHandlerTest, TestImageDisplay) {
     // 加载图像
     imageHandler.loadImage(QString::fromStdString(testFilePath));
     
-    // 获取显示用的QPixmap
+    // 获取显示用的 QPixmap
     QPixmap pixmap = imageHandler.getDisplayPixmap(QSize(128, 128));
-    EXPECT_FALSE(pixmap.isNull()) << "生成的QPixmap不应为空";
-    EXPECT_EQ(pixmap.width(), 128) << "缩放后宽度应为128";
-    EXPECT_EQ(pixmap.height(), 128) << "缩放后高度应为128";
+    EXPECT_FALSE(pixmap.isNull()) << "生成的 QPixmap 不应为空";
+    EXPECT_EQ(pixmap.width(), 128) << "缩放后宽度应为 128";
+    EXPECT_EQ(pixmap.height(), 128) << "缩放后高度应为 128";
 }
 
 // 测试错误处理

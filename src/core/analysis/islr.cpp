@@ -13,7 +13,7 @@ double ISLR::calculateISLR(const cv::Mat& image) {
         return 0.0;
     }
 
-    // 将图像转换为32位浮点类型进行处理
+    // 将图像转换为 32 位浮点类型进行处理
     cv::Mat floatImage;
     if (image.type() != CV_32F) {
         image.convertTo(floatImage, CV_32F);
@@ -21,7 +21,7 @@ double ISLR::calculateISLR(const cv::Mat& image) {
         floatImage = image.clone();
     }
 
-    // 计算点扩散函数(PSF)
+    // 计算点扩散函数 (PSF)
     cv::Mat psf = calculatePointSpreadFunction(floatImage);
 
     // 提取主瓣
@@ -42,15 +42,15 @@ double ISLR::calculateISLRInROI(const cv::Mat& image, const cv::Rect& roi) {
         return 0.0;
     }
 
-    // 将ROI区域提取出来
+    // 将 ROI 区域提取出来
     cv::Mat roiImage = image(roi).clone();
     
-    // 计算ROI区域的ISLR
+    // 计算 ROI 区域的 ISLR
     return calculateISLR(roiImage);
 }
 
 QString ISLR::getResultDescription() const {
-    return QString("积分旁瓣比(ISLR): %1 dB")
+    return QString("积分旁瓣比 (ISLR): %1 dB")
         .arg(lastISLR, 0, 'f', 2);
 }
 
@@ -85,7 +85,7 @@ cv::Mat ISLR::calculatePointSpreadFunction(const cv::Mat& image) {
 }
 
 cv::Mat ISLR::extractMainLobe(const cv::Mat& psf, cv::Point& peakLocation) {
-    // 找到PSF的峰值位置
+    // 找到 PSF 的峰值位置
     double minVal, maxVal;
     cv::Point minLoc;
     cv::minMaxLoc(psf, &minVal, &maxVal, &minLoc, &peakLocation);
@@ -93,7 +93,7 @@ cv::Mat ISLR::extractMainLobe(const cv::Mat& psf, cv::Point& peakLocation) {
     // 确定主瓣区域（以峰值位置为中心，定义一定半径内的区域为主瓣）
     int mainLobeRadius = std::min(psf.rows, psf.cols) / 10; // 可根据实际情况调整
     
-    // 创建与PSF大小相同的零矩阵
+    // 创建与 PSF 大小相同的零矩阵
     cv::Mat mainLobe = cv::Mat::zeros(psf.size(), CV_32F);
     
     // 提取主瓣区域
@@ -104,7 +104,7 @@ cv::Mat ISLR::extractMainLobe(const cv::Mat& psf, cv::Point& peakLocation) {
             // 计算到峰值的距离
             double dist = std::sqrt(std::pow(x - peakLocation.x, 2) + std::pow(y - peakLocation.y, 2));
             
-            // 如果在主瓣半径内，则复制PSF的值
+            // 如果在主瓣半径内，则复制 PSF 的值
             if (dist <= mainLobeRadius) {
                 mainLobe.at<float>(y, x) = psf.at<float>(y, x);
             }
@@ -134,7 +134,7 @@ double ISLR::computeISLRFromPSF(const cv::Mat& psf, const cv::Mat& mainLobe, con
     // 计算旁瓣能量
     double sideLobeEnergy = totalEnergy - mainLobeEnergy;
     
-    // 计算积分旁瓣比并转换为dB
+    // 计算积分旁瓣比并转换为 dB
     if (mainLobeEnergy > 1e-10) {
         return 10.0 * std::log10(sideLobeEnergy / mainLobeEnergy);
     } else {

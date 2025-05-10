@@ -17,7 +17,7 @@
 // 辐射度分析
 #include "radiometric.h"
 
-// GLCM纹理分析
+// GLCM 纹理分析
 #include "glcm.h"
 
 // 积分旁瓣比分析
