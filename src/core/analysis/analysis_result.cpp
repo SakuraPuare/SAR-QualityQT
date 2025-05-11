@@ -209,7 +209,7 @@ QString AnalysisResult::toTableHtml(const QMap<QString, QPair<double, QString>>&
 {
     QString html;
     
-    html += "<table border='1' cellspacing='0' cellpadding='5' style='border-collapse: collapse;'>";
+    html += "<table border='1' cellspacing='0' cellpadding='5' style='border-collapse: collapse; width: 100%;'>";
     html += "<tr bgcolor='#f0f0f0'>";
     html += "<th>指标</th>";
     html += "<th>合格标准</th>";
@@ -217,38 +217,199 @@ QString AnalysisResult::toTableHtml(const QMap<QString, QPair<double, QString>>&
     html += "<th>是否合格</th>";
     html += "</tr>";
 
-    QMapIterator<QString, AnalysisResultItem> i(results);
-    while (i.hasNext()) {
-        i.next();
-        const AnalysisResultItem& item = i.value();
-        
+    // 添加峰值旁瓣比
+    if (results.contains("PSLR")) {
+        const AnalysisResultItem& item = results["PSLR"];
         html += "<tr>";
-        html += "<td>" + i.key() + "</td>";
+        html += "<td>峰值旁瓣比</td>";
+        html += "<td>&lt;-20.0dB</td>";
         
-        // 合格标准
-        QString threshold;
-        if (thresholds.contains(i.key())) {
-            threshold = QString::number(thresholds[i.key()].first) + " " + thresholds[i.key()].second;
-        } else {
-            threshold = "未设置";
-        }
-        html += "<td>" + threshold + "</td>";
-        
-        // 计算指标
         if (item.isSuccess) {
             html += "<td>" + QString::number(item.numericValue) + " " + item.unit + "</td>";
-            
-            // 是否合格
-            bool isPass = false;
-            if (thresholds.contains(i.key())) {
-                isPass = isPassThreshold(item.numericValue, thresholds[i.key()].first, i.key());
+            bool isPass = item.numericValue <= -20.0;
+            html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
+                   (isPass ? "合格" : "不合格") + "</td>";
+        } else {
+            html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    // 添加积分旁瓣比
+    if (results.contains("ISLR")) {
+        const AnalysisResultItem& item = results["ISLR"];
+        html += "<tr>";
+        html += "<td>积分旁瓣比</td>";
+        html += "<td>&lt;-13.0dB</td>";
+        
+        if (item.isSuccess) {
+            html += "<td>" + QString::number(item.numericValue) + " " + item.unit + "</td>";
+            bool isPass = item.numericValue <= -13.0;
+            html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
+                   (isPass ? "合格" : "不合格") + "</td>";
+        } else {
+            html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    // 添加方位向模糊度
+    if (results.contains("AzimuthResolution")) {
+        const AnalysisResultItem& item = results["AzimuthResolution"];
+        html += "<tr>";
+        html += "<td>方位向模糊度</td>";
+        html += "<td>&le;20dB</td>";
+        
+        if (item.isSuccess) {
+            html += "<td>" + QString::number(item.numericValue) + " " + item.unit + "</td>";
+            bool isPass = item.numericValue <= 20.0;
+            html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
+                   (isPass ? "合格" : "不合格") + "</td>";
+        } else {
+            html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    // 添加距离向模糊度
+    if (results.contains("RangeResolution")) {
+        const AnalysisResultItem& item = results["RangeResolution"];
+        html += "<tr>";
+        html += "<td>距离向模糊度</td>";
+        html += "<td>&le;20dB</td>";
+        
+        if (item.isSuccess) {
+            html += "<td>" + QString::number(item.numericValue) + " " + item.unit + "</td>";
+            bool isPass = item.numericValue <= 20.0;
+            html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
+                   (isPass ? "合格" : "不合格") + "</td>";
+        } else {
+            html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    // 添加信噪比
+    if (results.contains("SNR")) {
+        const AnalysisResultItem& item = results["SNR"];
+        html += "<tr>";
+        html += "<td>信噪比</td>";
+        html += "<td>&ge;8dB</td>";
+        
+        if (item.isSuccess) {
+            html += "<td>" + QString::number(item.numericValue) + " " + item.unit + "</td>";
+            bool isPass = item.numericValue >= 8.0;
+            html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
+                   (isPass ? "合格" : "不合格") + "</td>";
+        } else {
+            html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    // 添加噪声等效散射系数
+    if (results.contains("NESZ")) {
+        const AnalysisResultItem& item = results["NESZ"];
+        html += "<tr>";
+        html += "<td>噪声等效散射系数</td>";
+        html += "<td>分辨率 1-10m: &le;-19.0dB<br>分辨率 25-500m: &le;-21.0dB</td>";
+        
+        if (item.isSuccess) {
+            html += "<td>" + QString::number(item.numericValue) + " " + item.unit + "</td>";
+            bool isPass = true; // 根据实际分辨率判断
+            if (item.additionalInfo.contains("分辨率")) {
+                double resolution = item.additionalInfo["分辨率"].toDouble();
+                if (resolution >= 1 && resolution <= 10) {
+                    isPass = item.numericValue <= -19.0;
+                } else if (resolution >= 25 && resolution <= 500) {
+                    isPass = item.numericValue <= -21.0;
+                }
             }
             html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
                    (isPass ? "合格" : "不合格") + "</td>";
         } else {
             html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
         }
+        html += "</tr>";
+    }
+
+    // 添加绝对辐射精度
+    if (results.contains("AbsoluteRadiometricAccuracy")) {
+        const AnalysisResultItem& item = results["AbsoluteRadiometricAccuracy"];
+        html += "<tr>";
+        html += "<td>绝对辐射精度</td>";
+        html += "<td>&le;1.5dB</td>";
         
+        if (item.isSuccess) {
+            html += "<td>" + QString::number(item.numericValue) + " " + item.unit + "</td>";
+            bool isPass = item.numericValue <= 1.5;
+            html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
+                   (isPass ? "合格" : "不合格") + "</td>";
+        } else {
+            html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    // 添加相对辐射精度
+    if (results.contains("RelativeRadiometricAccuracy")) {
+        const AnalysisResultItem& item = results["RelativeRadiometricAccuracy"];
+        html += "<tr>";
+        html += "<td>相对辐射精度</td>";
+        html += "<td>&le;1.0dB</td>";
+        
+        if (item.isSuccess) {
+            html += "<td>" + QString::number(item.numericValue) + " " + item.unit + "</td>";
+            bool isPass = item.numericValue <= 1.0;
+            html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
+                   (isPass ? "合格" : "不合格") + "</td>";
+        } else {
+            html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    // 添加辐射分辨率
+    if (results.contains("RadiometricResolution")) {
+        const AnalysisResultItem& item = results["RadiometricResolution"];
+        html += "<tr>";
+        html += "<td>辐射分辨率</td>";
+        html += "<td>分辨率 1-10m: 3.5dB<br>分辨率 25-500m: 2.0dB</td>";
+        
+        if (item.isSuccess) {
+            html += "<td>" + QString::number(item.numericValue) + " " + item.unit + "</td>";
+            bool isPass = true; // 根据实际分辨率判断
+            if (item.additionalInfo.contains("分辨率")) {
+                double resolution = item.additionalInfo["分辨率"].toDouble();
+                if (resolution >= 1 && resolution <= 10) {
+                    isPass = item.numericValue >= 3.5;
+                } else if (resolution >= 25 && resolution <= 500) {
+                    isPass = item.numericValue >= 2.0;
+                }
+            }
+            html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
+                   (isPass ? "合格" : "不合格") + "</td>";
+        } else {
+            html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
+        }
+        html += "</tr>";
+    }
+
+    // 添加等效视数
+    if (results.contains("ENL")) {
+        const AnalysisResultItem& item = results["ENL"];
+        html += "<tr>";
+        html += "<td>等效视数</td>";
+        html += "<td>&ge;3</td>";
+        
+        if (item.isSuccess) {
+            html += "<td>" + QString::number(item.numericValue) + "</td>";
+            bool isPass = item.numericValue >= 3.0;
+            html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
+                   (isPass ? "合格" : "不合格") + "</td>";
+        } else {
+            html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
+        }
         html += "</tr>";
     }
     
@@ -261,43 +422,241 @@ QString AnalysisResult::toTableText(const QMap<QString, QPair<double, QString>>&
     QString text;
     
     // 表头
-    text += QString("%-20s | %-15s | %-15s | %-10s\n").arg("指标", "合格标准", "计算指标", "是否合格");
-    text += QString("-").repeated(70) + "\n";
+    text += "指标                 | 合格标准                  | 计算指标         | 是否合格\n";
+    text += QString("-").repeated(80) + "\n";
 
-    QMapIterator<QString, AnalysisResultItem> i(results);
-    while (i.hasNext()) {
-        i.next();
-        const AnalysisResultItem& item = i.value();
-        
-        QString methodName = i.key();
-        
-        // 合格标准
-        QString threshold;
-        if (thresholds.contains(methodName)) {
-            threshold = QString::number(thresholds[methodName].first) + " " + thresholds[methodName].second;
-        } else {
-            threshold = "未设置";
-        }
-        
-        // 计算指标和是否合格
+    // 添加峰值旁瓣比
+    if (results.contains("PSLR")) {
+        const AnalysisResultItem& item = results["PSLR"];
         QString calculatedValue;
         QString passStatus;
+        
         if (item.isSuccess) {
             calculatedValue = QString::number(item.numericValue) + " " + item.unit;
-            
-            if (thresholds.contains(methodName)) {
-                bool isPass = isPassThreshold(item.numericValue, thresholds[methodName].first, methodName);
-                passStatus = isPass ? "合格" : "不合格";
-            } else {
-                passStatus = "未知";
-            }
+            bool isPass = item.numericValue <= -20.0;
+            passStatus = isPass ? "合格" : "不合格";
         } else {
             calculatedValue = "分析失败";
             passStatus = "N/A";
         }
         
-        text += QString("%-20s | %-15s | %-15s | %-10s\n")
-                .arg(methodName, threshold, calculatedValue, passStatus);
+        text += QString("峰值旁瓣比").leftJustified(20) + "| ";
+        text += QString("<-20.0dB").leftJustified(25) + "| ";
+        text += calculatedValue.leftJustified(15) + "| ";
+        text += passStatus.leftJustified(10) + "\n";
+    }
+
+    // 添加积分旁瓣比
+    if (results.contains("ISLR")) {
+        const AnalysisResultItem& item = results["ISLR"];
+        QString calculatedValue;
+        QString passStatus;
+        
+        if (item.isSuccess) {
+            calculatedValue = QString::number(item.numericValue) + " " + item.unit;
+            bool isPass = item.numericValue <= -13.0;
+            passStatus = isPass ? "合格" : "不合格";
+        } else {
+            calculatedValue = "分析失败";
+            passStatus = "N/A";
+        }
+        
+        text += QString("积分旁瓣比").leftJustified(20) + "| ";
+        text += QString("<-13.0dB").leftJustified(25) + "| ";
+        text += calculatedValue.leftJustified(15) + "| ";
+        text += passStatus.leftJustified(10) + "\n";
+    }
+
+    // 添加方位向模糊度
+    if (results.contains("AzimuthResolution")) {
+        const AnalysisResultItem& item = results["AzimuthResolution"];
+        QString calculatedValue;
+        QString passStatus;
+        
+        if (item.isSuccess) {
+            calculatedValue = QString::number(item.numericValue) + " " + item.unit;
+            bool isPass = item.numericValue <= 20.0;
+            passStatus = isPass ? "合格" : "不合格";
+        } else {
+            calculatedValue = "分析失败";
+            passStatus = "N/A";
+        }
+        
+        text += QString("方位向模糊度").leftJustified(20) + "| ";
+        text += QString("≤20dB").leftJustified(25) + "| ";
+        text += calculatedValue.leftJustified(15) + "| ";
+        text += passStatus.leftJustified(10) + "\n";
+    }
+
+    // 添加距离向模糊度
+    if (results.contains("RangeResolution")) {
+        const AnalysisResultItem& item = results["RangeResolution"];
+        QString calculatedValue;
+        QString passStatus;
+        
+        if (item.isSuccess) {
+            calculatedValue = QString::number(item.numericValue) + " " + item.unit;
+            bool isPass = item.numericValue <= 20.0;
+            passStatus = isPass ? "合格" : "不合格";
+        } else {
+            calculatedValue = "分析失败";
+            passStatus = "N/A";
+        }
+        
+        text += QString("距离向模糊度").leftJustified(20) + "| ";
+        text += QString("≤20dB").leftJustified(25) + "| ";
+        text += calculatedValue.leftJustified(15) + "| ";
+        text += passStatus.leftJustified(10) + "\n";
+    }
+
+    // 添加信噪比
+    if (results.contains("SNR")) {
+        const AnalysisResultItem& item = results["SNR"];
+        QString calculatedValue;
+        QString passStatus;
+        
+        if (item.isSuccess) {
+            calculatedValue = QString::number(item.numericValue) + " " + item.unit;
+            bool isPass = item.numericValue >= 8.0;
+            passStatus = isPass ? "合格" : "不合格";
+        } else {
+            calculatedValue = "分析失败";
+            passStatus = "N/A";
+        }
+        
+        text += QString("信噪比").leftJustified(20) + "| ";
+        text += QString("≥8dB").leftJustified(25) + "| ";
+        text += calculatedValue.leftJustified(15) + "| ";
+        text += passStatus.leftJustified(10) + "\n";
+    }
+
+    // 添加噪声等效散射系数
+    if (results.contains("NESZ")) {
+        const AnalysisResultItem& item = results["NESZ"];
+        QString calculatedValue;
+        QString passStatus;
+        
+        if (item.isSuccess) {
+            calculatedValue = QString::number(item.numericValue) + " " + item.unit;
+            bool isPass = true; // 根据实际分辨率判断
+            if (item.additionalInfo.contains("分辨率")) {
+                double resolution = item.additionalInfo["分辨率"].toDouble();
+                if (resolution >= 1 && resolution <= 10) {
+                    isPass = item.numericValue <= -19.0;
+                } else if (resolution >= 25 && resolution <= 500) {
+                    isPass = item.numericValue <= -21.0;
+                }
+            }
+            passStatus = isPass ? "合格" : "不合格";
+        } else {
+            calculatedValue = "分析失败";
+            passStatus = "N/A";
+        }
+        
+        text += QString("噪声等效散射系数").leftJustified(20) + "| ";
+        text += QString("分辨率 1-10m: ≤-19.0dB").leftJustified(25) + "| ";
+        text += calculatedValue.leftJustified(15) + "| ";
+        text += passStatus.leftJustified(10) + "\n";
+        text += QString(" ").repeated(20) + "| ";
+        text += QString("分辨率 25-500m: ≤-21.0dB").leftJustified(25) + "| ";
+        text += QString(" ").leftJustified(15) + "| ";
+        text += QString(" ").leftJustified(10) + "\n";
+    }
+
+    // 添加绝对辐射精度
+    if (results.contains("AbsoluteRadiometricAccuracy")) {
+        const AnalysisResultItem& item = results["AbsoluteRadiometricAccuracy"];
+        QString calculatedValue;
+        QString passStatus;
+        
+        if (item.isSuccess) {
+            calculatedValue = QString::number(item.numericValue) + " " + item.unit;
+            bool isPass = item.numericValue <= 1.5;
+            passStatus = isPass ? "合格" : "不合格";
+        } else {
+            calculatedValue = "分析失败";
+            passStatus = "N/A";
+        }
+        
+        text += QString("绝对辐射精度").leftJustified(20) + "| ";
+        text += QString("≤1.5dB").leftJustified(25) + "| ";
+        text += calculatedValue.leftJustified(15) + "| ";
+        text += passStatus.leftJustified(10) + "\n";
+    }
+
+    // 添加相对辐射精度
+    if (results.contains("RelativeRadiometricAccuracy")) {
+        const AnalysisResultItem& item = results["RelativeRadiometricAccuracy"];
+        QString calculatedValue;
+        QString passStatus;
+        
+        if (item.isSuccess) {
+            calculatedValue = QString::number(item.numericValue) + " " + item.unit;
+            bool isPass = item.numericValue <= 1.0;
+            passStatus = isPass ? "合格" : "不合格";
+        } else {
+            calculatedValue = "分析失败";
+            passStatus = "N/A";
+        }
+        
+        text += QString("相对辐射精度").leftJustified(20) + "| ";
+        text += QString("≤1.0dB").leftJustified(25) + "| ";
+        text += calculatedValue.leftJustified(15) + "| ";
+        text += passStatus.leftJustified(10) + "\n";
+    }
+
+    // 添加辐射分辨率
+    if (results.contains("RadiometricResolution")) {
+        const AnalysisResultItem& item = results["RadiometricResolution"];
+        QString calculatedValue;
+        QString passStatus;
+        
+        if (item.isSuccess) {
+            calculatedValue = QString::number(item.numericValue) + " " + item.unit;
+            bool isPass = true; // 根据实际分辨率判断
+            if (item.additionalInfo.contains("分辨率")) {
+                double resolution = item.additionalInfo["分辨率"].toDouble();
+                if (resolution >= 1 && resolution <= 10) {
+                    isPass = item.numericValue >= 3.5;
+                } else if (resolution >= 25 && resolution <= 500) {
+                    isPass = item.numericValue >= 2.0;
+                }
+            }
+            passStatus = isPass ? "合格" : "不合格";
+        } else {
+            calculatedValue = "分析失败";
+            passStatus = "N/A";
+        }
+        
+        text += QString("辐射分辨率").leftJustified(20) + "| ";
+        text += QString("分辨率 1-10m: 3.5dB").leftJustified(25) + "| ";
+        text += calculatedValue.leftJustified(15) + "| ";
+        text += passStatus.leftJustified(10) + "\n";
+        text += QString(" ").repeated(20) + "| ";
+        text += QString("分辨率 25-500m: 2.0dB").leftJustified(25) + "| ";
+        text += QString(" ").leftJustified(15) + "| ";
+        text += QString(" ").leftJustified(10) + "\n";
+    }
+
+    // 添加等效视数
+    if (results.contains("ENL")) {
+        const AnalysisResultItem& item = results["ENL"];
+        QString calculatedValue;
+        QString passStatus;
+        
+        if (item.isSuccess) {
+            calculatedValue = QString::number(item.numericValue);
+            bool isPass = item.numericValue >= 3.0;
+            passStatus = isPass ? "合格" : "不合格";
+        } else {
+            calculatedValue = "分析失败";
+            passStatus = "N/A";
+        }
+        
+        text += QString("等效视数").leftJustified(20) + "| ";
+        text += QString("≥3").leftJustified(25) + "| ";
+        text += calculatedValue.leftJustified(15) + "| ";
+        text += passStatus.leftJustified(10) + "\n";
     }
     
     return text;

@@ -68,19 +68,124 @@ namespace SAR {
                 }
             }
 
+            // 创建表格所需的阈值参数
+            QMap<QString, QPair<double, QString>> thresholds;
+            thresholds["PSLR"] = QPair<double, QString>(-20.0, "dB");
+            thresholds["ISLR"] = QPair<double, QString>(-13.0, "dB");
+            thresholds["AzimuthResolution"] = QPair<double, QString>(20.0, "dB");
+            thresholds["RangeResolution"] = QPair<double, QString>(20.0, "dB");
+            thresholds["SNR"] = QPair<double, QString>(8.0, "dB");
+            thresholds["NESZ"] = QPair<double, QString>(-19.0, "dB");
+            thresholds["AbsoluteRadiometricAccuracy"] = QPair<double, QString>(1.5, "dB");
+            thresholds["RelativeRadiometricAccuracy"] = QPair<double, QString>(1.0, "dB");
+            thresholds["RadiometricResolution"] = QPair<double, QString>(3.5, "dB");
+            thresholds["ENL"] = QPair<double, QString>(3.0, "");
+
+            // 创建包含表格的HTML文档
+            QString html = "<!DOCTYPE html><html><head>";
+            html += "<meta charset='UTF-8'>";
+            html += "<style>";
+            html += "body { font-family: Arial, sans-serif; font-size: 10pt; }";
+            html += "h1 { font-size: 16pt; text-align: center; margin: 20px 0; }";
+            html += "h2 { font-size: 14pt; margin: 16px 0 8px 0; }";
+            html += "p { margin: 6px 0; }";
+            html += "table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; table-layout: fixed; }";
+            html += "th, td { padding: 6px; border: 1px solid black; text-align: center; word-wrap: break-word; }";
+            html += "th { background-color: #f0f0f0; font-weight: bold; }";
+            html += ".text-section { margin-top: 20px; page-break-before: always; }";
+            html += ".result-item { margin: 8px 0; border-bottom: 1px solid #ccc; padding-bottom: 8px; }";
+            html += ".success { color: green; }";
+            html += ".failure { color: red; }";
+            html += ".detail-list { margin-left: 20px; }";
+            html += "</style>";
+            html += "</head><body>";
+            
+            // 添加标题和基本信息
+            html += "<h1>SAR 图像质量分析报告</h1>";
+            html += "<p><b>分析时间：</b>" + result.getAnalysisTime().toString("yyyy-MM-dd hh:mm:ss") + "</p>";
+            html += "<p><b>图像路径：</b>" + result.getImagePath() + "</p>";
+            if (!result.getDescription().isEmpty()) {
+                html += "<p><b>分析描述：</b>" + result.getDescription() + "</p>";
+            }
+            
+            // 添加表格
+            html += "<h2>表格概览</h2>";
+            html += result.toTableHtml(thresholds);
+            
+            // 添加详细文本信息部分
+            html += "<div class='text-section'>";
+            html += "<h2>详细分析结果</h2>";
+            
+            // 添加各个分析结果的详细信息
+            QMapIterator<QString, SAR::Core::AnalysisResultItem> i(result.getAllResults());
+            while (i.hasNext()) {
+                i.next();
+                const SAR::Core::AnalysisResultItem& item = i.value();
+                
+                html += "<div class='result-item'>";
+                html += "<h3>" + item.methodName + "</h3>";
+                
+                if (item.isSuccess) {
+                    html += "<p><b>结果值：</b><span class='success'>" + QString::number(item.numericValue);
+                    if (!item.unit.isEmpty()) {
+                        html += " " + item.unit;
+                    }
+                    html += "</span></p>";
+                    
+                    if (!item.description.isEmpty()) {
+                        html += "<p>" + item.description + "</p>";
+                    }
+                    
+                    // 附加数值结果
+                    if (!item.additionalValues.isEmpty()) {
+                        html += "<p><b>详细数值：</b></p><ul class='detail-list'>";
+                        QMapIterator<QString, double> j(item.additionalValues);
+                        while (j.hasNext()) {
+                            j.next();
+                            html += "<li>" + j.key() + ": " + QString::number(j.value()) + "</li>";
+                        }
+                        html += "</ul>";
+                    }
+                    
+                    // 附加信息
+                    if (!item.additionalInfo.isEmpty()) {
+                        html += "<p><b>附加信息：</b></p><ul class='detail-list'>";
+                        QMapIterator<QString, QString> k(item.additionalInfo);
+                        while (k.hasNext()) {
+                            k.next();
+                            // 过滤掉详细结果，因为可能包含HTML标签
+                            if (k.key() != "详细结果") {
+                                html += "<li>" + k.key() + ": " + k.value() + "</li>";
+                            }
+                        }
+                        html += "</ul>";
+                    }
+                } else {
+                    html += "<p><b>分析失败</b></p>";
+                    html += "<p class='failure'><b>错误信息：</b>" + item.errorMessage + "</p>";
+                }
+                
+                html += "</div>";
+            }
+            
+            html += "</div>";
+            html += "</body></html>";
+
+            // 创建PDF文档
             QTextDocument document;
-            document.setHtml(result.toHtml());
+            document.setHtml(html);
 
             // 设置页面大小为 A4
-            document.setPageSize(QSizeF(595, 842)); // 单位是点
+            document.setPageSize(QSizeF(595, 842)); // 单位是点，A4大小
 
             // 创建打印机配置
             QPrinter printer(QPrinter::HighResolution);
-            printer.setPageMargins(QMarginsF(30, 30, 30, 30), QPageLayout::Point);
+            printer.setPageMargins(QMarginsF(15, 15, 15, 15), QPageLayout::Point); // 减小边距以显示更多内容
             printer.setOutputFormat(QPrinter::PdfFormat);
             printer.setOutputFileName(finalOutputPath);
             printer.setPageSize(QPageSize(QPageSize::A4));
-
+            printer.setCreator("SAR 质量分析工具");
+            
             // 打印文档到 PDF
             document.print(&printer);
 
@@ -123,8 +228,34 @@ namespace SAR {
                 return false;
             }
 
+            // 创建表格所需的阈值参数
+            QMap<QString, QPair<double, QString>> thresholds;
+            thresholds["PSLR"] = QPair<double, QString>(-20.0, "dB");
+            thresholds["ISLR"] = QPair<double, QString>(-13.0, "dB");
+            thresholds["AzimuthResolution"] = QPair<double, QString>(20.0, "dB");
+            thresholds["RangeResolution"] = QPair<double, QString>(20.0, "dB");
+            thresholds["SNR"] = QPair<double, QString>(8.0, "dB");
+            thresholds["NESZ"] = QPair<double, QString>(-19.0, "dB");
+            thresholds["AbsoluteRadiometricAccuracy"] = QPair<double, QString>(1.5, "dB");
+            thresholds["RelativeRadiometricAccuracy"] = QPair<double, QString>(1.0, "dB");
+            thresholds["RadiometricResolution"] = QPair<double, QString>(3.5, "dB");
+            thresholds["ENL"] = QPair<double, QString>(3.0, "");
+
             QTextStream out(&file);
-            out << result.toPlainText();
+            
+            // 添加标题和基本信息
+            out << "SAR 图像质量分析报告\n";
+            out << "====================================\n\n";
+            out << "分析时间：" << result.getAnalysisTime().toString("yyyy-MM-dd hh:mm:ss") << "\n";
+            out << "图像路径：" << result.getImagePath() << "\n";
+            if (!result.getDescription().isEmpty()) {
+                out << "分析描述：" << result.getDescription() << "\n";
+            }
+            out << "\n====================================\n\n";
+            
+            // 添加表格
+            out << result.toTableText(thresholds);
+            
             file.close();
 
             if (logCallback) {
