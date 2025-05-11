@@ -32,6 +32,12 @@
 // 方位分辨率分析
 #include "azimuth_resolution.h"
 
+// 距离模糊度分析
+#include "rasr.h"
+
+// 方位模糊度分析
+#include "aasr.h"
+
 // 噪声等效后向散射系数分析
 #include "nesz.h"
 

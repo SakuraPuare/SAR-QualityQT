@@ -124,6 +124,7 @@ private:
     void setupConnections();
     void setupLogSystem(); // 设置日志系统
     void configureAnalysisOptions(); // 添加配置分析选项方法声明
+    void configureResultTabs(); // 配置结果选项卡的显示状态
     void enableAnalysisButtons(bool enable);
     void clearResults();
     bool loadImage(const QString &filePath);

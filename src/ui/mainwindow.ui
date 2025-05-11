@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>1035</height>
+    <height>1107</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -69,7 +69,7 @@
         <item>
          <widget class="QTabWidget" name="resultsTabWidget">
           <property name="currentIndex">
-           <number>3</number>
+           <number>7</number>
           </property>
           <widget class="QWidget" name="tabOverview">
            <attribute name="title">
@@ -85,13 +85,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tabMethod6">
+          <widget class="QWidget" name="tabISLR">
            <attribute name="title">
             <string>积分旁瓣比</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method6">
+           <layout class="QVBoxLayout" name="verticalLayout_ISLR">
             <item>
-             <widget class="QTextEdit" name="method6ResultsTextEdit">
+             <widget class="QTextEdit" name="ISLRResultsTextEdit">
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -99,13 +99,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tabMethod7">
+          <widget class="QWidget" name="tabPSLR">
            <attribute name="title">
             <string>峰值旁瓣比</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method7">
+           <layout class="QVBoxLayout" name="verticalLayout_PSLR">
             <item>
-             <widget class="QTextEdit" name="method7ResultsTextEdit">
+             <widget class="QTextEdit" name="PSLRResultsTextEdit">
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -113,13 +113,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tabMethod8">
+          <widget class="QWidget" name="tabRASR">
            <attribute name="title">
             <string>距离模糊度</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method8">
+           <layout class="QVBoxLayout" name="verticalLayout_RASR">
             <item>
-             <widget class="QTextEdit" name="method8ResultsTextEdit">
+             <widget class="QTextEdit" name="RASRResultsTextEdit">
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -127,13 +127,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tabMethod9">
+          <widget class="QWidget" name="tabAASR">
            <attribute name="title">
             <string>方位模糊度</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method9">
+           <layout class="QVBoxLayout" name="verticalLayout_AASR">
             <item>
-             <widget class="QTextEdit" name="method9ResultsTextEdit">
+             <widget class="QTextEdit" name="AASRResultsTextEdit">
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -141,13 +141,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tabMethod1">
+          <widget class="QWidget" name="tabSNR">
            <attribute name="title">
             <string>信噪比</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method1">
+           <layout class="QVBoxLayout" name="verticalLayout_SNR">
             <item>
-             <widget class="QTextEdit" name="method1ResultsTextEdit">
+             <widget class="QTextEdit" name="SNRResultsTextEdit">
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -155,69 +155,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tabMethod2">
-           <attribute name="title">
-            <string>信息熵</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method2">
-            <item>
-             <widget class="QTextEdit" name="method2ResultsTextEdit">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tabMethod3">
-           <attribute name="title">
-            <string>清晰度</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method3">
-            <item>
-             <widget class="QTextEdit" name="method3ResultsTextEdit">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tabMethod4">
-           <attribute name="title">
-            <string>辐射精度</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method4">
-            <item>
-             <widget class="QTextEdit" name="method4ResultsTextEdit">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tabMethod5">
-           <attribute name="title">
-            <string>GLCM</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method5">
-            <item>
-             <widget class="QTextEdit" name="method5ResultsTextEdit">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="tabMethod10">
+          <widget class="QWidget" name="tabNESZ">
            <attribute name="title">
             <string>NESZ</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method10">
+           <layout class="QVBoxLayout" name="verticalLayout_NESZ">
             <item>
-             <widget class="QTextEdit" name="method10ResultsTextEdit">
+             <widget class="QTextEdit" name="NESZResultsTextEdit">
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -225,13 +169,27 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tabMethod11">
+          <widget class="QWidget" name="tabRadAccuracy">
+           <attribute name="title">
+            <string>辐射精度</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_RadAccuracy">
+            <item>
+             <widget class="QTextEdit" name="RadAccuracyResultsTextEdit">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tabRadResolution">
            <attribute name="title">
             <string>辐射分辨率</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method11">
+           <layout class="QVBoxLayout" name="verticalLayout_RadResolution">
             <item>
-             <widget class="QTextEdit" name="method11ResultsTextEdit">
+             <widget class="QTextEdit" name="RadResolutionResultsTextEdit">
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -239,13 +197,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tabMethod12">
+          <widget class="QWidget" name="tabENL">
            <attribute name="title">
             <string>等效视数</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_method12">
+           <layout class="QVBoxLayout" name="verticalLayout_ENL">
             <item>
-             <widget class="QTextEdit" name="method12ResultsTextEdit">
+             <widget class="QTextEdit" name="ENLResultsTextEdit">
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -452,7 +410,7 @@
    <property name="minimumSize">
     <size>
      <width>268</width>
-     <height>708</height>
+     <height>780</height>
     </size>
    </property>
    <property name="windowTitle">
@@ -505,16 +463,16 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBoxRangeResolution">
+            <widget class="QCheckBox" name="checkBoxRASR">
              <property name="text">
-              <string>距离模糊度</string>
+              <string>距离模糊度 (RASR)</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBoxAzimuthResolution">
+            <widget class="QCheckBox" name="checkBoxAASR">
              <property name="text">
-              <string>方位模糊度</string>
+              <string>方位模糊度 (AASR)</string>
              </property>
             </widget>
            </item>
@@ -535,16 +493,9 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBoxInfoContent">
+            <widget class="QCheckBox" name="checkBoxNESZ">
              <property name="text">
-              <string>信息熵分析</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBoxClarity">
-             <property name="text">
-              <string>清晰度分析</string>
+              <string>噪声等效后向散射系数 (NESZ)</string>
              </property>
             </widget>
            </item>
@@ -552,20 +503,6 @@
             <widget class="QCheckBox" name="checkBoxRadiometricAccuracy">
              <property name="text">
               <string>辐射精度</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBoxGLCM">
-             <property name="text">
-              <string>GLCM 纹理特征</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkBoxNESZ">
-             <property name="text">
-              <string>噪声等效后向散射系数 (NESZ)</string>
              </property>
             </widget>
            </item>

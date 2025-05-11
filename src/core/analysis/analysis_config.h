@@ -20,11 +20,19 @@ namespace Analysis {
 #endif
 
 #ifndef CONFIG_ENABLE_RANGE_RES
-#define CONFIG_ENABLE_RANGE_RES 1      // 距离模糊度
+#define CONFIG_ENABLE_RANGE_RES 1      // 距离分辨率
 #endif
 
 #ifndef CONFIG_ENABLE_AZIMUTH_RES
-#define CONFIG_ENABLE_AZIMUTH_RES 1    // 方位模糊度
+#define CONFIG_ENABLE_AZIMUTH_RES 1    // 方位分辨率
+#endif
+
+#ifndef CONFIG_ENABLE_RASR
+#define CONFIG_ENABLE_RASR 1           // 距离模糊度
+#endif
+
+#ifndef CONFIG_ENABLE_AASR
+#define CONFIG_ENABLE_AASR 1           // 方位模糊度
 #endif
 
 #ifndef CONFIG_ENABLE_SNR

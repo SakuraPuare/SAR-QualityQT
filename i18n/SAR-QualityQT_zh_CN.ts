@@ -127,7 +127,7 @@ Error during GLCM calculation or feature extraction: %1</source>
     </message>
     <message>
         <location filename="../src/core/analysis/global.cpp" line="13"/>
-        <source>噪声等效后向散射系数 (NESZ) 分析结果：
+        <source>噪声等效后向散射系数 (NESZ) 分析结果:
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -140,6 +140,10 @@ Error during GLCM calculation or feature extraction: %1</source>
         <location filename="../src/core/analysis/global.cpp" line="17"/>
         <location filename="../src/core/analysis/global.cpp" line="119"/>
         <location filename="../src/core/analysis/global.cpp" line="192"/>
+        <location filename="../src/core/analysis/local.cpp" line="18"/>
+        <location filename="../src/core/analysis/local.cpp" line="129"/>
+        <location filename="../src/core/analysis/local.cpp" line="236"/>
+        <location filename="../src/core/analysis/local.cpp" line="349"/>
         <source>
 错误：未提供有效的图像数据。</source>
         <translation type="unfinished"></translation>
@@ -159,6 +163,10 @@ Error during GLCM calculation or feature extraction: %1</source>
         <location filename="../src/core/analysis/global.cpp" line="41"/>
         <location filename="../src/core/analysis/global.cpp" line="143"/>
         <location filename="../src/core/analysis/global.cpp" line="216"/>
+        <location filename="../src/core/analysis/local.cpp" line="42"/>
+        <location filename="../src/core/analysis/local.cpp" line="153"/>
+        <location filename="../src/core/analysis/local.cpp" line="260"/>
+        <location filename="../src/core/analysis/local.cpp" line="373"/>
         <source>
 错误：不支持的通道数量 (%1)。需要单通道或双通道图像。</source>
         <translation type="unfinished"></translation>
@@ -208,7 +216,7 @@ Error during GLCM calculation or feature extraction: %1</source>
     <message>
         <location filename="../src/core/analysis/global.cpp" line="93"/>
         <source>
-解释：
+解释:
 - NESZ 是测量 SAR 系统噪声水平的参数
 - 较低的 NESZ 值表示系统噪声较低，能够检测到较弱的雷达回波
 - 高质量 SAR 图像的 NESZ 通常在 -20dB 到 -25dB 之间</source>
@@ -246,7 +254,7 @@ Error during GLCM calculation or feature extraction: %1</source>
     </message>
     <message>
         <location filename="../src/core/analysis/global.cpp" line="115"/>
-        <source>辐射分辨率分析结果：
+        <source>辐射分辨率分析结果:
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -289,7 +297,7 @@ Error during GLCM calculation or feature extraction: %1</source>
     <message>
         <location filename="../src/core/analysis/global.cpp" line="165"/>
         <source>
-解释：
+解释:
 - 辐射分辨率描述系统区分不同后向散射强度的能力
 - 较低的值表示系统能够区分更细微的反射差异
 - 通常与等效视数 (ENL) 相关，ENL 越高，辐射分辨率越好
@@ -309,7 +317,7 @@ Error during GLCM calculation or feature extraction: %1</source>
     </message>
     <message>
         <location filename="../src/core/analysis/global.cpp" line="188"/>
-        <source>等效视数 (ENL) 分析结果：
+        <source>等效视数 (ENL) 分析结果:
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -352,7 +360,7 @@ Error during GLCM calculation or feature extraction: %1</source>
     <message>
         <location filename="../src/core/analysis/global.cpp" line="266"/>
         <source>
-解释：
+解释:
 - 等效视数 (ENL) 表示多视处理中的有效视数
 - 更高的 ENL 值表示更好的斑点噪声抑制效果
 - ENL = (均值/标准差)²
@@ -577,31 +585,13 @@ Error during histogram or entropy calculation: %1</source>
     </message>
     <message>
         <location filename="../src/core/analysis/local.cpp" line="14"/>
-        <source>积分旁瓣比 (ISLR) 分析结果：
+        <source>积分旁瓣比 (ISLR) 分析结果:
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/core/analysis/local.cpp" line="15"/>
         <source>ISLR: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/core/analysis/local.cpp" line="18"/>
-        <location filename="../src/core/analysis/local.cpp" line="129"/>
-        <location filename="../src/core/analysis/local.cpp" line="236"/>
-        <location filename="../src/core/analysis/local.cpp" line="349"/>
-        <source>
-错误：未提供有效的图像数据。</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/core/analysis/local.cpp" line="42"/>
-        <location filename="../src/core/analysis/local.cpp" line="153"/>
-        <location filename="../src/core/analysis/local.cpp" line="260"/>
-        <location filename="../src/core/analysis/local.cpp" line="373"/>
-        <source>
-错误：不支持的通道数量 (%1)。需要单通道或双通道图像。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -638,7 +628,7 @@ Error during histogram or entropy calculation: %1</source>
     <message>
         <location filename="../src/core/analysis/local.cpp" line="103"/>
         <source>
-解释：
+解释:
 - ISLR 是旁瓣能量与主瓣能量之比
 - 较低的 ISLR 值表示主瓣包含了更多的能量，成像质量更好
 - 典型的良好 SAR 图像 ISLR 在 -20dB 左右</source>
@@ -657,7 +647,7 @@ Error during histogram or entropy calculation: %1</source>
     </message>
     <message>
         <location filename="../src/core/analysis/local.cpp" line="125"/>
-        <source>峰值旁瓣比 (PSLR) 分析结果：
+        <source>峰值旁瓣比 (PSLR) 分析结果:
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -700,7 +690,7 @@ Error during histogram or entropy calculation: %1</source>
     <message>
         <location filename="../src/core/analysis/local.cpp" line="210"/>
         <source>
-解释：
+解释:
 - PSLR 是最大旁瓣峰值与主瓣峰值之比
 - 典型的良好 SAR 图像 PSLR 在 -25dB 到 -30dB 之间
 - 较低的 PSLR 值表示目标识别能力更好</source>
@@ -719,7 +709,7 @@ Error during histogram or entropy calculation: %1</source>
     </message>
     <message>
         <location filename="../src/core/analysis/local.cpp" line="232"/>
-        <source>距离模糊度分析结果：
+        <source>距离模糊度分析结果:
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -765,7 +755,7 @@ Error during histogram or entropy calculation: %1</source>
     <message>
         <location filename="../src/core/analysis/local.cpp" line="323"/>
         <source>
-解释：
+解释:
 - 距离分辨率表示在距离方向上能够分辨的最小距离
 - 较小的值表示更好的分辨能力
 - 典型的高分辨率 SAR 系统距离分辨率在 1-5 米范围</source>
@@ -790,7 +780,7 @@ Error during histogram or entropy calculation: %1</source>
     </message>
     <message>
         <location filename="../src/core/analysis/local.cpp" line="345"/>
-        <source>方位模糊度分析结果：
+        <source>方位模糊度分析结果:
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -815,7 +805,7 @@ Error during histogram or entropy calculation: %1</source>
     <message>
         <location filename="../src/core/analysis/local.cpp" line="434"/>
         <source>
-解释：
+解释:
 - 方位分辨率表示在方位方向上能够分辨的最小距离
 - 较小的值表示更好的分辨能力
 - 典型的高分辨率 SAR 系统方位分辨率在 1-5 米范围</source>
@@ -1234,7 +1224,7 @@ Error during radiometric statistics calculation: %1</source>
     <name>MainWindow</name>
     <message>
         <location filename="../src/ui/mainwindow.ui" line="20"/>
-        <source>SAR 图像质量评估工具</source>
+        <source>SAR图像质量评估工具</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1264,15 +1254,13 @@ Error during radiometric statistics calculation: %1</source>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.ui" line="118"/>
-        <location filename="../src/ui/mainwindow.ui" line="510"/>
-        <location filename="../src/ui/mainwindow.ui" line="836"/>
+        <location filename="../src/ui/mainwindow.ui" line="773"/>
         <source>距离模糊度</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.ui" line="132"/>
-        <location filename="../src/ui/mainwindow.ui" line="517"/>
-        <location filename="../src/ui/mainwindow.ui" line="841"/>
+        <location filename="../src/ui/mainwindow.ui" line="778"/>
         <source>方位模糊度</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1283,315 +1271,295 @@ Error during radiometric statistics calculation: %1</source>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.ui" line="160"/>
-        <source>信息熵</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.ui" line="174"/>
-        <source>清晰度</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.ui" line="188"/>
-        <location filename="../src/ui/mainwindow.ui" line="554"/>
-        <source>辐射精度</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.ui" line="202"/>
-        <source>GLCM</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.ui" line="216"/>
         <source>NESZ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="230"/>
-        <location filename="../src/ui/mainwindow.ui" line="575"/>
-        <location filename="../src/ui/mainwindow.ui" line="851"/>
+        <location filename="../src/ui/mainwindow.ui" line="174"/>
+        <location filename="../src/ui/mainwindow.ui" line="505"/>
+        <source>辐射精度</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="188"/>
+        <location filename="../src/ui/mainwindow.ui" line="512"/>
+        <location filename="../src/ui/mainwindow.ui" line="788"/>
         <source>辐射分辨率</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="244"/>
+        <location filename="../src/ui/mainwindow.ui" line="202"/>
         <source>等效视数</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="276"/>
+        <location filename="../src/ui/mainwindow.ui" line="234"/>
         <source>导出为 PDF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="283"/>
+        <location filename="../src/ui/mainwindow.ui" line="241"/>
         <source>导出为 TXT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="306"/>
-        <source>文件 (&amp;F)</source>
+        <location filename="../src/ui/mainwindow.ui" line="264"/>
+        <source>文件(&amp;F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="318"/>
-        <source>编辑 (&amp;E)</source>
+        <location filename="../src/ui/mainwindow.ui" line="276"/>
+        <source>编辑(&amp;E)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="324"/>
-        <source>视图 (&amp;V)</source>
+        <location filename="../src/ui/mainwindow.ui" line="282"/>
+        <source>视图(&amp;V)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="340"/>
-        <source>分析 (&amp;A)</source>
+        <location filename="../src/ui/mainwindow.ui" line="298"/>
+        <source>分析(&amp;A)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="356"/>
-        <source>帮助 (&amp;H)</source>
+        <location filename="../src/ui/mainwindow.ui" line="314"/>
+        <source>帮助(&amp;H)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="370"/>
-        <location filename="../src/ui/mainwindow.ui" line="705"/>
+        <location filename="../src/ui/mainwindow.ui" line="328"/>
+        <location filename="../src/ui/mainwindow.ui" line="642"/>
         <source>工具栏</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="397"/>
+        <location filename="../src/ui/mainwindow.ui" line="355"/>
         <source>日志输出</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="422"/>
-        <location filename="../src/ui/mainwindow.ui" line="821"/>
+        <location filename="../src/ui/mainwindow.ui" line="380"/>
+        <location filename="../src/ui/mainwindow.ui" line="758"/>
         <source>图像列表</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="459"/>
+        <location filename="../src/ui/mainwindow.ui" line="417"/>
         <source>分析面板</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="490"/>
+        <location filename="../src/ui/mainwindow.ui" line="448"/>
         <source>局部质量评价</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="496"/>
-        <location filename="../src/ui/mainwindow.ui" line="826"/>
+        <location filename="../src/ui/mainwindow.ui" line="454"/>
+        <location filename="../src/ui/mainwindow.ui" line="763"/>
         <source>积分旁瓣比 (ISLR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="503"/>
-        <location filename="../src/ui/mainwindow.ui" line="831"/>
+        <location filename="../src/ui/mainwindow.ui" line="461"/>
+        <location filename="../src/ui/mainwindow.ui" line="768"/>
         <source>峰值旁瓣比 (PSLR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="527"/>
+        <location filename="../src/ui/mainwindow.ui" line="468"/>
+        <source>距离模糊度 (RASR)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="475"/>
+        <source>方位模糊度 (AASR)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="485"/>
         <source>全局质量评价</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="533"/>
+        <location filename="../src/ui/mainwindow.ui" line="491"/>
         <source>信噪比分析 (SNR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="540"/>
-        <source>信息熵分析</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.ui" line="547"/>
-        <source>清晰度分析</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.ui" line="561"/>
-        <source>GLCM 纹理特征</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/mainwindow.ui" line="568"/>
-        <location filename="../src/ui/mainwindow.ui" line="846"/>
+        <location filename="../src/ui/mainwindow.ui" line="498"/>
+        <location filename="../src/ui/mainwindow.ui" line="783"/>
         <source>噪声等效后向散射系数 (NESZ)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="582"/>
-        <location filename="../src/ui/mainwindow.ui" line="856"/>
+        <location filename="../src/ui/mainwindow.ui" line="519"/>
+        <location filename="../src/ui/mainwindow.ui" line="793"/>
         <source>等效视数 (ENL)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="592"/>
+        <location filename="../src/ui/mainwindow.ui" line="529"/>
         <source>全选</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="602"/>
+        <location filename="../src/ui/mainwindow.ui" line="539"/>
         <source>开始分析</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="637"/>
-        <source>打开图像 (O)...</source>
+        <location filename="../src/ui/mainwindow.ui" line="574"/>
+        <source>打开图像(O)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="640"/>
+        <location filename="../src/ui/mainwindow.ui" line="577"/>
         <source>Ctrl+O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="645"/>
-        <source>关闭图像 (C)</source>
+        <location filename="../src/ui/mainwindow.ui" line="582"/>
+        <source>关闭图像(C)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="650"/>
+        <location filename="../src/ui/mainwindow.ui" line="587"/>
         <source>导出为 PDF (.pdf)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="655"/>
+        <location filename="../src/ui/mainwindow.ui" line="592"/>
         <source>导出为 文本文件 (.txt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="660"/>
-        <source>打印预览 (V)...</source>
+        <location filename="../src/ui/mainwindow.ui" line="597"/>
+        <source>打印预览(V)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="668"/>
-        <source>打印 (P)...</source>
+        <location filename="../src/ui/mainwindow.ui" line="605"/>
+        <source>打印(P)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="671"/>
+        <location filename="../src/ui/mainwindow.ui" line="608"/>
         <source>Ctrl+P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="676"/>
+        <location filename="../src/ui/mainwindow.ui" line="613"/>
         <source>最近打开的文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="681"/>
-        <source>退出 (X)</source>
+        <location filename="../src/ui/mainwindow.ui" line="618"/>
+        <source>退出(X)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="684"/>
+        <location filename="../src/ui/mainwindow.ui" line="621"/>
         <source>Alt+F4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="689"/>
-        <source>撤销 (U)</source>
+        <location filename="../src/ui/mainwindow.ui" line="626"/>
+        <source>撤销(U)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="694"/>
-        <source>参数设置 (P)...</source>
+        <location filename="../src/ui/mainwindow.ui" line="631"/>
+        <source>参数设置(P)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="716"/>
+        <location filename="../src/ui/mainwindow.ui" line="653"/>
         <source>状态栏</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="727"/>
+        <location filename="../src/ui/mainwindow.ui" line="664"/>
         <source>日志窗口</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="732"/>
-        <source>全屏显示 (F)</source>
+        <location filename="../src/ui/mainwindow.ui" line="669"/>
+        <source>全屏显示(F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="735"/>
+        <location filename="../src/ui/mainwindow.ui" line="672"/>
         <source>F11</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="743"/>
-        <source>开始评估 (R)</source>
+        <location filename="../src/ui/mainwindow.ui" line="680"/>
+        <source>开始评估(R)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="746"/>
+        <location filename="../src/ui/mainwindow.ui" line="683"/>
         <source>F5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="754"/>
-        <source>选择评估区域 (S)...</source>
+        <location filename="../src/ui/mainwindow.ui" line="691"/>
+        <source>选择评估区域(S)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="759"/>
-        <source>查看帮助 (H)</source>
+        <location filename="../src/ui/mainwindow.ui" line="696"/>
+        <source>查看帮助(H)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="764"/>
-        <source>关于 (A)...</source>
+        <location filename="../src/ui/mainwindow.ui" line="701"/>
+        <source>关于(A)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="772"/>
+        <location filename="../src/ui/mainwindow.ui" line="709"/>
         <source>放大</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="780"/>
+        <location filename="../src/ui/mainwindow.ui" line="717"/>
         <source>缩小</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="788"/>
+        <location filename="../src/ui/mainwindow.ui" line="725"/>
         <source>全图显示</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="799"/>
+        <location filename="../src/ui/mainwindow.ui" line="736"/>
         <source>漫游</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="807"/>
+        <location filename="../src/ui/mainwindow.ui" line="744"/>
         <source>保存报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="810"/>
+        <location filename="../src/ui/mainwindow.ui" line="747"/>
         <source>保存评估报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="67"/>
+        <location filename="../src/ui/mainwindow.cpp" line="68"/>
         <source>就绪</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="70"/>
+        <location filename="../src/ui/mainwindow.cpp" line="71"/>
         <source>GDAL 图像处理器已初始化</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="121"/>
+        <location filename="../src/ui/mainwindow.cpp" line="122"/>
         <source>已设置图像视图 (支持拖放功能)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1606,578 +1574,644 @@ Error during radiometric statistics calculation: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="174"/>
+        <location filename="../src/ui/mainwindow.cpp" line="175"/>
         <source>已加载图像：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="175"/>
+        <location filename="../src/ui/mainwindow.cpp" line="176"/>
         <source>图像已加载：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="190"/>
+        <location filename="../src/ui/mainwindow.cpp" line="191"/>
         <source>图像显示失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="191"/>
+        <location filename="../src/ui/mainwindow.cpp" line="192"/>
         <source>无法将 GDAL 图像转换为可显示格式：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="205"/>
+        <location filename="../src/ui/mainwindow.cpp" line="206"/>
         <source>图像信息：尺寸=%1, 数据类型=%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="217"/>
+        <location filename="../src/ui/mainwindow.cpp" line="218"/>
         <source>图像加载失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="218"/>
+        <location filename="../src/ui/mainwindow.cpp" line="219"/>
         <source>无法使用 GDAL 或 Qt 加载图像文件：%1
 错误：%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="232"/>
+        <location filename="../src/ui/mainwindow.cpp" line="234"/>
         <source>使用 Qt 加载图像：%1（GDAL 加载失败）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="266"/>
+        <location filename="../src/ui/mainwindow.cpp" line="269"/>
         <source>已关闭图像：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="326"/>
+        <location filename="../src/ui/mainwindow.cpp" line="316"/>
         <source>已加载分析选项</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="337"/>
+        <location filename="../src/ui/mainwindow.cpp" line="369"/>
+        <source>已配置分析选项</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="442"/>
         <source>图像视图接收到拖放事件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="344"/>
+        <location filename="../src/ui/mainwindow.cpp" line="449"/>
         <source>拖放文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="347"/>
+        <location filename="../src/ui/mainwindow.cpp" line="452"/>
         <source>接受拖放：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="355"/>
+        <location filename="../src/ui/mainwindow.cpp" line="460"/>
         <source>拒绝拖放：没有支持的图像文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="361"/>
+        <location filename="../src/ui/mainwindow.cpp" line="465"/>
         <source>图像视图处理拖放文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="367"/>
+        <location filename="../src/ui/mainwindow.cpp" line="471"/>
         <source>尝试处理拖放文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="371"/>
+        <location filename="../src/ui/mainwindow.cpp" line="475"/>
         <source>成功处理拖放文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="394"/>
+        <location filename="../src/ui/mainwindow.cpp" line="497"/>
         <source>已加载拖放图像：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="395"/>
+        <location filename="../src/ui/mainwindow.cpp" line="498"/>
         <source>拖放图像已加载：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="470"/>
+        <location filename="../src/ui/mainwindow.cpp" line="584"/>
         <source>未选择分析方法</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="471"/>
+        <location filename="../src/ui/mainwindow.cpp" line="585"/>
         <source>请至少选择一种分析方法进行评估。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="488"/>
+        <location filename="../src/ui/mainwindow.cpp" line="600"/>
         <source>选择区域功能尚未实现</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="489"/>
+        <location filename="../src/ui/mainwindow.cpp" line="601"/>
         <source>功能提示</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="490"/>
+        <location filename="../src/ui/mainwindow.cpp" line="602"/>
         <source>区域选择功能将在后续版本中实现。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="522"/>
+        <location filename="../src/ui/mainwindow.cpp" line="665"/>
         <source>关于 SAR 图像质量评估工具</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="523"/>
+        <location filename="../src/ui/mainwindow.cpp" line="666"/>
         <source>&lt;h3&gt;SAR 图像质量评估工具&lt;/h3&gt;&lt;p&gt;版本：1.0.0&lt;/p&gt;&lt;p&gt;本工具用于评估合成孔径雷达 (SAR) 图像的质量参数。&lt;/p&gt;&lt;p&gt;支持多种分析方法，包括信噪比分析、分辨率评估等。&lt;/p&gt;&lt;p&gt;&amp;copy; 2023-2024 All Rights Reserved.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="533"/>
+        <location filename="../src/ui/mainwindow.cpp" line="675"/>
         <source>无法分析</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="533"/>
+        <location filename="../src/ui/mainwindow.cpp" line="675"/>
         <source>请先打开一个图像文件。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="538"/>
+        <location filename="../src/ui/mainwindow.cpp" line="680"/>
         <source>正在分析...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="538"/>
+        <location filename="../src/ui/mainwindow.cpp" line="680"/>
         <source>取消</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="555"/>
+        <location filename="../src/ui/mainwindow.cpp" line="697"/>
         <source>正在分析：%1 (%2%)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="564"/>
+        <location filename="../src/ui/mainwindow.cpp" line="706"/>
         <source>错误：无法获取图像数据进行 %1 分析</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="568"/>
+        <location filename="../src/ui/mainwindow.cpp" line="710"/>
         <source>正在执行 %1 分析...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="578"/>
+        <location filename="../src/ui/mainwindow.cpp" line="720"/>
         <source>方法：SNR (信噪比)
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="579"/>
+        <location filename="../src/ui/mainwindow.cpp" line="721"/>
         <source>结果：%1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="616"/>
+        <location filename="../src/ui/mainwindow.cpp" line="757"/>
         <source>方法：信息内容分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="617"/>
+        <location filename="../src/ui/mainwindow.cpp" line="758"/>
         <source>结果：熵值 = %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="618"/>
+        <location filename="../src/ui/mainwindow.cpp" line="759"/>
         <source>信息内容表示图像包含的信息量，熵值越高表示图像包含的信息越多。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="625"/>
+        <location filename="../src/ui/mainwindow.cpp" line="766"/>
         <source>方法：清晰度分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="626"/>
+        <location filename="../src/ui/mainwindow.cpp" line="767"/>
         <source>结果：清晰度得分 = %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="627"/>
+        <location filename="../src/ui/mainwindow.cpp" line="768"/>
         <source>边缘强度 = %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="664"/>
+        <location filename="../src/ui/mainwindow.cpp" line="804"/>
         <source>方法：GLCM 纹理分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="665"/>
+        <location filename="../src/ui/mainwindow.cpp" line="805"/>
         <source>结果：对比度 = %1, 同质性 = %2
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="668"/>
+        <location filename="../src/ui/mainwindow.cpp" line="808"/>
         <source>详细 GLCM 特征：
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="672"/>
+        <location filename="../src/ui/mainwindow.cpp" line="813"/>
         <source>  %1 = %2
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="680"/>
+        <location filename="../src/ui/mainwindow.cpp" line="821"/>
         <source>方法：辐射精度分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="681"/>
+        <location filename="../src/ui/mainwindow.cpp" line="823"/>
         <source>结果：辐射精度 = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="682"/>
+        <location filename="../src/ui/mainwindow.cpp" line="824"/>
         <source>详细信息：
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="683"/>
+        <location filename="../src/ui/mainwindow.cpp" line="826"/>
         <source>  平均亮度 = %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="684"/>
+        <location filename="../src/ui/mainwindow.cpp" line="829"/>
         <source>  对比度 = %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="685"/>
+        <location filename="../src/ui/mainwindow.cpp" line="832"/>
         <source>  动态范围 = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="691"/>
+        <location filename="../src/ui/mainwindow.cpp" line="838"/>
         <source>方法：辐射分辨率分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="692"/>
+        <location filename="../src/ui/mainwindow.cpp" line="840"/>
         <source>结果：辐射分辨率 = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="698"/>
+        <location filename="../src/ui/mainwindow.cpp" line="845"/>
         <source>方法：等效视数分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="699"/>
+        <location filename="../src/ui/mainwindow.cpp" line="846"/>
         <source>结果：ENL = %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="705"/>
+        <location filename="../src/ui/mainwindow.cpp" line="851"/>
         <source>方法：积分旁瓣比分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="706"/>
+        <location filename="../src/ui/mainwindow.cpp" line="852"/>
         <source>结果：ISLR = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="712"/>
+        <location filename="../src/ui/mainwindow.cpp" line="857"/>
         <source>方法：峰值旁瓣比分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="713"/>
+        <location filename="../src/ui/mainwindow.cpp" line="858"/>
         <source>结果：PSLR = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="719"/>
+        <location filename="../src/ui/mainwindow.cpp" line="863"/>
         <source>方法：距离分辨率分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="720"/>
-        <location filename="../src/ui/mainwindow.cpp" line="727"/>
+        <location filename="../src/ui/mainwindow.cpp" line="864"/>
+        <location filename="../src/ui/mainwindow.cpp" line="870"/>
         <source>结果：分辨率 = %1 m
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="726"/>
+        <location filename="../src/ui/mainwindow.cpp" line="869"/>
         <source>方法：方位分辨率分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="733"/>
+        <location filename="../src/ui/mainwindow.cpp" line="875"/>
         <source>方法：噪声等效零散射截面分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="734"/>
+        <location filename="../src/ui/mainwindow.cpp" line="876"/>
         <source>结果：NESZ = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="739"/>
+        <location filename="../src/ui/mainwindow.cpp" line="889"/>
+        <source>方法：距离模糊度分析 (RASR)
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="890"/>
+        <source>结果：RASR = %1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="891"/>
+        <location filename="../src/ui/mainwindow.cpp" line="911"/>
+        <source>参数：
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="892"/>
+        <source>  PRF = %1 Hz
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="893"/>
+        <source>  R0 = %1 km
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="895"/>
+        <source>  入射角 = %1 度
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="909"/>
+        <source>方法：方位模糊度分析 (AASR)
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="910"/>
+        <source>结果：AASR = %1
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="913"/>
+        <source>  多普勒中心频率 = %1 Hz
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="914"/>
+        <source>  处理带宽 = %1 Hz
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="921"/>
         <source>分析方法 %1 尚未在 UI 中实现</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="740"/>
+        <location filename="../src/ui/mainwindow.cpp" line="922"/>
         <source>警告：分析方法 %1 尚未在 UI 中实现</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="744"/>
+        <location filename="../src/ui/mainwindow.cpp" line="926"/>
         <source>错误：执行 %1 分析时发生异常：%2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="745"/>
+        <location filename="../src/ui/mainwindow.cpp" line="927"/>
         <source>分析过程中发生错误：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="748"/>
+        <location filename="../src/ui/mainwindow.cpp" line="930"/>
         <source>错误：执行 %1 分析时发生未知异常</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="749"/>
+        <location filename="../src/ui/mainwindow.cpp" line="931"/>
         <source>分析过程中发生未知错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="754"/>
+        <location filename="../src/ui/mainwindow.cpp" line="937"/>
         <source>方法：%1
 时间：%2
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="760"/>
+        <location filename="../src/ui/mainwindow.cpp" line="941"/>
         <source>完成 %1 分析</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="762"/>
+        <location filename="../src/ui/mainwindow.cpp" line="943"/>
         <source>分析未成功完成
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="764"/>
+        <location filename="../src/ui/mainwindow.cpp" line="945"/>
         <source>警告：%1 分析未成功完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="778"/>
-        <location filename="../src/ui/mainwindow.cpp" line="982"/>
+        <location filename="../src/ui/mainwindow.cpp" line="959"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1187"/>
         <source>分析完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="779"/>
+        <location filename="../src/ui/mainwindow.cpp" line="960"/>
         <source>完成图像分析</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="785"/>
+        <location filename="../src/ui/mainwindow.cpp" line="965"/>
         <source>无法生成报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="786"/>
+        <location filename="../src/ui/mainwindow.cpp" line="966"/>
         <source>没有分析结果可供导出。请先执行分析。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="793"/>
+        <location filename="../src/ui/mainwindow.cpp" line="974"/>
         <source>导出 PDF 报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="794"/>
+        <location filename="../src/ui/mainwindow.cpp" line="976"/>
         <source>SAR_分析报告_%1.pdf</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="795"/>
+        <location filename="../src/ui/mainwindow.cpp" line="978"/>
         <source>PDF 文件 (*.pdf)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="813"/>
-        <location filename="../src/ui/mainwindow.cpp" line="885"/>
+        <location filename="../src/ui/mainwindow.cpp" line="996"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1073"/>
         <source>SAR 图像质量评估报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="823"/>
-        <location filename="../src/ui/mainwindow.cpp" line="888"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1007"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1076"/>
         <source>图像文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="827"/>
-        <location filename="../src/ui/mainwindow.cpp" line="889"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1012"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1078"/>
         <source>评估时间：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="838"/>
-        <location filename="../src/ui/mainwindow.cpp" line="892"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1023"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1081"/>
         <source>评估结果：</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="860"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1045"/>
         <source>报告已导出为 PDF：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="863"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1049"/>
         <source>导出文本报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="864"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1051"/>
         <source>SAR_分析报告_%1.txt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="865"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1053"/>
         <source>文本文件 (*.txt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="872"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1060"/>
         <source>导出失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="873"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1061"/>
         <source>无法创建文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="901"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1090"/>
         <source>报告已导出为文本文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="905"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1094"/>
         <source>导出成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="906"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1095"/>
         <source>报告已成功导出到：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="924"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1110"/>
         <source>方法：%1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="988"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1192"/>
         <source>主窗口接收到拖放事件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="995"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1199"/>
         <source>主窗口拖放文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="998"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1202"/>
         <source>主窗口接受拖放：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="1006"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1210"/>
         <source>主窗口拒绝拖放：没有支持的图像文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="1012"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1215"/>
         <source>主窗口处理拖放文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="1018"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1221"/>
         <source>主窗口尝试处理拖放文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="1022"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1225"/>
         <source>主窗口成功处理拖放文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="1073"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1277"/>
         <source>保存日志文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="1075"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1278"/>
         <source>文本文件 (*.txt);;所有文件 (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="1083"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1286"/>
         <source>日志已保存到：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="1087"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1290"/>
         <source>无法保存日志到：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="1089"/>
+        <location filename="../src/ui/mainwindow.cpp" line="1292"/>
         <source>保存失败</source>
         <translation type="unfinished"></translation>
     </message>

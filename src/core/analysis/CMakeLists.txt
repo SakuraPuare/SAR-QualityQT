@@ -4,16 +4,18 @@ cmake_minimum_required(VERSION 3.16)
 # 添加分析方法配置选项
 option(ENABLE_ISLR "启用积分旁瓣比分析" ON)
 option(ENABLE_PSLR "启用峰值旁瓣比分析" ON)
-option(ENABLE_RANGE_RES "启用距离模糊度分析" ON)
-option(ENABLE_AZIMUTH_RES "启用方位模糊度分析" ON)
+# option(ENABLE_RANGE_RES "启用距离分辨率分析" ON)
+# option(ENABLE_AZIMUTH_RES "启用方位分辨率分析" ON)
+option(ENABLE_RASR "启用距离模糊度分析" ON)
+option(ENABLE_AASR "启用方位模糊度分析" ON)
 option(ENABLE_SNR "启用信噪比分析" ON)
 option(ENABLE_NESZ "启用噪声等效后向散射系数分析" ON)
 option(ENABLE_RADIOMETRIC_ACC "启用辐射精度分析" ON)
 option(ENABLE_RADIOMETRIC_RES "启用辐射分辨率分析" ON)
 option(ENABLE_ENL "启用等效视数分析" ON)
-option(ENABLE_CLARITY "启用清晰度分析" ON)
-option(ENABLE_GLCM "启用 GLCM 纹理分析" ON)
-option(ENABLE_INFO_CONTENT "启用信息内容分析" ON)
+# option(ENABLE_CLARITY "启用清晰度分析" ON)
+# option(ENABLE_GLCM "启用 GLCM 纹理分析" ON)
+# option(ENABLE_INFO_CONTENT "启用信息内容分析" ON)
 
 # 根据选项设置编译定义
 if(ENABLE_ISLR)
@@ -38,6 +40,18 @@ if(ENABLE_AZIMUTH_RES)
     add_compile_definitions(CONFIG_ENABLE_AZIMUTH_RES=1)
 else()
     add_compile_definitions(CONFIG_ENABLE_AZIMUTH_RES=0)
+endif()
+
+if(ENABLE_RASR)
+    add_compile_definitions(CONFIG_ENABLE_RASR=1)
+else()
+    add_compile_definitions(CONFIG_ENABLE_RASR=0)
+endif()
+
+if(ENABLE_AASR)
+    add_compile_definitions(CONFIG_ENABLE_AASR=1)
+else()
+    add_compile_definitions(CONFIG_ENABLE_AASR=0)
 endif()
 
 if(ENABLE_SNR)
@@ -116,6 +130,10 @@ set(ANALYSIS_SOURCES
         azimuth_resolution.h
         nesz.cpp
         nesz.h
+        rasr.cpp
+        rasr.h
+        aasr.cpp
+        aasr.h
 )
 
 # 创建分析库
@@ -141,8 +159,10 @@ target_compile_features(SARAnalysis PUBLIC cxx_std_17)
 message(STATUS "以下 SAR 分析方法配置状态：")
 message(STATUS "  积分旁瓣比分析 (ISLR): ${ENABLE_ISLR}")
 message(STATUS "  峰值旁瓣比分析 (PSLR): ${ENABLE_PSLR}")
-message(STATUS "  距离模糊度分析：${ENABLE_RANGE_RES}")
-message(STATUS "  方位模糊度分析：${ENABLE_AZIMUTH_RES}")
+message(STATUS "  距离分辨率分析：${ENABLE_RANGE_RES}")
+message(STATUS "  方位分辨率分析：${ENABLE_AZIMUTH_RES}")
+message(STATUS "  距离模糊度分析 (RASR): ${ENABLE_RASR}")
+message(STATUS "  方位模糊度分析 (AASR): ${ENABLE_AASR}")
 message(STATUS "  信噪比分析 (SNR): ${ENABLE_SNR}")
 message(STATUS "  噪声等效后向散射系数分析 (NESZ): ${ENABLE_NESZ}")
 message(STATUS "  辐射精度分析：${ENABLE_RADIOMETRIC_ACC}")
