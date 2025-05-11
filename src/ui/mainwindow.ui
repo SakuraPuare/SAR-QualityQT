@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>1107</height>
+    <height>1024</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -59,7 +59,7 @@
        <property name="maximumSize">
         <size>
          <width>16777215</width>
-         <height>400</height>
+         <height>350</height>
         </size>
        </property>
        <property name="title">
@@ -69,7 +69,7 @@
         <item>
          <widget class="QTabWidget" name="resultsTabWidget">
           <property name="currentIndex">
-           <number>7</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="tabOverview">
            <attribute name="title">

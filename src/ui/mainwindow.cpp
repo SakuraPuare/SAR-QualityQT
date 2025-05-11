@@ -5,6 +5,7 @@
 
 // C++ 标准库
 #include <iostream>
+#include <cmath>
 
 // Qt 库
 #include <QDateTime>
@@ -983,64 +984,49 @@ void MainWindow::generateReport(const QString &format) {
     // 创建 PDF 文档
     QPdfWriter pdfWriter(filePath);
     pdfWriter.setPageSize(QPageSize(QPageSize::A4));
+    pdfWriter.setPageMargins(QMarginsF(15, 15, 15, 15), QPageLayout::Millimeter);
+    pdfWriter.setResolution(300); // 提高分辨率
 
     QPainter painter(&pdfWriter);
     painter.setPen(Qt::black);
 
-    // 绘制标题
-    QFont titleFont = painter.font();
-    titleFont.setPointSize(16);
-    titleFont.setBold(true);
-    painter.setFont(titleFont);
-    painter.drawText(QRect(100, 100, pdfWriter.width() - 200, 50),
-                     Qt::AlignCenter, tr("SAR 图像质量评估报告"));
+    // 使用 HTML 生成报告内容
+    QTextDocument doc;
+    QString htmlContent = generateReportHtml();
+    doc.setHtml(htmlContent);
 
-    // 绘制图像信息
-    QFont normalFont = painter.font();
-    normalFont.setPointSize(10);
-    normalFont.setBold(false);
-    painter.setFont(normalFont);
+    // 设置文档的页面尺寸以匹配 PDF 可绘制区域
+    QSizeF pageSize = pdfWriter.pageLayout().paintRect().size(); // 获取实际可绘制区域尺寸
+    doc.setPageSize(pageSize);
 
-    int yPos = 200;
-    painter.drawText(
-        QRect(100, yPos, pdfWriter.width() - 200, 30), Qt::AlignLeft,
-        tr("图像文件：%1").arg(QFileInfo(currentImagePath).fileName()));
+    // 计算需要绘制的页数
+    qreal totalHeight = doc.size().height();
+    qreal pageHeight = doc.pageSize().height(); // 使用文档设置的页面高度
+    int numPages = qCeil(totalHeight / pageHeight);
 
-    yPos += 30;
-    painter.drawText(QRect(100, yPos, pdfWriter.width() - 200, 30),
-                     Qt::AlignLeft,
-                     tr("评估时间：%1").arg(getCurrentDateTime()));
+    // 绘制每一页
+    for (int i = 0; i < numPages; ++i) {
+        // 如果不是第一页，开始新页面
+        if (i > 0) {
+            pdfWriter.newPage();
+        }
 
-    yPos += 50;
+        // 设置绘制区域
+        QRectF targetRect(0, 0, doc.pageSize().width(), doc.pageSize().height()); // 绘制到页面的矩形
+        QAbstractTextDocumentLayout::PaintContext context;
+        context.clip = targetRect; // 绘制区域即为整个页面可绘制区域
+        context.palette.setColor(QPalette::Text, Qt::black); // 设置文本颜色为黑色
 
-    // 绘制结果
-    QFont resultFont = painter.font();
-    resultFont.setPointSize(12);
-    resultFont.setBold(true);
-    painter.setFont(resultFont);
-
-    painter.drawText(QRect(100, yPos, pdfWriter.width() - 200, 30),
-                     Qt::AlignLeft, tr("评估结果："));
-
-    yPos += 40;
-
-    // 还原到普通字体
-    painter.setFont(normalFont);
-
-    // 绘制各项结果
-    for (auto it = imageResults.begin(); it != imageResults.end(); ++it) {
-      painter.drawText(QRect(120, yPos, pdfWriter.width() - 240, 200),
-                       Qt::AlignLeft, it.value());
-      yPos += 220;
-
-      // 检查是否需要新页
-      if (yPos > pdfWriter.height() - 200) {
-        pdfWriter.newPage();
-        yPos = 100;
-      }
+        // 绘制文档内容到当前页
+        painter.save();
+        // 将绘制原点移动到当前页内容的起始位置
+        painter.translate(0, -i * doc.pageSize().height());
+        doc.documentLayout()->draw(&painter, context);
+        painter.restore();
     }
 
-    painter.end();
+
+    painter.end(); // painter 结束绘制，保存 PDF
 
     log(tr("报告已导出为 PDF：%1").arg(filePath));
 
@@ -1084,6 +1070,11 @@ void MainWindow::generateReport(const QString &format) {
       out << "----------------------------------------\n";
       out << it.value() << "\n";
     }
+    
+    // 添加质量指标表格
+    out << "----------------------------------------\n";
+    out << tr("质量指标汇总表：") << "\n\n";
+    out << generateQualityTable() << "\n"; // 使用现有的文本表格生成函数
 
     file.close();
 
@@ -1116,6 +1107,11 @@ void MainWindow::showAnalysisResults() {
       }
     }
   }
+  
+  // 添加质量指标表格到概览
+  overviewText += "\n";
+  overviewText += generateQualityTable();
+  
   ui->overviewResultsTextEdit->setText(overviewText);
 
   // 显示详细结果
@@ -1292,4 +1288,466 @@ void MainWindow::saveLog() {
       QMessageBox::critical(this, tr("保存失败"), errorMsg);
     }
   }
+}
+
+// 生成质量指标表格 (文本格式)
+QString MainWindow::generateQualityTable() {
+  QString table;
+  
+  // 定义表头和行数据
+  QStringList headers = {tr("指标"), tr("合格标准"), tr("计算指标"), tr("是否合格")};
+  
+  // 提取分析结果中的数据 (这部分保持不变)
+  double islrValue = std::numeric_limits<double>::quiet_NaN();
+  double pslrValue = std::numeric_limits<double>::quiet_NaN();
+  double rasrValue = std::numeric_limits<double>::quiet_NaN();
+  double aasrValue = std::numeric_limits<double>::quiet_NaN();
+  double snrValue = std::numeric_limits<double>::quiet_NaN();
+  double neszNear = std::numeric_limits<double>::quiet_NaN();
+  double neszFar = std::numeric_limits<double>::quiet_NaN();
+  double radAccAbs = std::numeric_limits<double>::quiet_NaN();
+  double radAccRel = std::numeric_limits<double>::quiet_NaN();
+  double radResNear = std::numeric_limits<double>::quiet_NaN();
+  double radResFar = std::numeric_limits<double>::quiet_NaN();
+  double enlValue = std::numeric_limits<double>::quiet_NaN();
+  
+  // 提取简单的指标值（直接从结果行获取）
+  auto extractValueFromResult = [](const QString &resultText) -> double {
+    QStringList lines = resultText.split("\n");
+    for (const QString &line : lines) {
+      if (line.startsWith(tr("结果："))) { // Use tr() for localized string
+        // 提取数值
+        QRegularExpression re("[-+]?[0-9]*\\.?[0-9]+");
+        QRegularExpressionMatchIterator matches = re.globalMatch(line);
+        if (matches.hasNext()) {
+          QRegularExpressionMatch match = matches.next();
+          bool ok;
+          double value = match.captured(0).toDouble(&ok);
+          return ok ? value : std::numeric_limits<double>::quiet_NaN(); // 使用 NaN 表示提取失败
+        }
+      }
+    }
+    return std::numeric_limits<double>::quiet_NaN(); // 使用 NaN 表示未找到结果
+  };
+  
+  // 提取各分析结果中的具体值
+  if (imageResults.contains("ISLR")) {
+    islrValue = extractValueFromResult(imageResults["ISLR"]);
+  }
+  
+  if (imageResults.contains("PSLR")) {
+    pslrValue = extractValueFromResult(imageResults["PSLR"]);
+  }
+  
+  if (imageResults.contains("RASR")) {
+    rasrValue = extractValueFromResult(imageResults["RASR"]);
+  }
+  
+  if (imageResults.contains("AASR")) {
+    aasrValue = extractValueFromResult(imageResults["AASR"]);
+  }
+  
+  if (imageResults.contains("SNR")) {
+    snrValue = extractValueFromResult(imageResults["SNR"]);
+  }
+  
+  if (imageResults.contains("NESZ")) {
+    neszNear = extractValueFromResult(imageResults["NESZ"]);
+    neszFar = neszNear; // 当前 NESZ 结果只返回一个值，简化处理
+  }
+  
+  if (imageResults.contains("RadiametricAccuracy")) {
+    radAccAbs = extractValueFromResult(imageResults["RadiametricAccuracy"]);
+    radAccRel = radAccAbs; // 当前辐射精度结果只返回一个值，简化处理
+  }
+  
+  if (imageResults.contains("RadiometricResolution")) {
+    radResNear = extractValueFromResult(imageResults["RadiometricResolution"]);
+    radResFar = radResNear; // 当前辐射分辨率结果只返回一个值，简化处理
+  }
+  
+  if (imageResults.contains("ENL")) {
+    enlValue = extractValueFromResult(imageResults["ENL"]);
+  }
+  
+  // 根据指标判断是否合格
+  auto isQualified = [this](double value, double standard, bool lessThan) -> QString {
+    if (!std::isfinite(value)) {
+      return this->tr("未知");
+    }
+    
+    if (lessThan) {
+      return value <= standard ? this->tr("合格") : this->tr("不合格");
+    } else {
+      return value >= standard ? this->tr("合格") : this->tr("不合格");
+    }
+  };
+  
+  auto valueToString = [](double value) -> QString {
+      if (!std::isfinite(value)) {
+          return "-"; // 使用 "-" 表示未知或无效值，更适合文本表格
+      }
+      return QString::number(value, 'f', 2); // 保留两位小数
+  };
+
+  // 组织表格数据（包括多行项）
+  QList<QStringList> dataRows;
+  dataRows << (QStringList() << tr("峰值旁瓣比") << tr("<-20.0dB") << valueToString(pslrValue) << isQualified(pslrValue, -20.0, true));
+  dataRows << (QStringList() << tr("积分旁瓣比") << tr("<-13.0dB") << valueToString(islrValue) << isQualified(islrValue, -13.0, true));
+  dataRows << (QStringList() << tr("方位向模糊度") << tr("≤-20dB") << valueToString(aasrValue) << isQualified(aasrValue, -20.0, true));
+  dataRows << (QStringList() << tr("距离向模糊度") << tr("≤-20dB") << valueToString(rasrValue) << isQualified(rasrValue, -20.0, true));
+  dataRows << (QStringList() << tr("信噪比") << tr("≥8dB") << valueToString(snrValue) << isQualified(snrValue, 8.0, false));
+
+  // 噪声等效后向散射系数 (多行)
+  dataRows << (QStringList() << tr("噪声等效后向散射系数") << tr("分辨率 1-10m: ≤-19.0dB") << valueToString(neszNear) << isQualified(neszNear, -19.0, true));
+  dataRows << (QStringList() << "" << tr("分辨率 25-500m: ≤-21.0dB") << valueToString(neszFar) << isQualified(neszFar, -21.0, true));
+
+  // 绝对辐射精度
+  dataRows << (QStringList() << tr("绝对辐射精度") << tr("≤1.5dB") << valueToString(radAccAbs) << isQualified(radAccAbs, 1.5, true));
+
+  // 相对辐射精度
+  dataRows << (QStringList() << tr("相对辐射精度") << tr("≤1.0dB") << valueToString(radAccRel) << isQualified(radAccRel, 1.0, true));
+
+  // 辐射分辨率 (多行)
+  dataRows << (QStringList() << tr("辐射分辨率") << tr("分辨率 1-10m: 3.5dB") << valueToString(radResNear) << isQualified(radResNear, 3.5, false));
+  dataRows << (QStringList() << "" << tr("分辨率 25-500m: 2.0dB") << valueToString(radResFar) << isQualified(radResFar, 2.0, false));
+  
+  // 等效视数
+  dataRows << (QStringList() << tr("等效视数") << tr("≥3") << valueToString(enlValue) << isQualified(enlValue, 3.0, false));
+
+  // 计算每列的最大宽度
+  QList<int> columnWidths;
+  for (int j = 0; j < headers.size(); ++j) {
+      int maxWidth = headers[j].length(); // Start with header width
+      for (const auto& row : dataRows) {
+          if (j < row.size()) {
+              maxWidth = qMax(maxWidth, row[j].length());
+          }
+      }
+      columnWidths << maxWidth;
+  }
+
+  // 生成表格字符串
+  auto generateSeparator = [&](const QList<int>& widths) {
+      QString sep = "+";
+      for (int width : widths) {
+          sep += QString('-').repeated(width + 2) + "+"; // +2 for padding spaces
+      }
+      return sep + "\n";
+  };
+
+  auto generateRow = [&](const QStringList& row, const QList<int>& widths) {
+      QString rowStr = "|";
+      for (int j = 0; j < widths.size(); ++j) {
+          QString cellContent = (j < row.size()) ? row[j] : "";
+          rowStr += " " + cellContent.leftJustified(widths[j], ' ') + " |";
+      }
+      return rowStr + "\n";
+  };
+
+  // 表格顶部和表头
+  table += generateSeparator(columnWidths);
+  table += generateRow(headers, columnWidths);
+  table += generateSeparator(columnWidths);
+
+  // 表格数据行
+  for (const auto& row : dataRows) {
+      table += generateRow(row, columnWidths);
+      // Add separator between rows, except for the last one
+      if (row != dataRows.last()) {
+           table += generateSeparator(columnWidths);
+      }
+  }
+
+  // 表格底部
+  table += generateSeparator(columnWidths);
+  
+  return table;
+}
+
+// 移除旧的 PDF 绘制表格函数，因为我们现在使用 HTML 绘制
+// int MainWindow::drawQualityTableInPDF(QPainter &painter, int startX, int startY, int width) {
+//   // ... (old code to draw table manually) ...
+//   return yPos; // Return final Y position
+// }
+
+
+// 添加生成 HTML 报告内容的新函数
+QString MainWindow::generateReportHtml() {
+    QString html;
+    QTextStream stream(&html);
+
+    stream << "<!DOCTYPE html>\n";
+    stream << "<html>\n";
+    stream << "<head>\n";
+    stream << "<meta charset=\"UTF-8\">\n";
+    stream << "<title>" << tr("SAR 图像质量评估报告") << "</title>\n";
+    stream << "<style>\n";
+    stream << "  body { font-family: Arial, sans-serif; margin: 1.5cm; }\n"; // 调整边距以匹配 QPdfWriter
+    stream << "  h1 { text-align: center; color: #333; margin-bottom: 1cm; }\n";
+    stream << "  h2 { margin-top: 1cm; color: #555; border-bottom: 1px solid #ccc; padding-bottom: 5px; }\n";
+    stream << "  p { line-height: 1.5; }\n";
+    stream << "  .info { margin-bottom: 1cm; padding: 10px; background-color: #f0f0f0; border: 1px solid #ddd; }\n";
+    stream << "  .info p { margin: 5px 0; }\n";
+    stream << "  .result { margin-bottom: 1cm; border: 1px solid #eee; padding: 10px; background-color: #f9f9f9; }\n";
+    stream << "  .result h3 { margin-top: 0; color: #777; }\n";
+    stream << "  table { width: 100%; border-collapse: collapse; margin-top: 10px; }\n";
+    stream << "  th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }\n";
+    stream << "  th { background-color: #eee; }\n";
+     // 添加合格与不合格的样式
+    stream << "  .qualified { color: green; font-weight: bold; }\n";
+    stream << "  .not-qualified { color: red; font-weight: bold; }\n";
+    stream << "</style>\n";
+    stream << "</head>\n";
+    stream << "<body>\n\n";
+
+    // 标题
+    stream << "  <h1>" << tr("SAR 图像质量评估报告") << "</h1>\n\n";
+
+    // 图像信息
+    stream << "  <div class=\"info\">\n";
+    stream << "    <p><strong>" << tr("图像文件：") << "</strong> " << QFileInfo(currentImagePath).fileName() << "</p>\n";
+    stream << "    <p><strong>" << tr("评估时间：") << "</strong> " << getCurrentDateTime() << "</p>\n";
+    stream << "  </div>\n\n";
+
+    // 评估结果详情
+    stream << "  <h2>" << tr("评估结果") << "</h2>\n\n";
+    for (auto it = imageResults.begin(); it != imageResults.end(); ++it) {
+        // 提取方法名称用于小标题
+        QString methodName;
+        if (it.key() == "ISLR") methodName = tr("积分旁瓣比");
+        else if (it.key() == "PSLR") methodName = tr("峰值旁瓣比");
+        else if (it.key() == "RASR") methodName = tr("距离模糊度");
+        else if (it.key() == "AASR") methodName = tr("方位模糊度");
+        else if (it.key() == "SNR") methodName = tr("信噪比");
+        else if (it.key() == "NESZ") methodName = tr("噪声等效零散射截面");
+        else if (it.key() == "RadiametricAccuracy") methodName = tr("辐射精度");
+        else if (it.key() == "RadiometricResolution") methodName = tr("辐射分辨率");
+        else if (it.key() == "ENL") methodName = tr("等效视数");
+        else methodName = it.key();
+
+        stream << "  <div class=\"result\">\n";
+        stream << "    <h3>" << methodName << "</h3>\n";
+        // 将结果文本中的换行符替换为 <br> 标签，以便在 HTML 中正确显示
+        stream << "    <p>" << it.value().replace("\n", "<br>") << "</p>\n";
+        stream << "  </div>\n\n";
+    }
+
+    // 质量指标汇总表
+    stream << "  <h2>" << tr("质量指标汇总表") << "</h2>\n\n";
+    stream << generateQualityTableHtml() << "\n\n"; // 使用新的 HTML 表格生成函数
+
+    stream << "</body>\n";
+    stream << "</html>\n";
+
+    return html.trimmed(); // 移除末尾可能的空白字符
+}
+
+// 添加生成 HTML 质量指标表格的新函数
+QString MainWindow::generateQualityTableHtml() {
+    QString tableHtml;
+    QTextStream stream(&tableHtml);
+
+    stream << "<table>\n";
+    stream << "  <thead>\n";
+    stream << "    <tr>\n";
+    stream << "      <th>" << tr("指标") << "</th>\n";
+    stream << "      <th>" << tr("合格标准") << "</th>\n";
+    stream << "      <th>" << tr("计算指标") << "</th>\n";
+    stream << "      <th>" << tr("是否合格") << "</th>\n";
+    stream << "    </tr>\n";
+    stream << "  </thead>\n";
+    stream << "  <tbody>\n";
+
+    // 提取分析结果中的数据 (与 generateQualityTable 方法中相同的提取代码)
+    double islrValue = -13.0;  // 默认值
+    double pslrValue = -20.0;  // 默认值
+    double rasrValue = -20.0;  // 默认值
+    double aasrValue = -20.0;  // 默认值
+    double snrValue = 8.0;     // 默认值
+    double neszNear = -19.0;   // 默认值（近距离）
+    double neszFar = -21.0;    // 默认值（远距离）
+    double radAccAbs = 1.5;    // 默认值（绝对辐射精度）
+    double radAccRel = 1.0;    // 默认值（相对辐射精度）
+    double radResNear = 3.5;   // 默认值（近距离）
+    double radResFar = 2.0;    // 默认值（远距离）
+    double enlValue = 3.0;     // 默认值
+  
+    // 提取简单的指标值（直接从结果行获取）
+    auto extractValueFromResult = [](const QString &resultText, QString &resultValue) -> double {
+      QStringList lines = resultText.split("\n");
+      for (const QString &line : lines) {
+        if (line.startsWith("结果：")) {
+          // 提取数值
+          QRegularExpression re("[-+]?[0-9]*\\.?[0-9]+");
+          QRegularExpressionMatchIterator matches = re.globalMatch(line);
+          if (matches.hasNext()) {
+            QRegularExpressionMatch match = matches.next();
+            resultValue = match.captured(0);
+            bool ok;
+            double value = match.captured(0).toDouble(&ok);
+            return ok ? value : std::numeric_limits<double>::quiet_NaN(); // 使用 NaN 表示提取失败
+          }
+        }
+      }
+      return std::numeric_limits<double>::quiet_NaN(); // 使用 NaN 表示未找到结果
+    };
+
+    // 提取各分析结果中的具体值
+    if (imageResults.contains("ISLR")) {
+      QString resultValue;
+      islrValue = extractValueFromResult(imageResults["ISLR"], resultValue);
+    }
+
+    if (imageResults.contains("PSLR")) {
+      QString resultValue;
+      pslrValue = extractValueFromResult(imageResults["PSLR"], resultValue);
+    }
+
+    if (imageResults.contains("RASR")) {
+      QString resultValue;
+      rasrValue = extractValueFromResult(imageResults["RASR"], resultValue);
+    }
+
+    if (imageResults.contains("AASR")) {
+      QString resultValue;
+      aasrValue = extractValueFromResult(imageResults["AASR"], resultValue);
+    }
+
+    if (imageResults.contains("SNR")) {
+      QString resultValue;
+      snrValue = extractValueFromResult(imageResults["SNR"], resultValue);
+    }
+
+    if (imageResults.contains("NESZ")) {
+      QString resultValue;
+      neszNear = extractValueFromResult(imageResults["NESZ"], resultValue);
+      neszFar = neszNear; // 当前 NESZ 结果只返回一个值，简化处理
+    }
+
+    if (imageResults.contains("RadiametricAccuracy")) {
+      QString resultValue;
+      radAccAbs = extractValueFromResult(imageResults["RadiametricAccuracy"], resultValue);
+      radAccRel = radAccAbs; // 当前辐射精度结果只返回一个值，简化处理
+    }
+
+    if (imageResults.contains("RadiometricResolution")) {
+      QString resultValue;
+      radResNear = extractValueFromResult(imageResults["RadiometricResolution"], resultValue);
+      radResFar = radResNear; // 当前辐射分辨率结果只返回一个值，简化处理
+    }
+
+    if (imageResults.contains("ENL")) {
+      QString resultValue;
+      enlValue = extractValueFromResult(imageResults["ENL"], resultValue);
+    }
+    
+    // 根据指标判断是否合格并返回 HTML 字符串
+    auto isQualifiedHtml = [this](double value, double standard, bool lessThan) -> QString {
+        if (!std::isfinite(value)) {
+            return tr("<span class=\"unknown\">未知</span>");
+        }
+        bool qualified = lessThan ? (value <= standard) : (value >= standard);
+        return qualified ? tr("<span class=\"qualified\">合格</span>") : tr("<span class=\"not-qualified\">不合格</span>");
+    };
+    
+    auto valueToString = [](double value) -> QString {
+        if (!std::isfinite(value)) {
+            return "∞"; // 或者其他表示无穷大的符号
+        }
+        return QString::number(value, 'f', 1);
+    };
+
+
+    // 填充表格行
+    stream << "    <tr>\n";
+    stream << "      <td>" << tr("峰值旁瓣比") << "</td>\n";
+    stream << "      <td>" << tr("<-20.0dB") << "</td>\n";
+    stream << "      <td>" << valueToString(pslrValue) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(pslrValue, -20.0, true) << "</td>\n";
+    stream << "    </tr>\n";
+
+    stream << "    <tr>\n";
+    stream << "      <td>" << tr("积分旁瓣比") << "</td>\n";
+    stream << "      <td>" << tr("<-13.0dB") << "</td>\n";
+    stream << "      <td>" << valueToString(islrValue) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(islrValue, -13.0, true) << "</td>\n";
+    stream << "    </tr>\n";
+
+    stream << "    <tr>\n";
+    stream << "      <td>" << tr("方位向模糊度") << "</td>\n";
+    stream << "      <td>" << tr("≤-20dB") << "</td>\n";
+    stream << "      <td>" << valueToString(aasrValue) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(aasrValue, -20.0, true) << "</td>\n";
+    stream << "    </tr>\n";
+
+    stream << "    <tr>\n";
+    stream << "      <td>" << tr("距离向模糊度") << "</td>\n";
+    stream << "      <td>" << tr("≤-20dB") << "</td>\n";
+    stream << "      <td>" << valueToString(rasrValue) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(rasrValue, -20.0, true) << "</td>\n";
+    stream << "    </tr>\n";
+
+    stream << "    <tr>\n";
+    stream << "      <td>" << tr("信噪比") << "</td>\n";
+    stream << "      <td>" << tr("≥8dB") << "</td>\n";
+    stream << "      <td>" << valueToString(snrValue) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(snrValue, 8.0, false) << "</td>\n";
+    stream << "    </tr>\n";
+
+    // 噪声等效后向散射系数 (合并单元格)
+    stream << "    <tr>\n";
+    stream << "      <td rowspan=\"2\">" << tr("噪声等效后向散射系数") << "</td>\n";
+    stream << "      <td>" << tr("分辨率 1-10m: ≤-19.0dB") << "</td>\n";
+    stream << "      <td>" << valueToString(neszNear) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(neszNear, -19.0, true) << "</td>\n";
+    stream << "    </tr>\n";
+    stream << "    <tr>\n";
+    stream << "      <td>" << tr("分辨率 25-500m: ≤-21.0dB") << "</td>\n";
+    stream << "      <td>" << valueToString(neszFar) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(neszFar, -21.0, true) << "</td>\n";
+    stream << "    </tr>\n";
+    
+    // 绝对辐射精度
+    stream << "    <tr>\n";
+    stream << "      <td>" << tr("绝对辐射精度") << "</td>\n";
+    stream << "      <td>" << tr("≤1.5dB") << "</td>\n";
+    stream << "      <td>" << valueToString(radAccAbs) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(radAccAbs, 1.5, true) << "</td>\n";
+    stream << "    </tr>\n";
+    
+    // 相对辐射精度
+    stream << "    <tr>\n";
+    stream << "      <td>" << tr("相对辐射精度") << "</td>\n";
+    stream << "      <td>" << tr("≤1.0dB") << "</td>\n";
+    stream << "      <td>" << valueToString(radAccRel) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(radAccRel, 1.0, true) << "</td>\n";
+    stream << "    </tr>\n";
+
+    // 辐射分辨率 (合并单元格)
+    stream << "    <tr>\n";
+    stream << "      <td rowspan=\"2\">" << tr("辐射分辨率") << "</td>\n";
+    stream << "      <td>" << tr("分辨率 1-10m: 3.5dB") << "</td>\n";
+    stream << "      <td>" << valueToString(radResNear) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(radResNear, 3.5, false) << "</td>\n";
+    stream << "    </tr>\n";
+    stream << "    <tr>\n";
+    stream << "      <td>" << tr("分辨率 25-500m: 2.0dB") << "</td>\n";
+    stream << "      <td>" << valueToString(radResFar) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(radResFar, 2.0, false) << "</td>\n";
+    stream << "    </tr>\n";
+
+    // 等效视数
+    stream << "    <tr>\n";
+    stream << "      <td>" << tr("等效视数") << "</td>\n";
+    stream << "      <td>" << tr("≥3") << "</td>\n";
+    stream << "      <td>" << valueToString(enlValue) << "</td>\n";
+    stream << "      <td>" << isQualifiedHtml(enlValue, 3.0, false) << "</td>\n";
+    stream << "    </tr>\n";
+
+
+    stream << "  </tbody>\n";
+    stream << "</table>\n";
+
+    return tableHtml;
 }

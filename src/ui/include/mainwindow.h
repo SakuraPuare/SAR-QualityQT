@@ -17,6 +17,11 @@
 #include <QDropEvent>
 #include <QMimeData>
 #include <QUrl>
+#include <QRegularExpression>
+#include <QTextDocument>
+#include <QAbstractTextDocumentLayout>
+#include <cmath>
+#include <limits>
 
 // 添加 ImageHandler 头文件
 #include "imagehandler.h"
@@ -135,6 +140,9 @@ private:
     void showAnalysisResults();
     void handleDroppedFile(const QString &filePath); // 处理拖放文件
     bool isSupportedImageFormat(const QString &filePath); // 检查是否为支持的图像格式
+    QString generateQualityTable(); // 生成质量指标表格
+    QString generateReportHtml();
+    QString generateQualityTableHtml();
 };
 
 #endif // MAINWINDOW_H
