@@ -1,2 +1,2 @@
 data/LC08_L1TP_127035_20200425_20200509_01_T1_B2.TIF filter=lfs diff=lfs merge=lfs -text
-data filter=lfs diff=lfs merge=lfs -text
+data/GF3_KAS_UFS_023164_E105.5_N37.4_20210102_L1A_DH_L10005365624intensity.tiff filter=lfs diff=lfs merge=lfs -text
