@@ -5,7 +5,13 @@
 #include <QObject>
 #include <QQueue>
 #include <QMutex>
+
+// 添加必要的宏定义以正确包含 glog
+#define GLOG_NO_ABBREVIATED_SEVERITIES
+#define GOOGLE_GLOG_DLL_DECL // 添加这个宏定义
+#define GLOG_CUSTOM_PREFIX_SUPPORT
 #include <glog/logging.h>
+
 #include <functional>
 
 namespace SAR {

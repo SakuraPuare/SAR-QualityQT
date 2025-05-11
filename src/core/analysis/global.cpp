@@ -7,8 +7,8 @@
 #include <cmath>
 
 // 噪声等效后向散射系数（Noise Equivalent Sigma Zero, NESZ）分析
-AnalysisResult performNESZAnalysis(const cv::Mat &inputImage) {
-  AnalysisResult result;
+SAR::Analysis::AnalysisResult performNESZAnalysis(const cv::Mat &inputImage) {
+  SAR::Analysis::AnalysisResult result;
   result.analysisName = QCoreApplication::translate("Analysis", "噪声等效后向散射系数 (NESZ)");
   result.detailedLog = QCoreApplication::translate("Analysis", "噪声等效后向散射系数 (NESZ) 分析结果:\n");
   QString overviewPrefix = QCoreApplication::translate("Analysis", "NESZ: ");
@@ -109,8 +109,8 @@ AnalysisResult performNESZAnalysis(const cv::Mat &inputImage) {
 }
 
 // 辐射分辨率（Radiometric Resolution）分析
-AnalysisResult performRadiometricResolutionAnalysis(const cv::Mat &inputImage) {
-  AnalysisResult result;
+SAR::Analysis::AnalysisResult performRadiometricResolutionAnalysis(const cv::Mat &inputImage) {
+  SAR::Analysis::AnalysisResult result;
   result.analysisName = QCoreApplication::translate("Analysis", "辐射分辨率");
   result.detailedLog = QCoreApplication::translate("Analysis", "辐射分辨率分析结果:\n");
   QString overviewPrefix = QCoreApplication::translate("Analysis", "辐射分辨率：");
@@ -182,8 +182,8 @@ AnalysisResult performRadiometricResolutionAnalysis(const cv::Mat &inputImage) {
 }
 
 // 等效视数（Equivalent Number of Looks, ENL）分析
-AnalysisResult performENLAnalysis(const cv::Mat &inputImage) {
-  AnalysisResult result;
+SAR::Analysis::AnalysisResult performENLAnalysis(const cv::Mat &inputImage) {
+  SAR::Analysis::AnalysisResult result;
   result.analysisName = QCoreApplication::translate("Analysis", "等效视数 (ENL)");
   result.detailedLog = QCoreApplication::translate("Analysis", "等效视数 (ENL) 分析结果:\n");
   QString overviewPrefix = QCoreApplication::translate("Analysis", "ENL: ");

@@ -8,8 +8,8 @@
 #include <cmath>
 
 // 积分旁瓣比（Integrated Sidelobe Ratio, ISLR）分析
-AnalysisResult performISLRAnalysis(const cv::Mat &inputImage) {
-  AnalysisResult result;
+SAR::Analysis::AnalysisResult performISLRAnalysis(const cv::Mat &inputImage) {
+  SAR::Analysis::AnalysisResult result;
   result.analysisName = QCoreApplication::translate("Analysis", "积分旁瓣比 (ISLR)");
   result.detailedLog = QCoreApplication::translate("Analysis", "积分旁瓣比 (ISLR) 分析结果:\n");
   QString overviewPrefix = QCoreApplication::translate("Analysis", "ISLR: ");
@@ -119,8 +119,8 @@ AnalysisResult performISLRAnalysis(const cv::Mat &inputImage) {
 }
 
 // 峰值旁瓣比（Peak Sidelobe Ratio, PSLR）分析
-AnalysisResult performPSLRAnalysis(const cv::Mat &inputImage) {
-  AnalysisResult result;
+SAR::Analysis::AnalysisResult performPSLRAnalysis(const cv::Mat &inputImage) {
+  SAR::Analysis::AnalysisResult result;
   result.analysisName = QCoreApplication::translate("Analysis", "峰值旁瓣比 (PSLR)");
   result.detailedLog = QCoreApplication::translate("Analysis", "峰值旁瓣比 (PSLR) 分析结果:\n");
   QString overviewPrefix = QCoreApplication::translate("Analysis", "PSLR: ");
@@ -226,8 +226,8 @@ AnalysisResult performPSLRAnalysis(const cv::Mat &inputImage) {
 }
 
 // 距离模糊度（Range Resolution）分析
-AnalysisResult performRangeResolutionAnalysis(const cv::Mat &inputImage) {
-  AnalysisResult result;
+SAR::Analysis::AnalysisResult performRangeResolutionAnalysis(const cv::Mat &inputImage) {
+  SAR::Analysis::AnalysisResult result;
   result.analysisName = QCoreApplication::translate("Analysis", "距离模糊度");
   result.detailedLog = QCoreApplication::translate("Analysis", "距离模糊度分析结果:\n");
   QString overviewPrefix = QCoreApplication::translate("Analysis", "距离模糊度：");
@@ -339,8 +339,8 @@ AnalysisResult performRangeResolutionAnalysis(const cv::Mat &inputImage) {
 }
 
 // 方位模糊度（Azimuth Resolution）分析
-AnalysisResult performAzimuthResolutionAnalysis(const cv::Mat &inputImage) {
-  AnalysisResult result;
+SAR::Analysis::AnalysisResult performAzimuthResolutionAnalysis(const cv::Mat &inputImage) {
+  SAR::Analysis::AnalysisResult result;
   result.analysisName = QCoreApplication::translate("Analysis", "方位模糊度");
   result.detailedLog = QCoreApplication::translate("Analysis", "方位模糊度分析结果:\n");
   QString overviewPrefix = QCoreApplication::translate("Analysis", "方位模糊度：");

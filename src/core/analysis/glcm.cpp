@@ -8,8 +8,8 @@
 #include <vector>
 
 // 独立的 GLCM 分析函数
-AnalysisResult performGLCMAnalysis(const cv::Mat &inputImage) {
-  AnalysisResult result;
+SAR::Analysis::AnalysisResult performGLCMAnalysis(const cv::Mat &inputImage) {
+  SAR::Analysis::AnalysisResult result;
   result.analysisName = QCoreApplication::translate("Analysis", "GLCM Texture");
   result.detailedLog =
       QCoreApplication::translate("Analysis", "GLCM Analysis Results:\n");
@@ -30,7 +30,7 @@ AnalysisResult performGLCMAnalysis(const cv::Mat &inputImage) {
   result.detailedLog += QCoreApplication::translate(
       "Analysis", "Preparing 8-bit grayscale image for GLCM...\n");
   cv::Mat glcmInputMat =
-      prepareImageForGLCM(inputImage, prepareLog); // 调用独立函数
+      SAR::Analysis::prepareImageForGLCM(inputImage, prepareLog); // 使用完整命名空间
   result.detailedLog += prepareLog;
 
   if (glcmInputMat.empty() || glcmInputMat.type() != CV_8UC1) {
@@ -60,15 +60,15 @@ AnalysisResult performGLCMAnalysis(const cv::Mat &inputImage) {
   try {
     // 3. 计算 GLCM
     cv::Mat glcm;
-    computeGLCM(glcmInputMat, glcm, dx, dy, levels, true, true,
-                calcLog);          // 调用独立函数
+    SAR::Analysis::computeGLCM(glcmInputMat, glcm, dx, dy, levels, true, true,
+                calcLog);          // 使用完整命名空间
     result.detailedLog += calcLog; // 添加计算日志
 
     // 4. 计算纹理特征
     double contrast = 0.0, correlation = 0.0, energy = 0.0, homogeneity = 0.0;
     QString featureLog; // 日志用于特征计算
-    calculateGLCMFeatures(glcm, levels, contrast, energy, homogeneity,
-                          correlation, featureLog); // 调用独立函数
+    SAR::Analysis::calculateGLCMFeatures(glcm, levels, contrast, energy, homogeneity,
+                          correlation, featureLog); // 使用完整命名空间
     result.detailedLog += featureLog;               // 添加特征计算日志
 
     result.detailedLog +=

@@ -2,8 +2,8 @@
 cmake_minimum_required(VERSION 3.16)
 
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../core/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../core/include
 )
 
 # UI 模块源文件
@@ -12,25 +12,27 @@ set(UI_SOURCES
         mainwindow.cpp
         include/mainwindow.h
         mainwindow.ui
-        
+
         # UI设置模块
         ui_setup.cpp
         ui_setup.h
-        
+
         # 图像处理模块
         image_handler.cpp
         image_handler.h
-        
+
         # 拖放处理模块
         drag_drop_handler.cpp
         drag_drop_handler.h
-        
+
         # 分析控制器模块
         analysis_controller.h
-        
+        analysis_controller.cpp
+
         # 报告生成器模块
         report_generator.h
-        
+        report_generator.cpp
+
         # 自定义图形视图
         include/drag_drop_graphics_view.h
 )

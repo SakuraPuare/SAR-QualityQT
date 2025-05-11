@@ -9,8 +9,6 @@
 #include <QListWidgetItem>
 #include <QProgressDialog>
 #include <QTextEdit>
-#include <QPrinter>
-#include <QPrintDialog>
 #include <QThread>
 #include <QPixmap>
 #include <QDragEnterEvent>
@@ -19,25 +17,25 @@
 #include <QUrl>
 #include <QRegularExpression>
 #include <QTextDocument>
-#include <QAbstractTextDocumentLayout>
-#include <cmath>
-#include <limits>
 #include <QMap>
 #include <QStringList>
 
-// 添加 ImageHandler 头文件
-#include "imagehandler.h"
-// 添加 Logger 头文件
-#include "logger.h"
+// C++标准库头文件放在一起
+#include <cmath>
+#include <limits>
 
-// 添加前向声明
+// 添加核心模块头文件
+#include "../../core/include/analysis_result.h"
+#include "../../core/include/imagehandler.h"
+
+// 部分类仍使用前向声明
 namespace SAR {
 namespace Core {
-class ImageHandler;
+    class Logger;
+    class AnalysisController;
 }
 namespace UI {
-class AnalysisController;
-class ReportGenerator;
+    class ReportGenerator;
 }
 }
 
@@ -114,7 +112,7 @@ private slots:
     void updateStatusBar(const QString &message);
     void log(const QString &message);
     void onAnalysisProgress(int progress, const QString &message);
-    void onAnalysisComplete();
+    void onAnalysisComplete(const SAR::Core::AnalysisResult &results);
     
     // 拖放相关槽函数
     void handleViewDragEnter(QDragEnterEvent *event);
@@ -139,12 +137,13 @@ private:
     SAR::Core::ImageHandler *imageHandler;
     
     // 新添加的成员
-    SAR::UI::AnalysisController *analysisController;
+    SAR::Core::AnalysisController *analysisController;
     SAR::UI::ReportGenerator *reportGenerator;
+    
+    SAR::Core::AnalysisResult currentResults; // 当前分析结果
     
     void setupImageViewer();
     void setupConnections();
-    void setupLogSystem(); // 设置日志系统
     void configureAnalysisOptions(); // 添加配置分析选项方法声明
     void configureResultTabs(); // 配置结果选项卡的显示状态
     void enableAnalysisButtons(bool enable);
@@ -155,6 +154,7 @@ private:
     QString getCurrentDateTime();
     void updateResults(const QString &method, const QString &result);
     void showAnalysisResults();
+    void showAnalysisResult(const SAR::Core::AnalysisResult &result);
     void handleDroppedFile(const QString &filePath); // 处理拖放文件
     bool isSupportedImageFormat(const QString &filePath); // 检查是否为支持的图像格式
     QString generateQualityTable(); // 生成质量指标表格

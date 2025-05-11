@@ -8,6 +8,12 @@
 
 namespace {
 
+// 创建SNR的测试版本，实现抽象基类的纯虚函数
+class TestSNR : public SAR::Analysis::SNR {
+public:
+    TestSNR() : SAR::Analysis::SNR() {}
+};
+
 // SNR 测试套件
 class SNRTest : public ::testing::Test {
 protected:
@@ -21,7 +27,7 @@ protected:
         noiseROI = cv::Rect(10, 10, 40, 40);     // 左上角区域
     }
     
-    SAR::Analysis::SNR snrAnalyzer;
+    TestSNR snrAnalyzer;
     cv::Mat cleanImage;
     cv::Mat noisyImage;
     cv::Rect signalROI;

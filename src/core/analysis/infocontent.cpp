@@ -8,8 +8,8 @@
 #include <vector>
 
 // 独立的 Information Content (Entropy) 分析函数
-AnalysisResult performInfoContentAnalysis(const cv::Mat &inputImage) {
-  AnalysisResult result;
+SAR::Analysis::AnalysisResult performInfoContentAnalysis(const cv::Mat &inputImage) {
+  SAR::Analysis::AnalysisResult result;
   result.analysisName =
       QCoreApplication::translate("Analysis", "Information Content (Entropy)");
   QString overviewPrefix =

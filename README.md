@@ -1,383 +1,193 @@
-cmake_minimum_required(VERSION 3.16)
+# SAR-QualityQT
 
-project(SAR-QualityQT VERSION 0.1 LANGUAGES CXX)
+<div align="center">
+    <p>
+        <b>合成孔径雷达 (SAR) 图像质量评估工具</b>
+    </p>
+    <p>
+        <a href="#特性">特性</a> •
+        <a href="#安装说明">安装说明</a> •
+        <a href="#使用方法">使用方法</a> •
+        <a href="#分析方法">分析方法</a> •
+        <a href="#贡献">贡献</a> •
+        <a href="#许可证">许可证</a>
+    </p>
+</div>
 
-# 设置 CMake 策略
-if (POLICY CMP0074)
-    cmake_policy(SET CMP0074 NEW)
-endif ()
+## 项目概述
 
-# 全局设置
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+SAR-QualityQT 是一款基于 Qt6 开发的跨平台合成孔径雷达 (SAR) 图像质量评估工具。该应用程序提供了多种质量评估指标和分析方法，用于评估
+SAR 图像的质量、清晰度和信息内容。
 
-# 设置模块化功能编译选项
-option(CONFIG_ENABLE_ISLR "启用 ISLR 分析" ON)
-option(CONFIG_ENABLE_PSLR "启用 PSLR 分析" ON)
-option(CONFIG_ENABLE_RANGE_RES "启用距离分辨率分析" ON)
-option(CONFIG_ENABLE_AZIMUTH_RES "启用方位分辨率分析" ON)
-option(CONFIG_ENABLE_RASR "启用 RASR 分析" ON)
-option(CONFIG_ENABLE_AASR "启用 AASR 分析" ON)
-option(CONFIG_ENABLE_SNR "启用 SNR 分析" ON)
-option(CONFIG_ENABLE_NESZ "启用 NESZ 分析" ON)
-option(CONFIG_ENABLE_RADIOMETRIC_ACC "启用辐射精度分析" ON)
-option(CONFIG_ENABLE_RADIOMETRIC_RES "启用辐射分辨率分析" ON)
-option(CONFIG_ENABLE_ENL "启用 ENL 分析" ON)
+本工具集成了先进的图像处理算法，支持多种 SAR 数据格式，并提供友好的用户界面，方便用户进行图像质量分析和对比。该软件支持多语言（中文和英文），可在
+Windows、macOS 和 Linux 平台上运行。
 
-# 为所有目标添加编译定义
-add_compile_definitions(
-    $<$<BOOL:${CONFIG_ENABLE_ISLR}>:CONFIG_ENABLE_ISLR>
-    $<$<BOOL:${CONFIG_ENABLE_PSLR}>:CONFIG_ENABLE_PSLR>
-    $<$<BOOL:${CONFIG_ENABLE_RANGE_RES}>:CONFIG_ENABLE_RANGE_RES>
-    $<$<BOOL:${CONFIG_ENABLE_AZIMUTH_RES}>:CONFIG_ENABLE_AZIMUTH_RES>
-    $<$<BOOL:${CONFIG_ENABLE_RASR}>:CONFIG_ENABLE_RASR>
-    $<$<BOOL:${CONFIG_ENABLE_AASR}>:CONFIG_ENABLE_AASR>
-    $<$<BOOL:${CONFIG_ENABLE_SNR}>:CONFIG_ENABLE_SNR>
-    $<$<BOOL:${CONFIG_ENABLE_NESZ}>:CONFIG_ENABLE_NESZ>
-    $<$<BOOL:${CONFIG_ENABLE_RADIOMETRIC_ACC}>:CONFIG_ENABLE_RADIOMETRIC_ACC>
-    $<$<BOOL:${CONFIG_ENABLE_RADIOMETRIC_RES}>:CONFIG_ENABLE_RADIOMETRIC_RES>
-    $<$<BOOL:${CONFIG_ENABLE_ENL}>:CONFIG_ENABLE_ENL>
-)
+## 特性
 
-# 条件添加 Qt 路径
-if (WIN32)
-    set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake")
-    if (MSVC)
-        # Windows + MSVC
-        list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.9.0/msvc2022_64")
-        add_compile_options(/Zc:__cplusplus)
-    else ()
-        # Windows + MinGW
-        list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.9.0/mingw_64")
-    endif ()
-endif ()
+- **多种分析方法**：
+    - 积分旁瓣比 (ISLR) 分析
+    - 峰值旁瓣比 (PSLR) 分析
+    - 距离模糊度分析
+    - 方位模糊度分析
+    - 信噪比 (SNR) 分析
+    - 噪声等效后向散射系数 (NESZ) 分析
+    - 辐射精度分析
+    - 辐射分辨率分析
+    - 等效视数 (ENL) 分析
+    - 灰度共生矩阵 (GLCM) 分析（可选）
+    - 信息内容分析（可选）
+    - 清晰度分析（可选）
 
-# 查找 Qt 组件
-find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools Core PrintSupport)
+- **图像处理功能**：
+    - 支持多种 SAR 图像格式（通过 GDAL 库）
+    - 图像预处理和增强
+    - 区域选择与裁剪
+    - 数据可视化
 
-# 查找 OpenCV
-find_package(OpenCV REQUIRED)
-message(STATUS "OpenCV version: ${OpenCV_VERSION}")
-message(STATUS "OpenCV include dirs: ${OpenCV_INCLUDE_DIRS}")
+- **用户友好界面**：
+    - 直观的 Qt6 界面设计
+    - 交互式图像查看
+    - 结果导出与报告生成
 
-# 查找 GDAL
-find_package(GDAL CONFIG REQUIRED)
-message(STATUS "GDAL version: ${GDAL_VERSION}")
+- **跨平台支持**：
+    - Windows
+    - macOS
+    - Linux
 
-# 查找 GTest
-find_package(GTest REQUIRED)
+- **国际化支持**：
+    - 中文
+    - 英文
 
-# 创建资源文件目录
-if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/resources")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/resources")
-endif ()
+- **可定制分析方法**：
+    - 通过编译选项启用/禁用分析方法
+    - 按需裁剪功能，优化性能和内存占用
 
-# 添加子目录
-add_subdirectory(src)
+## 安装说明
 
-# 启用测试
-enable_testing()
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
-    add_subdirectory(tests)
-endif ()
+### 系统要求
 
-# 安装配置
-include(GNUInstallDirs)
-install(TARGETS SAR-QualityQT
-        BUNDLE DESTINATION .
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-        logCallback(QObject::tr("PDF 报告已生成：%1").arg(filePath));
-        return true;
-    } catch (const std::exception &e) {
-        logCallback(QObject::tr("生成 PDF 报告时发生错误：%1").arg(e.what()));
-        QMessageBox::critical(parent, QObject::tr("导出失败"),
-                            QObject::tr("生成 PDF 报告时发生错误：%1").arg(e.what()));
-        return false;
-    } catch (...) {
-        logCallback(QObject::tr("生成 PDF 报告时发生未知错误"));
-        QMessageBox::critical(parent, QObject::tr("导出失败"),
-                            QObject::tr("生成 PDF 报告时发生未知错误"));
-        return false;
-    }
-}
+- C++17 兼容的编译器（MSVC, GCC, Clang）
+- Qt 6.9.0 或更高版本
+- OpenCV 4.x
+- GDAL 3.x
+- CMake 3.16 或更高版本
 
-bool ReportGenerator::generateTextReport(const QString &filePath, const QMap<QString, QString> &results, const QString &imagePath) {
-    try {
-        logCallback(QObject::tr("正在生成文本报告：%1").arg(filePath));
-        
-        QFile file(filePath);
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            logCallback(QObject::tr("无法打开文件进行写入：%1").arg(filePath));
-            QMessageBox::critical(parent, QObject::tr("导出失败"),
-                               QObject::tr("无法打开文件进行写入：%1").arg(filePath));
-            return false;
-        }
-        
-        QTextStream out(&file);
-        out.setCodec("UTF-8");
-        
-        // 写入报告标题
-        out << QObject::tr("SAR 图像质量评估报告") << "\n";
-        out << QObject::tr("====================") << "\n\n";
-        
-        // 写入报告日期和时间
-        out << QObject::tr("报告生成时间：%1").arg(getCurrentDateTime()) << "\n\n";
-        
-        // 写入图像信息
-        out << QObject::tr("图像文件：%1").arg(QFileInfo(imagePath).fileName()) << "\n";
-        out << QObject::tr("图像路径：%1").arg(imagePath) << "\n\n";
-        
-        // 写入质量指标结果表格
-        out << generateQualityTable(results) << "\n\n";
-        
-        // 写入详细结果
-        out << QObject::tr("详细分析结果") << "\n";
-        out << QObject::tr("==============") << "\n\n";
-        
-        for (auto it = results.begin(); it != results.end(); ++it) {
-            out << QObject::tr("[%1]").arg(it.key()) << "\n";
-            out << QObject::tr("----------------") << "\n";
-            out << it.value() << "\n\n";
-        }
-        
-        file.close();
-        logCallback(QObject::tr("文本报告已生成：%1").arg(filePath));
-        return true;
-    } catch (const std::exception &e) {
-        logCallback(QObject::tr("生成文本报告时发生错误：%1").arg(e.what()));
-        QMessageBox::critical(parent, QObject::tr("导出失败"),
-                            QObject::tr("生成文本报告时发生错误：%1").arg(e.what()));
-        return false;
-    } catch (...) {
-        logCallback(QObject::tr("生成文本报告时发生未知错误"));
-        QMessageBox::critical(parent, QObject::tr("导出失败"),
-                            QObject::tr("生成文本报告时发生未知错误"));
-        return false;
-    }
-}
+### 从源码构建
 
-QString ReportGenerator::generateReportHtml(const QMap<QString, QString> &results, const QString &imagePath) {
-    QString html = "<html><head>";
-    html += "<style>";
-    html += "body { font-family: Arial, sans-serif; }";
-    html += "h1 { color: #1a5276; text-align: center; }";
-    html += "h2 { color: #2874a6; margin-top: 20px; }";
-    html += "table { width: 100%; border-collapse: collapse; margin: 15px 0; }";
-    html += "th, td { padding: 8px; text-align: left; border: 1px solid #ddd; }";
-    html += "th { background-color: #f2f2f2; }";
-    html += "tr:nth-child(even) { background-color: #f9f9f9; }";
-    html += ".result-section { margin: 20px 0; padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9; }";
-    html += ".result-title { font-weight: bold; color: #2874a6; margin-bottom: 10px; }";
-    html += ".result-content { white-space: pre-wrap; font-family: monospace; }";
-    html += "</style>";
-    html += "</head><body>";
-    
-    // 标题
-    html += "<h1>SAR 图像质量评估报告</h1>";
-    
-    // 报告信息
-    html += "<p><b>报告生成时间：</b>" + getCurrentDateTime() + "</p>";
-    html += "<p><b>图像文件：</b>" + QFileInfo(imagePath).fileName() + "</p>";
-    html += "<p><b>图像路径：</b>" + imagePath + "</p>";
-    
-    // 质量指标结果表格
-    html += "<h2>质量指标汇总</h2>";
-    html += generateQualityTableHtml(results);
-    
-    // 详细结果
-    html += "<h2>详细分析结果</h2>";
-    
-    for (auto it = results.begin(); it != results.end(); ++it) {
-        html += "<div class='result-section'>";
-        html += "<div class='result-title'>" + it.key() + "</div>";
-        
-        // 将结果文本中的换行符替换为 <br> 标签，以便在 HTML 中正确显示
-        QString resultText = it.value();
-        resultText.replace("\n", "<br>");
-        
-        html += "<div class='result-content'>" + resultText + "</div>";
-        html += "</div>";
-    }
-    
-    html += "</body></html>";
-    return html;
-}
+1. 克隆仓库：
 
-QString ReportGenerator::generateQualityTableHtml(const QMap<QString, QString> &results) {
-    QString html = "<table>";
-    html += "<tr><th>质量指标</th><th>结果值</th><th>单位</th><th>符合标准</th></tr>";
-    
-    // 定义质量标准阈值（示例值，实际应根据具体要求设置）
-    const double SNR_THRESHOLD = 20.0;     // dB
-    const double ISLR_THRESHOLD = -20.0;   // dB
-    const double PSLR_THRESHOLD = -30.0;   // dB
-    const double RASR_THRESHOLD = 0.05;    // 无量纲
-    const double AASR_THRESHOLD = 0.05;    // 无量纲
-    const double NESZ_THRESHOLD = -25.0;   // dB
-    
-    for (auto it = results.begin(); it != results.end(); ++it) {
-        const QString &method = it.key();
-        const QString &resultText = it.value();
-        
-        QString resultValue;
-        double value = extractValueFromResult(resultText, resultValue);
-        
-        QString unit;
-        bool passes = false;
-        
-        if (method == "SNR") {
-            unit = "dB";
-            passes = (value >= SNR_THRESHOLD);
-        } else if (method == "ISLR") {
-            unit = "dB";
-            passes = (value <= ISLR_THRESHOLD);
-        } else if (method == "PSLR") {
-            unit = "dB";
-            passes = (value <= PSLR_THRESHOLD);
-        } else if (method == "RASR") {
-            unit = "";
-            passes = (value <= RASR_THRESHOLD);
-        } else if (method == "AASR") {
-            unit = "";
-            passes = (value <= AASR_THRESHOLD);
-        } else if (method == "NESZ") {
-            unit = "dB";
-            passes = (value <= NESZ_THRESHOLD);
-        } else if (method == "RadiametricAccuracy") {
-            unit = "dB";
-            passes = true; // 假设该指标无明确阈值
-        } else if (method == "RadiometricResolution") {
-            unit = "dB";
-            passes = true; // 假设该指标无明确阈值
-        } else if (method == "ENL") {
-            unit = "";
-            passes = true; // 假设该指标无明确阈值
-        } else {
-            unit = "";
-            passes = true; // 为未知指标，暂定为通过
-        }
-        
-        html += "<tr>";
-        html += "<td>" + method + "</td>";
-        html += "<td>" + resultValue + "</td>";
-        html += "<td>" + unit + "</td>";
-        html += "<td>" + (passes ? "✓" : "✗") + "</td>";
-        html += "</tr>";
-    }
-    
-    html += "</table>";
-    return html;
-}
+```bash
+git clone https://github.com/yourusername/SAR-QualityQT.git
+cd SAR-QualityQT
+```
 
-QString ReportGenerator::generateQualityTable(const QMap<QString, QString> &results) {
-    QString table;
-    
-    // 表头
-    table += QObject::tr("质量指标\t结果值\t单位\t符合标准\n");
-    table += QObject::tr("------------------------------------------------\n");
-    
-    // 定义质量标准阈值（示例值，实际应根据具体要求设置）
-    const double SNR_THRESHOLD = 20.0;     // dB
-    const double ISLR_THRESHOLD = -20.0;   // dB
-    const double PSLR_THRESHOLD = -30.0;   // dB
-    const double RASR_THRESHOLD = 0.05;    // 无量纲
-    const double AASR_THRESHOLD = 0.05;    // 无量纲
-    const double NESZ_THRESHOLD = -25.0;   // dB
-    
-    for (auto it = results.begin(); it != results.end(); ++it) {
-        const QString &method = it.key();
-        const QString &resultText = it.value();
-        
-        QString resultValue;
-        double value = extractValueFromResult(resultText, resultValue);
-        
-        QString unit;
-        bool passes = false;
-        
-        if (method == "SNR") {
-            unit = "dB";
-            passes = (value >= SNR_THRESHOLD);
-        } else if (method == "ISLR") {
-            unit = "dB";
-            passes = (value <= ISLR_THRESHOLD);
-        } else if (method == "PSLR") {
-            unit = "dB";
-            passes = (value <= PSLR_THRESHOLD);
-        } else if (method == "RASR") {
-            unit = "";
-            passes = (value <= RASR_THRESHOLD);
-        } else if (method == "AASR") {
-            unit = "";
-            passes = (value <= AASR_THRESHOLD);
-        } else if (method == "NESZ") {
-            unit = "dB";
-            passes = (value <= NESZ_THRESHOLD);
-        } else if (method == "RadiametricAccuracy") {
-            unit = "dB";
-            passes = true; // 假设该指标无明确阈值
-        } else if (method == "RadiometricResolution") {
-            unit = "dB";
-            passes = true; // 假设该指标无明确阈值
-        } else if (method == "ENL") {
-            unit = "";
-            passes = true; // 假设该指标无明确阈值
-        } else {
-            unit = "";
-            passes = true; // 为未知指标，暂定为通过
-        }
-        
-        table += method + "\t" + resultValue + "\t" + unit + "\t" + 
-                (passes ? QObject::tr("是") : QObject::tr("否")) + "\n";
-    }
-    
-    return table;
-}
+2. 使用 CMake 配置项目：
 
-double ReportGenerator::extractValueFromResult(const QString &resultText) {
-    QString resultValue;
-    return extractValueFromResult(resultText, resultValue);
-}
+```bash
+mkdir build && cd build
+cmake ..
+```
 
-double ReportGenerator::extractValueFromResult(const QString &resultText, QString &resultValue) {
-    // 默认值
-    double value = 0.0;
-    resultValue = "N/A";
-    
-    // 尝试使用正则表达式提取数值
-    QRegularExpression re("结果：.*?([+-]?\\d*\\.?\\d+)");
-    QRegularExpressionMatch match = re.match(resultText);
-    
-    if (match.hasMatch()) {
-        resultValue = match.captured(1);
-        bool ok;
-        value = resultValue.toDouble(&ok);
-        if (!ok) {
-            value = 0.0;
-            resultValue = "N/A";
-        }
-    } else {
-        // 尝试另一种格式
-        re = QRegularExpression("=\\s*([+-]?\\d*\\.?\\d+)");
-        match = re.match(resultText);
-        
-        if (match.hasMatch()) {
-            resultValue = match.captured(1);
-            bool ok;
-            value = resultValue.toDouble(&ok);
-            if (!ok) {
-                value = 0.0;
-                resultValue = "N/A";
-            }
-        }
-    }
-    
-    return value;
-}
+3. 自定义分析方法（可选）：
 
-} // namespace UI
-} // namespace SAR 
+```bash
+# 例如，只启用积分旁瓣比、峰值旁瓣比和信噪比分析
+cmake -DENABLE_ISLR=ON -DENABLE_PSLR=ON -DENABLE_SNR=ON -DENABLE_RANGE_RES=OFF -DENABLE_AZIMUTH_RES=OFF -DENABLE_NESZ=OFF -DENABLE_RADIOMETRIC_ACC=OFF -DENABLE_RADIOMETRIC_RES=OFF -DENABLE_ENL=OFF ..
+```
+更多配置选项可参考[分析方法配置指南](docs/ANALYSIS_CONFIG.md)。
+
+4. 编译项目：
+
+```bash
+cmake --build . --config Release
+```
+
+5. 运行应用程序：
+
+```bash
+./SAR-QualityQT
+```
+
+### Windows 平台特别说明
+
+Windows 用户可以选择使用 MSVC 或 MinGW 编译器：
+
+#### 使用 MSVC
+
+```bash
+cmake -G "Visual Studio 17 2022" -A x64 ..
+cmake --build . --config Release
+```
+
+#### 使用 MinGW
+
+```bash
+cmake -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE=../mingw-w64-toolchain.cmake ..
+cmake --build .
+```
+
+## 使用方法
+
+1. 启动应用程序后，可以通过"文件"菜单打开 SAR 图像文件
+2. 选择适当的分析方法（积分旁瓣比、峰值旁瓣比、信噪比等）
+3. 设置分析参数
+4. 运行分析并查看结果
+5. 导出分析结果或生成报告
+
+## 分析方法
+
+### SAR 图像质量评估指标
+
+本工具支持以下主要 SAR 图像质量评估指标：
+
+#### 积分旁瓣比 (ISLR)
+评估 SAR 系统脉冲压缩性能，计算旁瓣能量与主瓣能量之比。
+
+#### 峰值旁瓣比 (PSLR)
+评估 SAR 系统的目标识别能力，计算最大旁瓣峰值与主瓣峰值之比。
+
+#### 距离模糊度
+评估 SAR 图像在距离方向上的分辨能力。
+
+#### 方位模糊度
+评估 SAR 图像在方位方向上的分辨能力。
+
+#### 信噪比 (SNR) 分析
+计算图像的信噪比，评估信号强度相对于噪声的质量。
+
+#### 噪声等效后向散射系数 (NESZ)
+测量 SAR 系统噪声水平，评估系统检测弱雷达回波的能力。
+
+#### 辐射精度
+评估 SAR 系统测量后向散射系数的精确度。
+
+#### 辐射分辨率
+描述系统区分不同后向散射强度的能力。
+
+#### 等效视数 (ENL)
+评估多视处理后的图像质量和噪声抑制效果。
+
+### 可选分析指标
+
+以下指标可通过配置选项启用：
+
+#### 灰度共生矩阵 (GLCM) 分析
+使用 GLCM 计算纹理特征，包括对比度、同质性、能量和相关性等。
+
+#### 信息内容分析
+通过熵分析和其他统计方法评估图像中包含的信息量。
+
+#### 清晰度分析
+评估图像的清晰度和分辨率。
+
+## 配置分析方法
+
+您可以通过编译时选项自定义启用的分析方法，详细信息请参考[分析方法配置指南](docs/ANALYSIS_CONFIG.md)。
+
+## 贡献
+
+欢迎贡献代码、报告问题或提出功能建议！请参阅[贡献指南](docs/CONTRIBUTING.md)了解更多信息。
+
+## 许可证
+
+本项目采用 [MIT 许可证](LICENSE) 发布。

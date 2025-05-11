@@ -67,20 +67,20 @@ cmake -DENABLE_ISLR=ON -DENABLE_PSLR=ON -DENABLE_RANGE_RES=OFF -DENABLE_AZIMUTH_
 
 以下是所有可用的配置选项及其含义：
 
-| CMake 选项                | 配置宏                         | 描述                      |
-|-------------------------|--------------------------------|---------------------------|
-| ENABLE_ISLR             | CONFIG_ENABLE_ISLR             | 积分旁瓣比分析              |
-| ENABLE_PSLR             | CONFIG_ENABLE_PSLR             | 峰值旁瓣比分析              |
-| ENABLE_RANGE_RES        | CONFIG_ENABLE_RANGE_RES        | 距离模糊度分析              |
-| ENABLE_AZIMUTH_RES      | CONFIG_ENABLE_AZIMUTH_RES      | 方位模糊度分析              |
-| ENABLE_SNR              | CONFIG_ENABLE_SNR              | 信噪比分析                 |
-| ENABLE_NESZ             | CONFIG_ENABLE_NESZ             | 噪声等效后向散射系数分析     |
-| ENABLE_RADIOMETRIC_ACC  | CONFIG_ENABLE_RADIOMETRIC_ACC  | 辐射精度分析               |
-| ENABLE_RADIOMETRIC_RES  | CONFIG_ENABLE_RADIOMETRIC_RES  | 辐射分辨率分析              |
-| ENABLE_ENL              | CONFIG_ENABLE_ENL              | 等效视数分析               |
-| ENABLE_CLARITY          | CONFIG_ENABLE_CLARITY          | 清晰度分析（默认禁用）       |
-| ENABLE_GLCM             | CONFIG_ENABLE_GLCM             | GLCM 纹理分析（默认禁用）     |
-| ENABLE_INFO_CONTENT     | CONFIG_ENABLE_INFO_CONTENT     | 信息内容分析（默认禁用）     |
+| CMake 选项               | 配置宏                           | 描述              |
+|------------------------|-------------------------------|-----------------|
+| ENABLE_ISLR            | CONFIG_ENABLE_ISLR            | 积分旁瓣比分析         |
+| ENABLE_PSLR            | CONFIG_ENABLE_PSLR            | 峰值旁瓣比分析         |
+| ENABLE_RANGE_RES       | CONFIG_ENABLE_RANGE_RES       | 距离模糊度分析         |
+| ENABLE_AZIMUTH_RES     | CONFIG_ENABLE_AZIMUTH_RES     | 方位模糊度分析         |
+| ENABLE_SNR             | CONFIG_ENABLE_SNR             | 信噪比分析           |
+| ENABLE_NESZ            | CONFIG_ENABLE_NESZ            | 噪声等效后向散射系数分析    |
+| ENABLE_RADIOMETRIC_ACC | CONFIG_ENABLE_RADIOMETRIC_ACC | 辐射精度分析          |
+| ENABLE_RADIOMETRIC_RES | CONFIG_ENABLE_RADIOMETRIC_RES | 辐射分辨率分析         |
+| ENABLE_ENL             | CONFIG_ENABLE_ENL             | 等效视数分析          |
+| ENABLE_CLARITY         | CONFIG_ENABLE_CLARITY         | 清晰度分析（默认禁用）     |
+| ENABLE_GLCM            | CONFIG_ENABLE_GLCM            | GLCM 纹理分析（默认禁用） |
+| ENABLE_INFO_CONTENT    | CONFIG_ENABLE_INFO_CONTENT    | 信息内容分析（默认禁用）    |
 
 ## 效果
 

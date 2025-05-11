@@ -46,9 +46,61 @@ double AASR::calculateAASRInROI(const cv::Mat& image, const cv::Rect& roi,
     return calculateAASR(roiImage, dopplerCenterFreq, processingBandwidth, antennaGain);
 }
 
+AnalysisBase::Result AASR::getResult() const {
+    return lastResult;
+}
+
 QString AASR::getResultDescription() const {
     return QString("方位模糊度 (AASR): %1")
         .arg(lastAASR, 0, 'f', 4);
+}
+
+// 实现AnalysisBase的纯虚函数
+AnalysisBase::Result AASR::analyze(const cv::Mat& image) {
+    // 使用默认参数值
+    double dopplerCenterFreq = 0.0;      // 多普勒中心频率 (Hz)
+    double processingBandwidth = 1000.0; // 处理带宽 (Hz)
+    
+    // 计算AASR
+    double aasr = calculateAASR(image, dopplerCenterFreq, processingBandwidth);
+    
+    // 准备结果
+    lastResult.numericValue = aasr;
+    lastResult.unit = "";
+    lastResult.isSuccess = true;
+    lastResult.additionalValues["多普勒中心频率"] = dopplerCenterFreq;
+    lastResult.additionalValues["处理带宽"] = processingBandwidth;
+    lastResult.additionalInfo["分析方法"] = "方位谱分析法";
+    
+    return lastResult;
+}
+
+AnalysisBase::Result AASR::analyzeWithROI(const cv::Mat& image, const cv::Rect& roi) {
+    // 使用默认参数值
+    double dopplerCenterFreq = 0.0;      // 多普勒中心频率 (Hz)
+    double processingBandwidth = 1000.0; // 处理带宽 (Hz)
+    
+    // 计算AASR
+    double aasr = calculateAASRInROI(image, roi, dopplerCenterFreq, processingBandwidth);
+    
+    // 准备结果
+    lastResult.numericValue = aasr;
+    lastResult.unit = "";
+    lastResult.isSuccess = true;
+    lastResult.additionalValues["多普勒中心频率"] = dopplerCenterFreq;
+    lastResult.additionalValues["处理带宽"] = processingBandwidth;
+    lastResult.additionalInfo["分析方法"] = "ROI方位谱分析法";
+    lastResult.additionalInfo["ROI"] = QString("(%1,%2,%3,%4)").arg(roi.x).arg(roi.y).arg(roi.width).arg(roi.height);
+    
+    return lastResult;
+}
+
+QString AASR::getMethodName() const {
+    return "AASR";
+}
+
+QString AASR::getDescription() const {
+    return "方位模糊度比分析，评估SAR图像在方位向上的模糊度";
 }
 
 double AASR::calculateAASRValue(const cv::Mat& image, double dopplerCenterFreq, double processingBandwidth,

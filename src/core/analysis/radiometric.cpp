@@ -8,8 +8,8 @@
 #include <cmath>
 
 // 独立的 Radiometric Analysis (Basic Statistics) 函数
-AnalysisResult performRadiometricAnalysis(const cv::Mat &inputImage) {
-  AnalysisResult result;
+SAR::Analysis::AnalysisResult performRadiometricAnalysis(const cv::Mat &inputImage) {
+  SAR::Analysis::AnalysisResult result;
   result.analysisName =
       QCoreApplication::translate("Analysis", "Radiometric Statistics");
   result.detailedLog = QCoreApplication::translate(

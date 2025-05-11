@@ -32,7 +32,7 @@ bool AnalysisController::performAnalysis(const QStringList &selectedMethods, con
         const QString &method = selectedMethods[i];
         
         // 更新进度
-        int progress = (i * 100) / selectedMethods.size();
+        int progress = i * 100 / selectedMethods.size();
         progressCallback(progress, QObject::tr("正在分析：%1 (%2%)").arg(method).arg(progress));
         
         // 检查图像数据是否有效
@@ -122,12 +122,15 @@ QString AnalysisController::getCurrentDateTime() {
 }
 
 QString AnalysisController::performSNRAnalysis(const cv::Mat &imageData) {
+    // 使用SNR类的实例，调用analyze方法
     SAR::Analysis::SNR analyzer;
-    double snr = analyzer.calculateSNR(imageData);
-    QString result = QObject::tr("方法：SNR (信噪比)\n");
-    result += QObject::tr("结果：%1 dB\n").arg(snr, 0, 'f', 2);
-    result += analyzer.getResultDescription();
-    return result;
+    auto result = analyzer.analyze(imageData);
+    double snr = result.numericValue;
+    
+    QString resultStr = QObject::tr("方法：SNR (信噪比)\n");
+    resultStr += QObject::tr("结果：%1 dB\n").arg(snr, 0, 'f', 2);
+    resultStr += analyzer.getResultDescription();
+    return resultStr;
 }
 
 QString AnalysisController::performISLRAnalysis(const cv::Mat &imageData) {
@@ -165,19 +168,28 @@ QString AnalysisController::performRASRAnalysis(const cv::Mat &imageData) {
 }
 
 QString AnalysisController::performAASRAnalysis(const cv::Mat &imageData) {
+    // 使用AASR类的实例，调用analyze方法
     SAR::Analysis::AASR analyzer;
-    // 设置默认参数值，实际应用中可能需要从配置或用户界面获取
-    double dopplerCenterFreq = 0.0;      // 多普勒中心频率 (Hz)
-    double processingBandwidth = 1000.0; // 处理带宽 (Hz)
-
-    double aasr = analyzer.calculateAASR(imageData, dopplerCenterFreq, processingBandwidth);
-    QString result = QObject::tr("方法：方位模糊度分析 (AASR)\n");
-    result += QObject::tr("结果：AASR = %1\n").arg(aasr, 0, 'f', 4);
-    result += QObject::tr("参数：\n");
-    result += QObject::tr("  多普勒中心频率 = %1 Hz\n").arg(dopplerCenterFreq);
-    result += QObject::tr("  处理带宽 = %1 Hz\n").arg(processingBandwidth);
-    result += analyzer.getResultDescription();
-    return result;
+    auto result = analyzer.analyze(imageData);
+    double aasr = result.numericValue;
+    
+    QString resultStr = QObject::tr("方法：方位模糊度分析 (AASR)\n");
+    resultStr += QObject::tr("结果：AASR = %1\n").arg(aasr, 0, 'f', 4);
+    resultStr += QObject::tr("参数：\n");
+    
+    // 从结果中获取参数
+    if (result.additionalValues.find("多普勒中心频率") != result.additionalValues.end()) {
+        resultStr += QObject::tr("  多普勒中心频率 = %1 Hz\n")
+                       .arg(result.additionalValues.at("多普勒中心频率"));
+    }
+    
+    if (result.additionalValues.find("处理带宽") != result.additionalValues.end()) {
+        resultStr += QObject::tr("  处理带宽 = %1 Hz\n")
+                       .arg(result.additionalValues.at("处理带宽"));
+    }
+    
+    resultStr += analyzer.getResultDescription();
+    return resultStr;
 }
 
 QString AnalysisController::performNESZAnalysis(const cv::Mat &imageData) {

@@ -1,72 +1,88 @@
 #ifndef ANALYSIS_CONFIG_H
 #define ANALYSIS_CONFIG_H
 
+#include <QFlags>
+
 namespace SAR {
 namespace Analysis {
 
 /**
- * @brief 分析方法配置
- * 控制启用/禁用各种分析方法
- * 可以通过修改此处的定义或通过CMake参数控制
+ * @brief 分析方法枚举
+ * 定义所有可用的分析方法
  */
+enum class AnalysisMethod {
+    ISLR              = 1 << 0,  // 积分旁瓣比
+    PSLR              = 1 << 1,  // 峰值旁瓣比
+    RangeResolution   = 1 << 2,  // 距离分辨率
+    AzimuthResolution = 1 << 3,  // 方位分辨率
+    RASR              = 1 << 4,  // 距离模糊度
+    AASR              = 1 << 5,  // 方位模糊度
+    SNR               = 1 << 6,  // 信噪比分析
+    NESZ              = 1 << 7,  // 噪声等效后向散射系数
+    RadiometricAcc    = 1 << 8,  // 辐射精度
+    RadiometricRes    = 1 << 9,  // 辐射分辨率
+    ENL               = 1 << 10, // 等效视数
+    Clarity           = 1 << 11, // 清晰度分析
+    GLCM              = 1 << 12, // GLCM 纹理分析
+    InfoContent       = 1 << 13  // 信息内容分析
+};
+Q_DECLARE_FLAGS(AnalysisMethods, AnalysisMethod)
+Q_DECLARE_OPERATORS_FOR_FLAGS(AnalysisMethods)
 
-// 启用所有分析方法
-#ifndef CONFIG_ENABLE_ISLR
-#define CONFIG_ENABLE_ISLR 1           // 积分旁瓣比
-#endif
+/**
+ * @brief 分析模块配置类
+ * 用于控制分析模块的全局配置
+ */
+class AnalysisConfig {
+public:
+    /**
+     * @brief 获取默认配置实例
+     * @return 配置实例引用
+     */
+    static AnalysisConfig& getInstance();
 
-#ifndef CONFIG_ENABLE_PSLR
-#define CONFIG_ENABLE_PSLR 1           // 峰值旁瓣比
-#endif
+    /**
+     * @brief 检查分析方法是否启用
+     * @param method 要检查的分析方法
+     * @return 是否启用
+     */
+    bool isMethodEnabled(AnalysisMethod method) const;
 
-#ifndef CONFIG_ENABLE_RANGE_RES
-#define CONFIG_ENABLE_RANGE_RES 1      // 距离分辨率
-#endif
+    /**
+     * @brief 启用分析方法
+     * @param method 要启用的分析方法
+     */
+    void enableMethod(AnalysisMethod method);
 
-#ifndef CONFIG_ENABLE_AZIMUTH_RES
-#define CONFIG_ENABLE_AZIMUTH_RES 1    // 方位分辨率
-#endif
+    /**
+     * @brief 禁用分析方法
+     * @param method 要禁用的分析方法
+     */
+    void disableMethod(AnalysisMethod method);
 
-#ifndef CONFIG_ENABLE_RASR
-#define CONFIG_ENABLE_RASR 1           // 距离模糊度
-#endif
+    /**
+     * @brief 设置启用的分析方法
+     * @param methods 要启用的分析方法
+     */
+    void setEnabledMethods(AnalysisMethods methods);
 
-#ifndef CONFIG_ENABLE_AASR
-#define CONFIG_ENABLE_AASR 1           // 方位模糊度
-#endif
+    /**
+     * @brief 获取所有启用的分析方法
+     * @return 启用的分析方法集合
+     */
+    AnalysisMethods getEnabledMethods() const;
 
-#ifndef CONFIG_ENABLE_SNR
-#define CONFIG_ENABLE_SNR 1            // 信噪比分析
-#endif
-
-#ifndef CONFIG_ENABLE_NESZ
-#define CONFIG_ENABLE_NESZ 1           // 噪声等效后向散射系数
-#endif
-
-#ifndef CONFIG_ENABLE_RADIOMETRIC_ACC
-#define CONFIG_ENABLE_RADIOMETRIC_ACC 1 // 辐射精度
-#endif
-
-#ifndef CONFIG_ENABLE_RADIOMETRIC_RES
-#define CONFIG_ENABLE_RADIOMETRIC_RES 1 // 辐射分辨率
-#endif
-
-#ifndef CONFIG_ENABLE_ENL
-#define CONFIG_ENABLE_ENL 1            // 等效视数
-#endif
-
-// 启用其他分析方法
-#ifndef CONFIG_ENABLE_CLARITY
-#define CONFIG_ENABLE_CLARITY 1        // 清晰度分析
-#endif
-
-#ifndef CONFIG_ENABLE_GLCM
-#define CONFIG_ENABLE_GLCM 1           // GLCM 纹理分析
-#endif
-
-#ifndef CONFIG_ENABLE_INFO_CONTENT
-#define CONFIG_ENABLE_INFO_CONTENT 1   // 信息内容分析
-#endif
+private:
+    // 私有构造函数，用于单例模式
+    AnalysisConfig();
+    
+    // 禁止拷贝和赋值
+    AnalysisConfig(const AnalysisConfig&) = delete;
+    AnalysisConfig& operator=(const AnalysisConfig&) = delete;
+    
+    // 启用的方法集合
+    AnalysisMethods enabledMethods;
+};
 
 } // namespace Analysis
 } // namespace SAR

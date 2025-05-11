@@ -68,7 +68,7 @@ bool ImageHandler::loadImage(const QString &filePath) {
 
     closeImage(); // Close previous before opening new
 
-    poDataset = (GDALDataset *)GDALOpen(filePath.toUtf8().constData(), GA_ReadOnly);
+    poDataset = static_cast<GDALDataset *>(GDALOpen(filePath.toUtf8().constData(), GA_ReadOnly));
 
     if (poDataset == nullptr) {
         QString gdalErrorMsg = CPLGetLastErrorMsg();

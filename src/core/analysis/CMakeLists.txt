@@ -1,93 +1,26 @@
 # src/core/analysis/CMakeLists.txt
 cmake_minimum_required(VERSION 3.16)
 
-# 根据选项设置编译定义
-if(ENABLE_ISLR)
-    add_compile_definitions(CONFIG_ENABLE_ISLR=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_ISLR=0)
-endif()
-
-if(ENABLE_PSLR)
-    add_compile_definitions(CONFIG_ENABLE_PSLR=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_PSLR=0)
-endif()
-
-if(ENABLE_RANGE_RES)
-    add_compile_definitions(CONFIG_ENABLE_RANGE_RES=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_RANGE_RES=0)
-endif()
-
-if(ENABLE_AZIMUTH_RES)
-    add_compile_definitions(CONFIG_ENABLE_AZIMUTH_RES=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_AZIMUTH_RES=0)
-endif()
-
-if(ENABLE_RASR)
-    add_compile_definitions(CONFIG_ENABLE_RASR=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_RASR=0)
-endif()
-
-if(ENABLE_AASR)
-    add_compile_definitions(CONFIG_ENABLE_AASR=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_AASR=0)
-endif()
-
-if(ENABLE_SNR)
-    add_compile_definitions(CONFIG_ENABLE_SNR=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_SNR=0)
-endif()
-
-if(ENABLE_NESZ)
-    add_compile_definitions(CONFIG_ENABLE_NESZ=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_NESZ=0)
-endif()
-
-if(ENABLE_RADIOMETRIC_ACC)
-    add_compile_definitions(CONFIG_ENABLE_RADIOMETRIC_ACC=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_RADIOMETRIC_ACC=0)
-endif()
-
-if(ENABLE_RADIOMETRIC_RES)
-    add_compile_definitions(CONFIG_ENABLE_RADIOMETRIC_RES=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_RADIOMETRIC_RES=0)
-endif()
-
-if(ENABLE_ENL)
-    add_compile_definitions(CONFIG_ENABLE_ENL=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_ENL=0)
-endif()
-
-if(ENABLE_CLARITY)
-    add_compile_definitions(CONFIG_ENABLE_CLARITY=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_CLARITY=0)
-endif()
-
-if(ENABLE_GLCM)
-    add_compile_definitions(CONFIG_ENABLE_GLCM=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_GLCM=0)
-endif()
-
-if(ENABLE_INFO_CONTENT)
-    add_compile_definitions(CONFIG_ENABLE_INFO_CONTENT=1)
-else()
-    add_compile_definitions(CONFIG_ENABLE_INFO_CONTENT=0)
-endif()
+# 查找glog库
+find_package(glog REQUIRED)
 
 # 分析模块源文件
 set(ANALYSIS_SOURCES
+        # 核心文件
+        analysis_result.cpp
+        ../include/analysis_result.h
+        analysis_controller.cpp
+        ../include/analysis_controller.h
+        analysis_base.cpp
+        analysis_base.h
+        analysis_config.cpp
+        analysis_config.h
+        analysis_utils.cpp
+        analysis_utils.h
+        analysis_factory.cpp
+        analysis_factory.h
+        
+        # 分析方法实现
         clarity.cpp
         clarity.h
         glcm.cpp
@@ -102,8 +35,6 @@ set(ANALYSIS_SOURCES
         radiometric.h
         snr.cpp
         snr.h
-        analysis_utils.h
-        analysis_config.h
         islr.cpp
         islr.h
         pslr.cpp
@@ -128,30 +59,19 @@ add_library(SARAnalysis STATIC
 # 设置包含目录
 target_include_directories(SARAnalysis PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include
 )
 
 # 链接依赖库
 target_link_libraries(SARAnalysis PUBLIC
         Qt6::Core
+        Qt6::Widgets
         ${OpenCV_LIBS}
+        glog::glog
 )
 
 # 设置编译选项
-target_compile_features(SARAnalysis PUBLIC cxx_std_17) 
+target_compile_features(SARAnalysis PUBLIC cxx_std_17)
 
-# 显示启用的分析方法
-message(STATUS "以下 SAR 分析方法配置状态：")
-message(STATUS "  积分旁瓣比分析 (ISLR): ${ENABLE_ISLR}")
-message(STATUS "  峰值旁瓣比分析 (PSLR): ${ENABLE_PSLR}")
-message(STATUS "  距离分辨率分析：${ENABLE_RANGE_RES}")
-message(STATUS "  方位分辨率分析：${ENABLE_AZIMUTH_RES}")
-message(STATUS "  距离模糊度分析 (RASR): ${ENABLE_RASR}")
-message(STATUS "  方位模糊度分析 (AASR): ${ENABLE_AASR}")
-message(STATUS "  信噪比分析 (SNR): ${ENABLE_SNR}")
-message(STATUS "  噪声等效后向散射系数分析 (NESZ): ${ENABLE_NESZ}")
-message(STATUS "  辐射精度分析：${ENABLE_RADIOMETRIC_ACC}")
-message(STATUS "  辐射分辨率分析：${ENABLE_RADIOMETRIC_RES}")
-message(STATUS "  等效视数分析 (ENL): ${ENABLE_ENL}")
-message(STATUS "  清晰度分析：${ENABLE_CLARITY}")
-message(STATUS "  GLCM 纹理分析：${ENABLE_GLCM}")
-message(STATUS "  信息内容分析：${ENABLE_INFO_CONTENT}")
+# 显示分析模块状态
+message(STATUS "SAR 分析模块已配置...")
