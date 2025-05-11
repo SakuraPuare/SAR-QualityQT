@@ -22,11 +22,31 @@
 #include <QAbstractTextDocumentLayout>
 #include <cmath>
 #include <limits>
+#include <QMap>
+#include <QStringList>
 
 // 添加 ImageHandler 头文件
 #include "imagehandler.h"
 // 添加 Logger 头文件
 #include "logger.h"
+
+// 添加前向声明
+namespace SAR {
+namespace Core {
+class ImageHandler;
+}
+namespace UI {
+class AnalysisController;
+class ReportGenerator;
+}
+}
+
+// 自定义拖放图形视图的前向声明
+class DragDropGraphicsView;
+
+namespace Ui {
+class MainWindow;
+}
 
 // 自定义 GraphicsView 类支持拖放
 class DragDropGraphicsView : public QGraphicsView
@@ -52,21 +72,36 @@ signals:
     void dropReceived(QDropEvent *event);
 };
 
-namespace Ui {
-class MainWindow;
-}
-
+/**
+ * @brief 主窗口类
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
+    /**
+     * @brief 构造函数
+     * @param parent 父窗口
+     */
     explicit MainWindow(QWidget *parent = nullptr);
+    
+    /**
+     * @brief 析构函数
+     */
     ~MainWindow();
 
 protected:
-    // 添加拖放事件处理函数
+    /**
+     * @brief 拖放进入事件处理函数
+     * @param event 拖放进入事件
+     */
     void dragEnterEvent(QDragEnterEvent *event) override;
+    
+    /**
+     * @brief 拖放事件处理函数
+     * @param event 拖放事件
+     */
     void dropEvent(QDropEvent *event) override;
 
 private slots:
@@ -124,6 +159,10 @@ private:
     
     // 添加 ImageHandler 成员变量，用于 GDAL 图像处理
     SAR::Core::ImageHandler *imageHandler;
+    
+    // 新添加的成员
+    SAR::UI::AnalysisController *analysisController;
+    SAR::UI::ReportGenerator *reportGenerator;
     
     void setupImageViewer();
     void setupConnections();

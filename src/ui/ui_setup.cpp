@@ -54,7 +54,7 @@ void setupConnections(QMainWindow *parent, Ui::MainWindow *ui, DragDropGraphicsV
     // 全选/取消全选按钮
     QObject::connect(ui->checkBoxSelectAll, &QCheckBox::toggled, [=](bool checked) {
         // 根据配置启用或禁用各个分析选项的代码...
-        // (会由 MainWindow 中的槽函数处理)
+        // (会由MainWindow中的槽函数处理)
     });
 
     // 当有图像加载时启用分析按钮
