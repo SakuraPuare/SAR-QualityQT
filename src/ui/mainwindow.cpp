@@ -3,6 +3,7 @@
 #include "include/drag_drop_graphics_view.h"
 #include "include/report_generator.h"
 #include "include/threshold_settings_dialog.h"
+#include "include/filter_settings_dialog.h"
 #include "../core/include/logger.h"
 #include "ui_mainwindow.h"
 #include <QApplication>
@@ -725,5 +726,95 @@ void MainWindow::on_actionThresholdSettings_triggered()
         // 更新状态栏
         updateStatusBar(tr("阈值设置已更新"));
         LOG_INFO("用户更新了分析算法阈值设置");
+    }
+}
+
+// 添加滤波相关槽的实现
+void MainWindow::on_actionFilterSettings_triggered() {
+    showFilterSettingsDialog();
+}
+
+void MainWindow::on_actionLowPassFilter_triggered() {
+    applyFilter(SAR::Core::FilterType::LowPass);
+}
+
+void MainWindow::on_actionHighPassFilter_triggered() {
+    applyFilter(SAR::Core::FilterType::HighPass);
+}
+
+void MainWindow::on_actionBandPassFilter_triggered() {
+    applyFilter(SAR::Core::FilterType::BandPass);
+}
+
+void MainWindow::on_actionMedianFilter_triggered() {
+    applyFilter(SAR::Core::FilterType::Median);
+}
+
+void MainWindow::on_actionGaussianFilter_triggered() {
+    applyFilter(SAR::Core::FilterType::Gaussian);
+}
+
+void MainWindow::on_actionBilateralFilter_triggered() {
+    applyFilter(SAR::Core::FilterType::Bilateral);
+}
+
+void MainWindow::on_actionLeeFilter_triggered() {
+    applyFilter(SAR::Core::FilterType::Lee);
+}
+
+void MainWindow::on_actionFrostFilter_triggered() {
+    applyFilter(SAR::Core::FilterType::Frost);
+}
+
+void MainWindow::applyFilter(SAR::Core::FilterType filterType) {
+    // 检查是否有图像加载
+    if (!imageHandler || !imageHandler->isValid()) {
+        QMessageBox::warning(this, tr("警告"), tr("请先加载图像"));
+        return;
+    }
+    
+    // 根据滤波器类型显示设置对话框或直接应用默认参数
+    showFilterSettingsDialog(filterType);
+}
+
+void MainWindow::showFilterSettingsDialog(SAR::Core::FilterType filterType) {
+    // 创建滤波器设置对话框
+    FilterSettingsDialog dialog(this, filterType, currentFilterParams);
+    
+    // 显示对话框
+    if (dialog.exec() == QDialog::Accepted) {
+        // 获取用户设置的参数
+        currentFilterParams = dialog.getFilterParameters();
+        
+        // 创建处理日志
+        QString filterLog;
+        
+        // 更新状态栏
+        updateStatusBar(tr("正在应用 %1...").arg(
+            SAR::Core::ImageFilters::getFilterTypeDescription(currentFilterParams.type)));
+        
+        // 应用滤波器
+        QApplication::setOverrideCursor(Qt::WaitCursor);
+        bool success = imageHandler->applyFilterInplace(currentFilterParams, &filterLog);
+        QApplication::restoreOverrideCursor();
+        
+        // 记录日志
+        log(filterLog);
+        
+        if (success) {
+            // 更新图像显示
+            if (imageScene) {
+                imageScene->clear();
+                QPixmap pixmap = imageHandler->getDisplayPixmap(imageView->size());
+                imageScene->addPixmap(pixmap);
+                imageView->fitInView(imageScene->sceneRect(), Qt::KeepAspectRatio);
+            }
+            
+            updateStatusBar(tr("成功应用 %1").arg(
+                SAR::Core::ImageFilters::getFilterTypeDescription(currentFilterParams.type)));
+        } else {
+            QMessageBox::critical(this, tr("错误"), tr("无法应用滤波器，请查看日志了解详情"));
+            updateStatusBar(tr("无法应用滤波器"));
+        }
     }
 }

@@ -12,6 +12,7 @@ set(CORE_SOURCES
     analysis/analysis_result.cpp
     logger.cpp
     imagehandler.cpp
+    imagefilters.cpp
 )
 
 set(CORE_HEADERS
@@ -19,6 +20,7 @@ set(CORE_HEADERS
     include/analysis_result_item.h
     include/logger.h
     include/imagehandler.h
+    imagefilters.h
 )
 
 # 创建核心库

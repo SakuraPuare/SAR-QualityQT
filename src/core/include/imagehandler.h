@@ -7,6 +7,7 @@
 #include <functional> // 用于 std::function
 
 #include <opencv2/core/mat.hpp> // 包含 cv::Mat 定义
+#include "../imagefilters.h" // 包含滤波器定义
 
 // 前向声明 GDAL 数据集类型，避免在头文件中包含重量级的 gdal_priv.h
 // 但实际操作中，方法实现需要完整定义，所以包含 gdal_priv.h 可能更直接
@@ -52,6 +53,14 @@ public:
   QPixmap getDisplayPixmap(const QSize &targetSize) const;
   // 获取原始图像数据 (cv::Mat) 的常量引用
   const cv::Mat &getImageData() const;
+
+  // --- 图像处理方法 ---
+  // 应用滤波器并返回处理后的图像
+  cv::Mat applyFilter(const FilterParameters& params, QString* log = nullptr) const;
+  // 应用滤波器并更新当前图像
+  bool applyFilterInplace(const FilterParameters& params, QString* log = nullptr);
+  // 获取支持的滤波器类型列表
+  static QStringList getAvailableFilterTypes();
 
 private:
   // 内部日志记录方法

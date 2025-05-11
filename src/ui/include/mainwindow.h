@@ -28,6 +28,7 @@
 // 添加核心模块头文件
 #include "../../core/include/analysis_result.h"
 #include "../../core/include/imagehandler.h"
+#include "../../core/imagefilters.h" // 添加滤波器头文件
 #include "threshold_settings_dialog.h"
 
 // 部分类仍使用前向声明
@@ -48,7 +49,8 @@ namespace Ui {
 class MainWindow;
 }
 
-// 自定义 GraphicsView 类已在 drag_drop_graphics_view.h 定义
+// 声明滤波器设置对话框类
+class FilterSettingsDialog;
 
 /**
  * @brief 主窗口类
@@ -110,6 +112,17 @@ private slots:
     // 图像列表操作
     void on_imageListWidget_itemClicked(QListWidgetItem *item);
     
+    // 滤波操作
+    void on_actionFilterSettings_triggered();
+    void on_actionLowPassFilter_triggered();
+    void on_actionHighPassFilter_triggered();
+    void on_actionBandPassFilter_triggered();
+    void on_actionMedianFilter_triggered();
+    void on_actionGaussianFilter_triggered();
+    void on_actionBilateralFilter_triggered();
+    void on_actionLeeFilter_triggered();
+    void on_actionFrostFilter_triggered();
+    
     // 其他
     void on_actionAbout_triggered();
     void updateStatusBar(const QString &message);
@@ -145,6 +158,9 @@ private:
     
     SAR::Core::AnalysisResult currentResults; // 当前分析结果
     
+    // 滤波器设置
+    SAR::Core::FilterParameters currentFilterParams;
+    
     void setupImageViewer();
     void setupConnections();
     void configureAnalysisOptions(); // 添加配置分析选项方法声明
@@ -163,6 +179,10 @@ private:
     QString generateQualityTable(); // 生成质量指标表格
     QString generateReportHtml();
     QString generateQualityTableHtml();
+    
+    // 滤波相关方法
+    void applyFilter(SAR::Core::FilterType filterType);
+    void showFilterSettingsDialog(SAR::Core::FilterType filterType = SAR::Core::FilterType::Gaussian);
 };
 
 #endif // MAINWINDOW_H

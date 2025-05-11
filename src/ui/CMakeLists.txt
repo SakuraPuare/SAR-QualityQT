@@ -39,11 +39,16 @@ set(UI_SOURCES
         # 阈值设置对话框
         threshold_settings_dialog.cpp
         include/threshold_settings_dialog.h
+        
+        # 滤波器设置对话框
+        filter_settings_dialog.cpp
+        include/filter_settings_dialog.h
 )
 
 # 为特定文件设置 SKIP_AUTOMOC 属性
 set_source_files_properties(
         threshold_settings_dialog.cpp
+        filter_settings_dialog.cpp
         PROPERTIES
         SKIP_AUTOMOC TRUE
 )
@@ -88,4 +93,4 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/dialogs/CMakeLists.txt")
 endif ()
 
 # 设置编译选项
-target_compile_features(SARUI PUBLIC cxx_std_17) 
+target_compile_features(SARUI PUBLIC cxx_std_17)

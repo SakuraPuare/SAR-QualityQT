@@ -14,6 +14,8 @@
 #include <cpl_error.h>   // 包含 CPLGetLastErrorMsg
 #include <gdalwarper.h> // 如果未来需要重投影或重采样
 
+#include "imagefilters.h" // 包含滤波器实现
+
 namespace SAR {
 namespace Core {
 
@@ -313,6 +315,79 @@ QPixmap ImageHandler::getDisplayPixmap(const QSize &targetSize) const {
     
     // 转换为 QPixmap
     return QPixmap::fromImage(imageCopy);
+}
+
+cv::Mat ImageHandler::applyFilter(const FilterParameters& params, QString* logStr) const {
+    if (!isValid()) {
+        if (logStr) {
+            *logStr += QCoreApplication::translate("ImageHandler", "错误：图像未加载或无效，无法应用滤波器");
+        }
+        if (m_logger) {
+            m_logger(QCoreApplication::translate("ImageHandler", "错误：图像未加载或无效，无法应用滤波器"));
+        }
+        return cv::Mat();
+    }
+
+    // 调用滤波器实现
+    cv::Mat filteredImage = ImageFilters::applyFilter(currentImage, params, logStr);
+    
+    if (filteredImage.empty()) {
+        if (m_logger) {
+            m_logger(QCoreApplication::translate("ImageHandler", "错误：滤波处理失败"));
+        }
+    } else {
+        if (m_logger) {
+            m_logger(QCoreApplication::translate("ImageHandler", "成功应用 %1 滤波器").arg(ImageFilters::getFilterTypeDescription(params.type)));
+        }
+    }
+    
+    return filteredImage;
+}
+
+bool ImageHandler::applyFilterInplace(const FilterParameters& params, QString* logStr) {
+    if (!isValid()) {
+        if (logStr) {
+            *logStr += QCoreApplication::translate("ImageHandler", "错误：图像未加载或无效，无法应用滤波器");
+        }
+        if (m_logger) {
+            m_logger(QCoreApplication::translate("ImageHandler", "错误：图像未加载或无效，无法应用滤波器"));
+        }
+        return false;
+    }
+    
+    // 调用滤波器实现
+    cv::Mat filteredImage = ImageFilters::applyFilter(currentImage, params, logStr);
+    
+    if (filteredImage.empty()) {
+        if (m_logger) {
+            m_logger(QCoreApplication::translate("ImageHandler", "错误：滤波处理失败"));
+        }
+        return false;
+    }
+    
+    // 更新当前图像
+    currentImage = filteredImage;
+    
+    if (m_logger) {
+        m_logger(QCoreApplication::translate("ImageHandler", "成功应用 %1 滤波器并更新当前图像").arg(ImageFilters::getFilterTypeDescription(params.type)));
+    }
+    return true;
+}
+
+QStringList ImageHandler::getAvailableFilterTypes() {
+    QStringList filterTypes;
+    
+    // 添加所有可用的滤波器类型
+    filterTypes << ImageFilters::getFilterTypeDescription(FilterType::LowPass);
+    filterTypes << ImageFilters::getFilterTypeDescription(FilterType::HighPass);
+    filterTypes << ImageFilters::getFilterTypeDescription(FilterType::BandPass);
+    filterTypes << ImageFilters::getFilterTypeDescription(FilterType::Median);
+    filterTypes << ImageFilters::getFilterTypeDescription(FilterType::Gaussian);
+    filterTypes << ImageFilters::getFilterTypeDescription(FilterType::Bilateral);
+    filterTypes << ImageFilters::getFilterTypeDescription(FilterType::Lee);
+    filterTypes << ImageFilters::getFilterTypeDescription(FilterType::Frost);
+    
+    return filterTypes;
 }
 
 } // namespace Core

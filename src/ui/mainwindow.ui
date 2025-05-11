@@ -297,8 +297,27 @@
     <property name="title">
      <string>分析(&amp;A)</string>
     </property>
+    <widget class="QMenu" name="menuFilter">
+     <property name="title">
+      <string>滤波(&amp;F)</string>
+     </property>
+     <addaction name="actionLowPassFilter"/>
+     <addaction name="actionHighPassFilter"/>
+     <addaction name="actionBandPassFilter"/>
+     <addaction name="separator"/>
+     <addaction name="actionMedianFilter"/>
+     <addaction name="actionGaussianFilter"/>
+     <addaction name="actionBilateralFilter"/>
+     <addaction name="separator"/>
+     <addaction name="actionLeeFilter"/>
+     <addaction name="actionFrostFilter"/>
+     <addaction name="separator"/>
+     <addaction name="actionFilterSettings"/>
+    </widget>
     <addaction name="actionStartAssessment"/>
     <addaction name="actionSelectAssessmentRegion"/>
+    <addaction name="separator"/>
+    <addaction name="menuFilter"/>
     <addaction name="separator"/>
     <addaction name="actionISLR"/>
     <addaction name="actionPSLR"/>
@@ -801,6 +820,78 @@
    </property>
    <property name="toolTip">
     <string>设置各项分析指标的阈值</string>
+   </property>
+  </action>
+  <action name="actionLowPassFilter">
+   <property name="text">
+    <string>低通滤波</string>
+   </property>
+   <property name="toolTip">
+    <string>应用低通滤波器</string>
+   </property>
+  </action>
+  <action name="actionHighPassFilter">
+   <property name="text">
+    <string>高通滤波</string>
+   </property>
+   <property name="toolTip">
+    <string>应用高通滤波器</string>
+   </property>
+  </action>
+  <action name="actionBandPassFilter">
+   <property name="text">
+    <string>带通滤波</string>
+   </property>
+   <property name="toolTip">
+    <string>应用带通滤波器</string>
+   </property>
+  </action>
+  <action name="actionMedianFilter">
+   <property name="text">
+    <string>中值滤波</string>
+   </property>
+   <property name="toolTip">
+    <string>应用中值滤波器</string>
+   </property>
+  </action>
+  <action name="actionGaussianFilter">
+   <property name="text">
+    <string>高斯滤波</string>
+   </property>
+   <property name="toolTip">
+    <string>应用高斯滤波器</string>
+   </property>
+  </action>
+  <action name="actionBilateralFilter">
+   <property name="text">
+    <string>双边滤波</string>
+   </property>
+   <property name="toolTip">
+    <string>应用双边滤波器</string>
+   </property>
+  </action>
+  <action name="actionLeeFilter">
+   <property name="text">
+    <string>Lee滤波</string>
+   </property>
+   <property name="toolTip">
+    <string>应用Lee滤波器（SAR图像专用）</string>
+   </property>
+  </action>
+  <action name="actionFrostFilter">
+   <property name="text">
+    <string>Frost滤波</string>
+   </property>
+   <property name="toolTip">
+    <string>应用Frost滤波器（SAR图像专用）</string>
+   </property>
+  </action>
+  <action name="actionFilterSettings">
+   <property name="text">
+    <string>滤波器设置...</string>
+   </property>
+   <property name="toolTip">
+    <string>配置滤波器参数</string>
    </property>
   </action>
  </widget>
