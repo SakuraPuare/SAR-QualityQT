@@ -5,6 +5,7 @@
 #include "include/drag_drop_graphics_view.h"
 #include <QLayout>
 #include <QTabWidget>
+#include <QCheckBox>
 
 namespace SAR {
 namespace UI {
@@ -19,10 +20,10 @@ void setupImageViewer(QMainWindow *parent, Ui::MainWindow *ui,
     // 将新创建的 DragDropGraphicsView 添加到界面布局中
     if (ui->imageDisplayLabel) {
         // 获取占位符的父 widget
-        QWidget *parent = ui->imageDisplayLabel->parentWidget();
-        if (parent) {
+        QWidget *parentWidget = ui->imageDisplayLabel->parentWidget();
+        if (parentWidget) {
             // 获取占位符在布局中的位置
-            QLayout *layout = parent->layout();
+            QLayout *layout = parentWidget->layout();
             if (layout) {
                 // 移除占位符标签
                 layout->removeWidget(ui->imageDisplayLabel);
@@ -38,18 +39,15 @@ void setupImageViewer(QMainWindow *parent, Ui::MainWindow *ui,
 }
 
 void setupConnections(QMainWindow *parent, Ui::MainWindow *ui, DragDropGraphicsView *imageView) {
-    auto mainWindow = qobject_cast<QObject*>(parent);
-    if (!mainWindow) return;
-
     // 连接图像视图的拖放信号
     QObject::connect(imageView, SIGNAL(dragEnterReceived(QDragEnterEvent*)),
-                     mainWindow, SLOT(handleViewDragEnter(QDragEnterEvent*)));
+                     parent, SLOT(handleViewDragEnter(QDragEnterEvent*)));
     QObject::connect(imageView, SIGNAL(dropReceived(QDropEvent*)),
-                     mainWindow, SLOT(handleViewDrop(QDropEvent*)));
+                     parent, SLOT(handleViewDrop(QDropEvent*)));
 
     // 连接日志系统信号
     QObject::connect(SAR::Core::Logger::instance(), SIGNAL(newLogMessage(const QString&)),
-                     mainWindow, SLOT(onNewLogMessage(const QString&)));
+                     parent, SLOT(onNewLogMessage(const QString&)));
 
     // 全选/取消全选按钮
     QObject::connect(ui->checkBoxSelectAll, &QCheckBox::toggled, [=](bool checked) {
@@ -88,11 +86,11 @@ void configureAnalysisOptions(Ui::MainWindow *ui, const std::function<void(const
 #endif
 
 #if !CONFIG_ENABLE_RANGE_RES
-    ui->checkBoxRangeResolution->setVisible(false);
+    if (ui->actionRangeResolution) ui->actionRangeResolution->setVisible(false);
 #endif
 
 #if !CONFIG_ENABLE_AZIMUTH_RES
-    ui->checkBoxAzimuthResolution->setVisible(false);
+    if (ui->actionAzimuthResolution) ui->actionAzimuthResolution->setVisible(false);
 #endif
 
 #if !CONFIG_ENABLE_RASR

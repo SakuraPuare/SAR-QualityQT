@@ -1,5 +1,5 @@
 #include "image_handler.h"
-#include "../core/include/image_handler.h"
+#include "../core/include/imagehandler.h"
 #include <QGraphicsPixmapItem>
 #include <QDir>
 

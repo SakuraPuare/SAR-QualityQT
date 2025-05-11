@@ -48,29 +48,7 @@ namespace Ui {
 class MainWindow;
 }
 
-// 自定义 GraphicsView 类支持拖放
-class DragDropGraphicsView : public QGraphicsView
-{
-    Q_OBJECT
-    
-public:
-    explicit DragDropGraphicsView(QWidget *parent = nullptr) : QGraphicsView(parent) {
-        setAcceptDrops(true);
-    }
-    
-protected:
-    void dragEnterEvent(QDragEnterEvent *event) override {
-        emit dragEnterReceived(event);
-    }
-    
-    void dropEvent(QDropEvent *event) override {
-        emit dropReceived(event);
-    }
-    
-signals:
-    void dragEnterReceived(QDragEnterEvent *event);
-    void dropReceived(QDropEvent *event);
-};
+// 自定义 GraphicsView 类已在 drag_drop_graphics_view.h 定义
 
 /**
  * @brief 主窗口类

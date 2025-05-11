@@ -1,107 +1,107 @@
-cmake_minimum_required(VERSION 3.16)
+#include "report_generator.h"
+#include <QDateTime>
+#include <QFile>
+#include <QTextStream>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QPdfWriter>
+#include <QPainter>
+#include <QTextDocument>
+#include <QFileInfo>
+#include <QDir>
+#include <cmath>
+#include <QRegularExpression>
 
-project(SAR-QualityQT VERSION 0.1 LANGUAGES CXX)
+namespace SAR {
+namespace UI {
 
-# 设置 CMake 策略
-if (POLICY CMP0074)
-    cmake_policy(SET CMP0074 NEW)
-endif ()
+ReportGenerator::ReportGenerator(QWidget *parent, const std::function<void(const QString&)>& logCallback)
+    : parent(parent), logCallback(logCallback) {
+}
 
-# 全局设置
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+bool ReportGenerator::generateReport(const QString &format, const QMap<QString, QString> &results, const QString &imagePath) {
+    // 检查是否有结果可以导出
+    if (results.isEmpty()) {
+        QMessageBox::warning(parent, QObject::tr("导出失败"),
+                          QObject::tr("没有可以导出的分析结果"));
+        return false;
+    }
 
-# 设置模块化功能编译选项
-option(CONFIG_ENABLE_ISLR "启用 ISLR 分析" ON)
-option(CONFIG_ENABLE_PSLR "启用 PSLR 分析" ON)
-option(CONFIG_ENABLE_RANGE_RES "启用距离分辨率分析" ON)
-option(CONFIG_ENABLE_AZIMUTH_RES "启用方位分辨率分析" ON)
-option(CONFIG_ENABLE_RASR "启用 RASR 分析" ON)
-option(CONFIG_ENABLE_AASR "启用 AASR 分析" ON)
-option(CONFIG_ENABLE_SNR "启用 SNR 分析" ON)
-option(CONFIG_ENABLE_NESZ "启用 NESZ 分析" ON)
-option(CONFIG_ENABLE_RADIOMETRIC_ACC "启用辐射精度分析" ON)
-option(CONFIG_ENABLE_RADIOMETRIC_RES "启用辐射分辨率分析" ON)
-option(CONFIG_ENABLE_ENL "启用 ENL 分析" ON)
+    // 获取保存路径
+    QString defaultPath = QDir::homePath();
+    QString defaultName = QFileInfo(imagePath).baseName() + "_" + 
+                         QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss");
+    
+    QString filePath;
+    if (format.toLower() == "pdf") {
+        filePath = QFileDialog::getSaveFileName(
+            parent, QObject::tr("保存PDF报告"), defaultPath + "/" + defaultName + ".pdf",
+            QObject::tr("PDF文件 (*.pdf)"));
+            
+        if (filePath.isEmpty()) return false;
+        
+        return generatePDFReport(filePath, results, imagePath);
+    } else if (format.toLower() == "txt") {
+        filePath = QFileDialog::getSaveFileName(
+            parent, QObject::tr("保存文本报告"), defaultPath + "/" + defaultName + ".txt",
+            QObject::tr("文本文件 (*.txt)"));
+            
+        if (filePath.isEmpty()) return false;
+        
+        return generateTextReport(filePath, results, imagePath);
+    } else {
+        QMessageBox::warning(parent, QObject::tr("导出失败"),
+                          QObject::tr("不支持的导出格式: %1").arg(format));
+        return false;
+    }
+}
 
-# 为所有目标添加编译定义
-add_compile_definitions(
-    $<$<BOOL:${CONFIG_ENABLE_ISLR}>:CONFIG_ENABLE_ISLR>
-    $<$<BOOL:${CONFIG_ENABLE_PSLR}>:CONFIG_ENABLE_PSLR>
-    $<$<BOOL:${CONFIG_ENABLE_RANGE_RES}>:CONFIG_ENABLE_RANGE_RES>
-    $<$<BOOL:${CONFIG_ENABLE_AZIMUTH_RES}>:CONFIG_ENABLE_AZIMUTH_RES>
-    $<$<BOOL:${CONFIG_ENABLE_RASR}>:CONFIG_ENABLE_RASR>
-    $<$<BOOL:${CONFIG_ENABLE_AASR}>:CONFIG_ENABLE_AASR>
-    $<$<BOOL:${CONFIG_ENABLE_SNR}>:CONFIG_ENABLE_SNR>
-    $<$<BOOL:${CONFIG_ENABLE_NESZ}>:CONFIG_ENABLE_NESZ>
-    $<$<BOOL:${CONFIG_ENABLE_RADIOMETRIC_ACC}>:CONFIG_ENABLE_RADIOMETRIC_ACC>
-    $<$<BOOL:${CONFIG_ENABLE_RADIOMETRIC_RES}>:CONFIG_ENABLE_RADIOMETRIC_RES>
-    $<$<BOOL:${CONFIG_ENABLE_ENL}>:CONFIG_ENABLE_ENL>
-)
+QString ReportGenerator::getCurrentDateTime() {
+    return QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+}
 
-# 条件添加 Qt 路径
-if (WIN32)
-    set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake")
-    if (MSVC)
-        # Windows + MSVC
-        list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.9.0/msvc2022_64")
-        add_compile_options(/Zc:__cplusplus)
-    else ()
-        # Windows + MinGW
-        list(APPEND CMAKE_PREFIX_PATH "C:/Qt/6.9.0/mingw_64")
-    endif ()
-endif ()
-
-# 查找 Qt 组件
-find_package(Qt6 REQUIRED COMPONENTS Widgets LinguistTools Core PrintSupport)
-
-# 查找 OpenCV
-find_package(OpenCV REQUIRED)
-message(STATUS "OpenCV version: ${OpenCV_VERSION}")
-message(STATUS "OpenCV include dirs: ${OpenCV_INCLUDE_DIRS}")
-
-# 查找 GDAL
-find_package(GDAL CONFIG REQUIRED)
-message(STATUS "GDAL version: ${GDAL_VERSION}")
-
-# 查找 GTest
-find_package(GTest REQUIRED)
-
-# 创建资源文件目录
-if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/resources")
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/resources")
-endif ()
-
-# 添加子目录
-add_subdirectory(src)
-
-# 启用测试
-enable_testing()
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
-    add_subdirectory(tests)
-endif ()
-
-# 安装配置
-include(GNUInstallDirs)
-install(TARGETS SAR-QualityQT
-        BUNDLE DESTINATION .
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-        logCallback(QObject::tr("PDF 报告已生成：%1").arg(filePath));
+bool ReportGenerator::generatePDFReport(const QString &filePath, const QMap<QString, QString> &results, const QString &imagePath) {
+    try {
+        logCallback(QObject::tr("正在生成PDF报告：%1").arg(filePath));
+        
+        // 创建PDF写入器
+        QPdfWriter pdfWriter(filePath);
+        pdfWriter.setPageSize(QPageSize(QPageSize::A4));
+        pdfWriter.setPageMargins(QMarginsF(30, 30, 30, 30));
+        pdfWriter.setTitle(QObject::tr("SAR图像质量评估报告"));
+        
+        // 创建绘图器
+        QPainter painter(&pdfWriter);
+        painter.setPen(Qt::black);
+        
+        // 创建文本文档并设置HTML内容
+        QTextDocument document;
+        document.setDefaultFont(QFont("Arial", 10));
+        
+        // 生成HTML报告
+        QString html = generateReportHtml(results, imagePath);
+        document.setHtml(html);
+        
+        // 设置文档页面大小与PDF页面大小匹配
+        document.setPageSize(pdfWriter.pageRect().size());
+        
+        // 绘制文档到PDF
+        document.drawContents(&painter);
+        
+        // 完成绘制
+        painter.end();
+        
+        logCallback(QObject::tr("PDF报告已生成：%1").arg(filePath));
         return true;
     } catch (const std::exception &e) {
-        logCallback(QObject::tr("生成 PDF 报告时发生错误：%1").arg(e.what()));
+        logCallback(QObject::tr("生成PDF报告时发生错误：%1").arg(e.what()));
         QMessageBox::critical(parent, QObject::tr("导出失败"),
-                            QObject::tr("生成 PDF 报告时发生错误：%1").arg(e.what()));
+                            QObject::tr("生成PDF报告时发生错误：%1").arg(e.what()));
         return false;
     } catch (...) {
-        logCallback(QObject::tr("生成 PDF 报告时发生未知错误"));
+        logCallback(QObject::tr("生成PDF报告时发生未知错误"));
         QMessageBox::critical(parent, QObject::tr("导出失败"),
-                            QObject::tr("生成 PDF 报告时发生未知错误"));
+                            QObject::tr("生成PDF报告时发生未知错误"));
         return false;
     }
 }
@@ -122,7 +122,7 @@ bool ReportGenerator::generateTextReport(const QString &filePath, const QMap<QSt
         out.setCodec("UTF-8");
         
         // 写入报告标题
-        out << QObject::tr("SAR 图像质量评估报告") << "\n";
+        out << QObject::tr("SAR图像质量评估报告") << "\n";
         out << QObject::tr("====================") << "\n\n";
         
         // 写入报告日期和时间
@@ -178,7 +178,7 @@ QString ReportGenerator::generateReportHtml(const QMap<QString, QString> &result
     html += "</head><body>";
     
     // 标题
-    html += "<h1>SAR 图像质量评估报告</h1>";
+    html += "<h1>SAR图像质量评估报告</h1>";
     
     // 报告信息
     html += "<p><b>报告生成时间：</b>" + getCurrentDateTime() + "</p>";
