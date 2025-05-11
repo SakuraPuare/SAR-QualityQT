@@ -35,6 +35,17 @@ set(UI_SOURCES
 
         # 自定义图形视图
         include/drag_drop_graphics_view.h
+        
+        # 阈值设置对话框
+        threshold_settings_dialog.cpp
+        include/threshold_settings_dialog.h
+)
+
+# 为特定文件设置 SKIP_AUTOMOC 属性
+set_source_files_properties(
+        threshold_settings_dialog.cpp
+        PROPERTIES
+        SKIP_AUTOMOC TRUE
 )
 
 # 创建 UI 库

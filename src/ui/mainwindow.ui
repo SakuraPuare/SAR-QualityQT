@@ -308,6 +308,8 @@
     <addaction name="actionNESZ"/>
     <addaction name="actionRadiometricResolution"/>
     <addaction name="actionENL"/>
+    <addaction name="separator"/>
+    <addaction name="actionThresholdSettings"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -791,6 +793,14 @@
   <action name="actionENL">
    <property name="text">
     <string>等效视数 (ENL)</string>
+   </property>
+  </action>
+  <action name="actionThresholdSettings">
+   <property name="text">
+    <string>分析算法阈值设置</string>
+   </property>
+   <property name="toolTip">
+    <string>设置各项分析指标的阈值</string>
    </property>
   </action>
  </widget>

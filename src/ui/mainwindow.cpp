@@ -2,6 +2,7 @@
 #include "../core/include/analysis_controller.h"
 #include "include/drag_drop_graphics_view.h"
 #include "include/report_generator.h"
+#include "include/threshold_settings_dialog.h"
 #include "../core/include/logger.h"
 #include "ui_mainwindow.h"
 #include <QApplication>
@@ -705,4 +706,16 @@ void MainWindow::onAnalysisComplete(const SAR::Core::AnalysisResult &results) {
   showAnalysisResult(results);
 
   LOG_INFO("分析已完成");
+}
+
+// 实现阈值设置对话框的槽函数
+void MainWindow::on_actionThresholdSettings_triggered()
+{
+    // 创建并显示阈值设置对话框
+    SAR::UI::ThresholdSettingsDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted) {
+        // 更新状态栏
+        updateStatusBar(tr("阈值设置已更新"));
+        LOG_INFO("用户更新了分析算法阈值设置");
+    }
 }

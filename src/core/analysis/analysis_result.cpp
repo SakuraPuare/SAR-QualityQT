@@ -1,4 +1,7 @@
 #include "../include/analysis_result.h"
+#include <QPdfWriter>
+#include <QPainter>
+#include <QTextDocument>
 
 namespace SAR {
 namespace Core {
@@ -191,6 +194,157 @@ QString AnalysisResult::toPlainText() const
     }
     
     return text;
+}
+
+bool AnalysisResult::isPassThreshold(double value, double threshold, const QString& methodName) const
+{
+    if (methodName.contains("旁瓣比") || methodName.contains("模糊度")) {
+        return value <= threshold;
+    } else {
+        return value >= threshold;
+    }
+}
+
+QString AnalysisResult::toTableHtml(const QMap<QString, QPair<double, QString>>& thresholds) const
+{
+    QString html;
+    
+    html += "<table border='1' cellspacing='0' cellpadding='5' style='border-collapse: collapse;'>";
+    html += "<tr bgcolor='#f0f0f0'>";
+    html += "<th>指标</th>";
+    html += "<th>合格标准</th>";
+    html += "<th>计算指标</th>";
+    html += "<th>是否合格</th>";
+    html += "</tr>";
+
+    QMapIterator<QString, AnalysisResultItem> i(results);
+    while (i.hasNext()) {
+        i.next();
+        const AnalysisResultItem& item = i.value();
+        
+        html += "<tr>";
+        html += "<td>" + i.key() + "</td>";
+        
+        // 合格标准
+        QString threshold;
+        if (thresholds.contains(i.key())) {
+            threshold = QString::number(thresholds[i.key()].first) + " " + thresholds[i.key()].second;
+        } else {
+            threshold = "未设置";
+        }
+        html += "<td>" + threshold + "</td>";
+        
+        // 计算指标
+        if (item.isSuccess) {
+            html += "<td>" + QString::number(item.numericValue) + " " + item.unit + "</td>";
+            
+            // 是否合格
+            bool isPass = false;
+            if (thresholds.contains(i.key())) {
+                isPass = isPassThreshold(item.numericValue, thresholds[i.key()].first, i.key());
+            }
+            html += "<td bgcolor='" + QString(isPass ? "#90EE90" : "#FFB6C1") + "'>" + 
+                   (isPass ? "合格" : "不合格") + "</td>";
+        } else {
+            html += "<td colspan='2' bgcolor='#FFB6C1'>分析失败：" + item.errorMessage + "</td>";
+        }
+        
+        html += "</tr>";
+    }
+    
+    html += "</table>";
+    return html;
+}
+
+QString AnalysisResult::toTableText(const QMap<QString, QPair<double, QString>>& thresholds) const
+{
+    QString text;
+    
+    // 表头
+    text += QString("%-20s | %-15s | %-15s | %-10s\n").arg("指标", "合格标准", "计算指标", "是否合格");
+    text += QString("-").repeated(70) + "\n";
+
+    QMapIterator<QString, AnalysisResultItem> i(results);
+    while (i.hasNext()) {
+        i.next();
+        const AnalysisResultItem& item = i.value();
+        
+        QString methodName = i.key();
+        
+        // 合格标准
+        QString threshold;
+        if (thresholds.contains(methodName)) {
+            threshold = QString::number(thresholds[methodName].first) + " " + thresholds[methodName].second;
+        } else {
+            threshold = "未设置";
+        }
+        
+        // 计算指标和是否合格
+        QString calculatedValue;
+        QString passStatus;
+        if (item.isSuccess) {
+            calculatedValue = QString::number(item.numericValue) + " " + item.unit;
+            
+            if (thresholds.contains(methodName)) {
+                bool isPass = isPassThreshold(item.numericValue, thresholds[methodName].first, methodName);
+                passStatus = isPass ? "合格" : "不合格";
+            } else {
+                passStatus = "未知";
+            }
+        } else {
+            calculatedValue = "分析失败";
+            passStatus = "N/A";
+        }
+        
+        text += QString("%-20s | %-15s | %-15s | %-10s\n")
+                .arg(methodName, threshold, calculatedValue, passStatus);
+    }
+    
+    return text;
+}
+
+bool AnalysisResult::toPdf(const QString& filePath, const QMap<QString, QPair<double, QString>>& thresholds) const
+{
+    QPdfWriter writer(filePath);
+    writer.setPageSize(QPageSize(QPageSize::A4));
+    writer.setPageMargins(QMarginsF(30, 30, 30, 30));
+    
+    QPainter painter(&writer);
+    if (!painter.isActive()) {
+        return false;
+    }
+    
+    QTextDocument doc;
+    
+    // 创建完整的 HTML 文档
+    QString html = "<!DOCTYPE html><html><head>";
+    html += "<style>";
+    html += "body { font-family: Arial, sans-serif; }";
+    html += "table { width: 100%; border-collapse: collapse; }";
+    html += "th, td { padding: 8px; border: 1px solid black; }";
+    html += "th { background-color: #f0f0f0; }";
+    html += "</style>";
+    html += "</head><body>";
+    
+    // 添加标题和基本信息
+    html += "<h1>SAR 图像质量分析报告</h1>";
+    html += "<p><b>分析时间：</b>" + analysisTime.toString("yyyy-MM-dd hh:mm:ss") + "</p>";
+    html += "<p><b>图像路径：</b>" + imagePath + "</p>";
+    if (!description.isEmpty()) {
+        html += "<p><b>分析描述：</b>" + description + "</p>";
+    }
+    html += "<br>";
+    
+    // 添加表格
+    html += toTableHtml(thresholds);
+    
+    html += "</body></html>";
+    
+    doc.setHtml(html);
+    doc.setPageSize(painter.viewport().size());
+    doc.drawContents(&painter);
+    
+    return true;
 }
 
 } // namespace Core

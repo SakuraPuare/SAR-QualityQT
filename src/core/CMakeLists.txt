@@ -9,30 +9,34 @@ add_subdirectory(analysis)
 
 # 核心库源文件
 set(CORE_SOURCES
-        imagehandler.cpp
-        include/imagehandler.h
-        logger.cpp
-        include/logger.h
+    analysis/analysis_result.cpp
+    logger.cpp
+    imagehandler.cpp
+)
+
+set(CORE_HEADERS
+    include/analysis_result.h
+    include/analysis_result_item.h
+    include/logger.h
+    include/imagehandler.h
 )
 
 # 创建核心库
-add_library(SARCore STATIC
-        ${CORE_SOURCES}
-)
+add_library(SARCore STATIC ${CORE_SOURCES} ${CORE_HEADERS})
 
 # 设置包含目录
 target_include_directories(SARCore PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # 链接依赖库
 target_link_libraries(SARCore PUBLIC
-        SARAnalysis
-        Qt6::Core
-        Qt6::Widgets
-        GDAL::GDAL
-        ${OpenCV_LIBS}
-        glog::glog
+    Qt6::Core
+    Qt6::Gui
+    SARAnalysis
+    GDAL::GDAL
+    ${OpenCV_LIBS}
+    glog::glog
 )
 
 # 设置编译选项

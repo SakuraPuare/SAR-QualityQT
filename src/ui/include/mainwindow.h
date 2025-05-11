@@ -27,6 +27,7 @@
 // 添加核心模块头文件
 #include "../../core/include/analysis_result.h"
 #include "../../core/include/imagehandler.h"
+#include "threshold_settings_dialog.h"
 
 // 部分类仍使用前向声明
 namespace SAR {
@@ -99,6 +100,7 @@ private slots:
     void on_actionStartAssessment_triggered();
     void on_actionSelectAssessmentRegion_triggered();
     void on_checkBoxSelectAll_toggled(bool checked);
+    void on_actionThresholdSettings_triggered();
     
     // 导出结果
     void on_pushButton_exportPDF_clicked();
