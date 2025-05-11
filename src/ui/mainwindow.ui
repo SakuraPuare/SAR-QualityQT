@@ -311,6 +311,7 @@
      <addaction name="separator"/>
      <addaction name="actionLeeFilter"/>
      <addaction name="actionFrostFilter"/>
+     <addaction name="actionKuanFilter"/>
      <addaction name="separator"/>
      <addaction name="actionFilterSettings"/>
     </widget>
@@ -884,6 +885,14 @@
    </property>
    <property name="toolTip">
     <string>应用Frost滤波器（SAR图像专用）</string>
+   </property>
+  </action>
+  <action name="actionKuanFilter">
+   <property name="text">
+    <string>Kuan滤波</string>
+   </property>
+   <property name="toolTip">
+    <string>应用Kuan滤波器（SAR图像专用）</string>
    </property>
   </action>
   <action name="actionFilterSettings">

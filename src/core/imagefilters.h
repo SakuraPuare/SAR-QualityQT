@@ -19,6 +19,7 @@ enum class FilterType {
     Bilateral,   // 双边滤波
     Lee,         // Lee滤波 (SAR图像专用)
     Frost,       // Frost滤波 (SAR图像专用)
+    Kuan,        // Kuan滤波 (SAR图像专用)
     Custom       // 自定义滤波
 };
 
@@ -99,6 +100,11 @@ private:
     static cv::Mat applyFrostFilter(const cv::Mat& image, 
                                     const FilterParameters& params, 
                                     QString* log = nullptr);
+    
+    // Kuan滤波器实现
+    static cv::Mat applyKuanFilter(const cv::Mat& image, 
+                                   const FilterParameters& params, 
+                                   QString* log = nullptr);
     
     // 自定义滤波器实现
     static cv::Mat applyCustomFilter(const cv::Mat& image, 

@@ -386,6 +386,7 @@ QStringList ImageHandler::getAvailableFilterTypes() {
     filterTypes << ImageFilters::getFilterTypeDescription(FilterType::Bilateral);
     filterTypes << ImageFilters::getFilterTypeDescription(FilterType::Lee);
     filterTypes << ImageFilters::getFilterTypeDescription(FilterType::Frost);
+    filterTypes << ImageFilters::getFilterTypeDescription(FilterType::Kuan);
     
     return filterTypes;
 }

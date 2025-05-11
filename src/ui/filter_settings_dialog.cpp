@@ -84,6 +84,7 @@ void FilterSettingsDialog::setupUi()
     filterTypeComboBox->addItem(tr("双边滤波"), static_cast<int>(SAR::Core::FilterType::Bilateral));
     filterTypeComboBox->addItem(tr("Lee滤波"), static_cast<int>(SAR::Core::FilterType::Lee));
     filterTypeComboBox->addItem(tr("Frost滤波"), static_cast<int>(SAR::Core::FilterType::Frost));
+    filterTypeComboBox->addItem(tr("Kuan滤波"), static_cast<int>(SAR::Core::FilterType::Kuan));
     formLayout->addRow(tr("滤波器类型:"), filterTypeComboBox);
     
     // 内核大小
@@ -179,6 +180,7 @@ void FilterSettingsDialog::updateParameterVisibility()
             
         case SAR::Core::FilterType::Lee:
         case SAR::Core::FilterType::Frost:
+        case SAR::Core::FilterType::Kuan:
             dampingLabel->show();
             dampingSpinBox->show();
             break;

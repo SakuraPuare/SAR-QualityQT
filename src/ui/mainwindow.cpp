@@ -766,6 +766,10 @@ void MainWindow::on_actionFrostFilter_triggered() {
     applyFilter(SAR::Core::FilterType::Frost);
 }
 
+void MainWindow::on_actionKuanFilter_triggered() {
+    applyFilter(SAR::Core::FilterType::Kuan);
+}
+
 void MainWindow::applyFilter(SAR::Core::FilterType filterType) {
     // 检查是否有图像加载
     if (!imageHandler || !imageHandler->isValid()) {

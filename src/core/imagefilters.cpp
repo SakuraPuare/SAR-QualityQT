@@ -35,6 +35,8 @@ cv::Mat ImageFilters::applyFilter(const cv::Mat& image,
             return applyLeeFilter(image, params, log);
         case FilterType::Frost:
             return applyFrostFilter(image, params, log);
+        case FilterType::Kuan:
+            return applyKuanFilter(image, params, log);
         case FilterType::Custom:
             return applyCustomFilter(image, params, log);
         default:
@@ -61,6 +63,8 @@ QString ImageFilters::getFilterTypeDescription(FilterType type) {
             return QCoreApplication::translate("ImageFilters", "Lee滤波");
         case FilterType::Frost:
             return QCoreApplication::translate("ImageFilters", "Frost滤波");
+        case FilterType::Kuan:
+            return QCoreApplication::translate("ImageFilters", "Kuan滤波");
         case FilterType::Custom:
             return QCoreApplication::translate("ImageFilters", "自定义滤波");
         default:
@@ -578,6 +582,84 @@ double ImageFilters::estimateNoiseVariance(const cv::Mat& image) {
     
     // 返回估计的噪声方差
     return mean[0] * mean[0];
+}
+
+cv::Mat ImageFilters::applyKuanFilter(const cv::Mat& image, 
+                                     const FilterParameters& params, 
+                                     QString* log) {
+    logMessage(log, QCoreApplication::translate("ImageFilters", "应用Kuan滤波器..."));
+    
+    // 确保图像为浮点类型
+    cv::Mat floatImage;
+    if (image.depth() != CV_32F) {
+        image.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = image.clone();
+    }
+    
+    int ksize = params.kernelSize;
+    if (ksize % 2 == 0) {
+        ksize++;  // 确保内核大小为奇数
+    }
+    
+    double damping = params.damping;
+    int radius = ksize / 2;
+    
+    cv::Mat result = cv::Mat::zeros(floatImage.size(), CV_32F);
+    cv::Mat paddedImage;
+    
+    // 添加边界填充，以处理边缘像素
+    cv::copyMakeBorder(floatImage, paddedImage, radius, radius, radius, radius, 
+                      cv::BORDER_REFLECT_101);
+    
+    // 估计图像噪声水平
+    double noiseVariance = estimateNoiseVariance(floatImage);
+    
+    // 遍历每个像素
+    for (int i = 0; i < floatImage.rows; i++) {
+        for (int j = 0; j < floatImage.cols; j++) {
+            // 提取局部窗口
+            cv::Mat window = paddedImage(cv::Rect(j, i, ksize, ksize));
+            
+            // 计算局部统计量
+            cv::Scalar meanValue, stdDev;
+            cv::meanStdDev(window, meanValue, stdDev);
+            
+            double mean = meanValue[0];
+            double variance = stdDev[0] * stdDev[0];
+            
+            // 计算Kuan滤波器的自适应权重
+            double alpha = 1.0;
+            
+            // 防止除以零
+            if (mean > 1e-5) {
+                double noiseSigma = noiseVariance / (mean * mean);
+                double ENL = damping;  // 等效视数，这里使用阻尼系数作为参数
+                double cu = 1.0 / std::sqrt(ENL);
+                double ci = std::sqrt(variance) / mean;
+                
+                // 计算Kuan滤波器的权重
+                if (ci > cu) {
+                    alpha = (1.0 - (cu * cu / (ci * ci))) / (1.0 + cu * cu);
+                } else {
+                    alpha = 0.0;  // 完全平滑
+                }
+            }
+            
+            // 应用滤波器
+            double pixelValue = floatImage.at<float>(i, j);
+            double filteredValue = mean + alpha * (pixelValue - mean);
+            result.at<float>(i, j) = filteredValue;
+        }
+    }
+    
+    // 转换回原始数据类型
+    if (image.depth() != CV_32F) {
+        result.convertTo(result, image.type());
+    }
+    
+    logMessage(log, QCoreApplication::translate("ImageFilters", "Kuan滤波器应用完成，内核大小：%1，阻尼系数：%2").arg(ksize).arg(damping));
+    return result;
 }
 
 } // namespace Core

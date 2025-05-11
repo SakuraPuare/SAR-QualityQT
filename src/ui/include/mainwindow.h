@@ -122,6 +122,7 @@ private slots:
     void on_actionBilateralFilter_triggered();
     void on_actionLeeFilter_triggered();
     void on_actionFrostFilter_triggered();
+    void on_actionKuanFilter_triggered();
     
     // 其他
     void on_actionAbout_triggered();

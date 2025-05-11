@@ -112,7 +112,9 @@ enum class FilterType {
     HighPass,   // 高通滤波
     BandPass,   // 带通滤波
     Median,     // 中值滤波
-    Gaussian    // 高斯滤波
+    Gaussian,   // 高斯滤波
+    Kuan,       // Kuan滤波（SAR图像自适应滤波）
+    Frost       // Frost滤波（SAR图像自适应滤波）
 };
 
 /**

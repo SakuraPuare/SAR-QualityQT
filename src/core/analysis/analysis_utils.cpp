@@ -1,6 +1,7 @@
 #include "analysis_utils.h"
 #include <opencv2/imgproc.hpp>
 #include <cmath>
+#include <limits>
 #include "../include/logger.h"
 
 namespace SAR {
@@ -301,6 +302,163 @@ cv::Mat applyFilter(const cv::Mat& image, FilterType type, double param1, double
             
             // 逆变换
             cv::dft(complex, result, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT | cv::DFT_SCALE);
+        }
+        break;
+        
+    case FilterType::Kuan:
+        {
+            // Kuan滤波 - 自适应滤波器，用于抑制SAR图像中的乘性噪声
+            
+            // 获取参数
+            int windowSize = param1 > 0 ? static_cast<int>(param1) : 7;
+            if (windowSize % 2 == 0) windowSize++; // 确保窗口大小为奇数
+            double damping = param2 > 0 ? param2 : 1.0; // 阻尼系数
+            
+            // 创建结果图像
+            result = cv::Mat::zeros(image.size(), image.type());
+            
+            // 获取带填充的图像，以处理边界
+            cv::Mat paddedImage;
+            int padding = windowSize / 2;
+            cv::copyMakeBorder(image, paddedImage, padding, padding, padding, padding, 
+                              cv::BORDER_REFLECT_101);
+            
+            // 估计图像中的噪声水平
+            double globalMean = cv::mean(image)[0];
+            double noiseVariance = 0.0;
+            
+            // 计算噪声方差 - 可以根据图像估计或使用预设值
+            // 这里使用简单的全局噪声水平估计
+            cv::Mat tempDiff;
+            cv::absdiff(image, globalMean, tempDiff);
+            cv::multiply(tempDiff, tempDiff, tempDiff);
+            noiseVariance = cv::mean(tempDiff)[0];
+            
+            // 噪声标准差估计
+            double noiseStdDev = std::sqrt(noiseVariance);
+            
+            // 遍历图像的每个像素
+            for (int i = 0; i < image.rows; i++) {
+                for (int j = 0; j < image.cols; j++) {
+                    // 提取当前窗口
+                    cv::Mat window = paddedImage(cv::Rect(j, i, windowSize, windowSize));
+                    
+                    // 计算窗口的均值和方差
+                    cv::Scalar windowMean, windowStdDev;
+                    cv::meanStdDev(window, windowMean, windowStdDev);
+                    
+                    double mean = windowMean[0];
+                    double variance = windowStdDev[0] * windowStdDev[0];
+                    
+                    // 计算噪声与信号的方差比
+                    double alpha = 1.0;
+                    
+                    // 防止除以零
+                    if (mean > std::numeric_limits<double>::epsilon()) {
+                        double noiseSigma = noiseVariance / (mean * mean);
+                        double ENL = damping; // 等效次数，可作为参数传入
+                        double cu = 1.0 / std::sqrt(ENL);
+                        double ci = std::sqrt(variance) / mean;
+                        
+                        // 计算Kuan滤波器的权重
+                        if (ci > cu) {
+                            alpha = (1.0 - (cu * cu / (ci * ci))) / (1.0 + cu * cu);
+                        } else {
+                            alpha = 0.0; // 完全平滑
+                        }
+                    }
+                    
+                    // 应用滤波
+                    double centerValue = image.at<float>(i, j);
+                    double filteredValue = mean + alpha * (centerValue - mean);
+                    
+                    // 设置结果
+                    result.at<float>(i, j) = static_cast<float>(filteredValue);
+                }
+            }
+        }
+        break;
+        
+    case FilterType::Frost:
+        {
+            // Frost滤波 - 基于指数加权的自适应滤波器
+            
+            // 获取参数
+            int windowSize = param1 > 0 ? static_cast<int>(param1) : 7;
+            if (windowSize % 2 == 0) windowSize++; // 确保窗口大小为奇数
+            double damping = param2 > 0 ? param2 : 2.0; // 阻尼系数，控制滤波强度
+            
+            // 创建结果图像
+            result = cv::Mat::zeros(image.size(), image.type());
+            
+            // 获取带填充的图像，以处理边界
+            cv::Mat paddedImage;
+            int padding = windowSize / 2;
+            cv::copyMakeBorder(image, paddedImage, padding, padding, padding, padding, 
+                              cv::BORDER_REFLECT_101);
+            
+            // 估计图像中的噪声水平
+            double globalMean = cv::mean(image)[0];
+            double globalVariance = 0.0;
+            
+            // 计算全局方差
+            cv::Mat tempDiff;
+            cv::absdiff(image, globalMean, tempDiff);
+            cv::multiply(tempDiff, tempDiff, tempDiff);
+            globalVariance = cv::mean(tempDiff)[0];
+            
+            // 遍历图像的每个像素
+            for (int i = 0; i < image.rows; i++) {
+                for (int j = 0; j < image.cols; j++) {
+                    // 提取当前窗口
+                    cv::Mat window = paddedImage(cv::Rect(j, i, windowSize, windowSize));
+                    
+                    // 计算窗口的局部统计量
+                    cv::Scalar windowMean, windowStdDev;
+                    cv::meanStdDev(window, windowMean, windowStdDev);
+                    
+                    double localMean = windowMean[0];
+                    double localVariance = windowStdDev[0] * windowStdDev[0];
+                    
+                    // 计算局部变异系数
+                    double variationCoeff = 0.0;
+                    if (localMean > std::numeric_limits<double>::epsilon()) {
+                        variationCoeff = localVariance / (localMean * localMean);
+                    }
+                    
+                    // 计算中心点
+                    int centerX = padding;
+                    int centerY = padding;
+                    
+                    // 权重总和
+                    double weightSum = 0.0;
+                    double valueSum = 0.0;
+                    
+                    // 遍历窗口内的每个像素，计算Frost权重并应用
+                    for (int wi = 0; wi < windowSize; wi++) {
+                        for (int wj = 0; wj < windowSize; wj++) {
+                            // 计算到中心的距离
+                            double dist = std::sqrt((wi - centerY) * (wi - centerY) + 
+                                                   (wj - centerX) * (wj - centerX));
+                            
+                            // 计算Frost滤波器权重
+                            double weight = std::exp(-damping * variationCoeff * dist);
+                            
+                            // 累加加权值
+                            double pixelValue = static_cast<double>(window.at<float>(wi, wj));
+                            valueSum += weight * pixelValue;
+                            weightSum += weight;
+                        }
+                    }
+                    
+                    // 设置结果
+                    if (weightSum > std::numeric_limits<double>::epsilon()) {
+                        result.at<float>(i, j) = static_cast<float>(valueSum / weightSum);
+                    } else {
+                        result.at<float>(i, j) = image.at<float>(i, j); // 防止除以零
+                    }
+                }
+            }
         }
         break;
         
