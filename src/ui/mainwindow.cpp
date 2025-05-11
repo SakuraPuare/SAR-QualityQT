@@ -312,9 +312,17 @@ bool MainWindow::loadImage(const QString &filePath) {
   // 使用 GDAL 加载图像
   if (imageHandler->loadImage(filePath)) {
     // 更新 UI
-    QPixmap pixmap(filePath);
+    QPixmap pixmap = imageHandler->getDisplayPixmap(imageView->size());
+    if (pixmap.isNull()) {
+      QMessageBox::warning(this, tr("图像显示失败"),
+                         tr("无法将图像转换为可显示格式：%1").arg(filePath));
+      LOG_ERROR(QString("无法将图像转换为可显示格式：%1").arg(filePath));
+      return false;
+    }
+    
     imageScene->clear();
-    imageScene->addPixmap(pixmap);
+    QGraphicsPixmapItem *item = imageScene->addPixmap(pixmap);
+    imageScene->setSceneRect(item->boundingRect());
     imageView->fitInView(imageScene->sceneRect(), Qt::KeepAspectRatio);
 
     // 更新当前图像路径

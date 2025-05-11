@@ -45,49 +45,117 @@ Logger::~Logger() {
     google::ShutdownGoogleLogging();
 }
 
-void Logger::info(const QString& message) {
+void Logger::info(const QString& message, const char* file, int line) {
     std::string stdMsg = message.toStdString();
-    LOG(INFO) << stdMsg;
+    if (file && line > 0) {
+        // 使用源文件位置记录日志
+        google::LogMessage(file, line, google::GLOG_INFO).stream() << stdMsg;
+    } else {
+        // 默认方式
+        LOG(INFO) << stdMsg;
+    }
     
-    QString formattedMsg = QString("[INFO][%1] %2")
-        .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
-        .arg(message);
+    QString formattedMsg;
+    if (file && line > 0) {
+        // 在格式化消息中添加源文件位置
+        QString fileName = QString(file).split('/').last().split('\\').last();
+        formattedMsg = QString("[INFO][%1][%2:%3] %4")
+            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
+            .arg(fileName)
+            .arg(line)
+            .arg(message);
+    } else {
+        formattedMsg = QString("[INFO][%1] %2")
+            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
+            .arg(message);
+    }
         
     addToRecentLogs(formattedMsg);
     emit newLogMessage(formattedMsg);
 }
 
-void Logger::warning(const QString& message) {
+void Logger::warning(const QString& message, const char* file, int line) {
     std::string stdMsg = message.toStdString();
-    LOG(WARNING) << stdMsg;
+    if (file && line > 0) {
+        // 使用源文件位置记录日志
+        google::LogMessage(file, line, google::GLOG_WARNING).stream() << stdMsg;
+    } else {
+        // 默认方式
+        LOG(WARNING) << stdMsg;
+    }
     
-    QString formattedMsg = QString("[WARNING][%1] %2")
-        .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
-        .arg(message);
+    QString formattedMsg;
+    if (file && line > 0) {
+        // 在格式化消息中添加源文件位置
+        QString fileName = QString(file).split('/').last().split('\\').last();
+        formattedMsg = QString("[WARNING][%1][%2:%3] %4")
+            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
+            .arg(fileName)
+            .arg(line)
+            .arg(message);
+    } else {
+        formattedMsg = QString("[WARNING][%1] %2")
+            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
+            .arg(message);
+    }
         
     addToRecentLogs(formattedMsg);
     emit newLogMessage(formattedMsg);
 }
 
-void Logger::error(const QString& message) {
+void Logger::error(const QString& message, const char* file, int line) {
     std::string stdMsg = message.toStdString();
-    LOG(ERROR) << stdMsg;
+    if (file && line > 0) {
+        // 使用源文件位置记录日志
+        google::LogMessage(file, line, google::GLOG_ERROR).stream() << stdMsg;
+    } else {
+        // 默认方式
+        LOG(ERROR) << stdMsg;
+    }
     
-    QString formattedMsg = QString("[ERROR][%1] %2")
-        .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
-        .arg(message);
+    QString formattedMsg;
+    if (file && line > 0) {
+        // 在格式化消息中添加源文件位置
+        QString fileName = QString(file).split('/').last().split('\\').last();
+        formattedMsg = QString("[ERROR][%1][%2:%3] %4")
+            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
+            .arg(fileName)
+            .arg(line)
+            .arg(message);
+    } else {
+        formattedMsg = QString("[ERROR][%1] %2")
+            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
+            .arg(message);
+    }
         
     addToRecentLogs(formattedMsg);
     emit newLogMessage(formattedMsg);
 }
 
-void Logger::fatal(const QString& message) {
+void Logger::fatal(const QString& message, const char* file, int line) {
     std::string stdMsg = message.toStdString();
-    LOG(FATAL) << stdMsg;
+    if (file && line > 0) {
+        // 使用源文件位置记录日志
+        google::LogMessage(file, line, google::GLOG_FATAL).stream() << stdMsg;
+    } else {
+        // 默认方式
+        LOG(FATAL) << stdMsg;
+    }
     
-    QString formattedMsg = QString("[FATAL][%1] %2")
-        .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
-        .arg(message);
+    QString formattedMsg;
+    if (file && line > 0) {
+        // 在格式化消息中添加源文件位置
+        QString fileName = QString(file).split('/').last().split('\\').last();
+        formattedMsg = QString("[FATAL][%1][%2:%3] %4")
+            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
+            .arg(fileName)
+            .arg(line)
+            .arg(message);
+    } else {
+        formattedMsg = QString("[FATAL][%1] %2")
+            .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz"))
+            .arg(message);
+    }
         
     addToRecentLogs(formattedMsg);
     emit newLogMessage(formattedMsg);

@@ -3,6 +3,11 @@
 #include <cmath>
 #include <numeric>
 
+// 定义M_PI（如果不存在）
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace SAR {
 namespace Analysis {
 

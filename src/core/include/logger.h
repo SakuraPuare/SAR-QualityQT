@@ -44,26 +44,34 @@ public:
     /**
      * @brief 记录INFO级别日志
      * @param message 日志消息
+     * @param file 调用者文件名
+     * @param line 调用者行号
      */
-    void info(const QString& message);
+    void info(const QString& message, const char* file = nullptr, int line = 0);
     
     /**
      * @brief 记录WARNING级别日志
      * @param message 日志消息
+     * @param file 调用者文件名
+     * @param line 调用者行号
      */
-    void warning(const QString& message);
+    void warning(const QString& message, const char* file = nullptr, int line = 0);
     
     /**
      * @brief 记录ERROR级别日志
      * @param message 日志消息
+     * @param file 调用者文件名
+     * @param line 调用者行号
      */
-    void error(const QString& message);
+    void error(const QString& message, const char* file = nullptr, int line = 0);
     
     /**
      * @brief 记录FATAL级别日志
      * @param message 日志消息
+     * @param file 调用者文件名
+     * @param line 调用者行号
      */
-    void fatal(const QString& message);
+    void fatal(const QString& message, const char* file = nullptr, int line = 0);
     
     /**
      * @brief 获取最新的日志条目
@@ -91,11 +99,11 @@ private:
     void addToRecentLogs(const QString& message);
 };
 
-// 定义便捷宏，使用类似 glog 风格的接口
-#define LOG_INFO(msg) SAR::Core::Logger::instance()->info(msg)
-#define LOG_WARNING(msg) SAR::Core::Logger::instance()->warning(msg)
-#define LOG_ERROR(msg) SAR::Core::Logger::instance()->error(msg)
-#define LOG_FATAL(msg) SAR::Core::Logger::instance()->fatal(msg)
+// 定义便捷宏，使用类似 glog 风格的接口，但传递文件和行号信息
+#define LOG_INFO(msg) SAR::Core::Logger::instance()->info(msg, __FILE__, __LINE__)
+#define LOG_WARNING(msg) SAR::Core::Logger::instance()->warning(msg, __FILE__, __LINE__)
+#define LOG_ERROR(msg) SAR::Core::Logger::instance()->error(msg, __FILE__, __LINE__)
+#define LOG_FATAL(msg) SAR::Core::Logger::instance()->fatal(msg, __FILE__, __LINE__)
 
 } // namespace Core
 } // namespace SAR

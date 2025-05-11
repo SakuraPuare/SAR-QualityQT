@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>1024</height>
+    <height>1038</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -40,7 +40,7 @@
            <bool>true</bool>
           </property>
           <property name="text">
-           <string>图像显示区域 (请替换为 QGraphicsView 或类似组件)</string>
+           <string>图像显示区域</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -256,7 +256,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>29</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

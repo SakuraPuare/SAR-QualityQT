@@ -15,7 +15,7 @@ set(UI_SOURCES
 
         # UI设置模块
         ui_setup.cpp
-        ui_setup.h
+        ui_setup.h  # 直接引用在根目录下创建的文件
 
         # 图像处理模块
         image_handler.cpp
