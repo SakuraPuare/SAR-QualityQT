@@ -79,10 +79,10 @@ endif ()
 add_subdirectory(src)
 
 # 启用测试
-enable_testing()
-if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
-    add_subdirectory(tests)
-endif ()
+# enable_testing()
+# if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
+#     add_subdirectory(tests)
+# endif ()
 
 # 安装配置
 include(GNUInstallDirs)

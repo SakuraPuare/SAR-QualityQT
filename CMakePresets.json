@@ -14,5 +14,31 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/linux"
     }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug-windows",
+      "configurePreset": "vcpkg",
+      "configuration": "Debug",
+      "jobs": 0,
+      "nativeToolOptions": ["/maxcpucount", "/p:CL_MPcount=0"]
+    },
+    {
+      "name": "release-windows",
+      "configurePreset": "vcpkg",
+      "configuration": "Release",
+      "jobs": 0,
+      "nativeToolOptions": ["/maxcpucount", "/p:CL_MPcount=0"]
+    },
+    {
+      "name": "debug-linux",
+      "configurePreset": "linux-system",
+      "configuration": "Debug"
+    },
+    {
+      "name": "release-linux",
+      "configurePreset": "linux-system",
+      "configuration": "Release"
+    }
   ]
 }
