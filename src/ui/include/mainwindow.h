@@ -139,6 +139,11 @@ private slots:
     void onNewLogMessage(const QString &message);
     void clearLog();
     void saveLog();
+    
+    // 新增的图像增强相关槽函数
+    void onDisplayModeChanged(int index);
+    void onClipPercentileChanged();
+    void onAutoEnhanceClicked();
 
 private:
     Ui::MainWindow *ui;
@@ -176,14 +181,16 @@ private:
     void showAnalysisResults();
     void showAnalysisResult(const SAR::Core::AnalysisResult &result);
     void handleDroppedFile(const QString &filePath); // 处理拖放文件
-    bool isSupportedImageFormat(const QString &filePath); // 检查是否为支持的图像格式
-    QString generateQualityTable(); // 生成质量指标表格
-    QString generateReportHtml();
-    QString generateQualityTableHtml();
+    bool isSupportedImageFormat(const QString &filePath);
     
-    // 滤波相关方法
+    // 滤波器相关方法
     void applyFilter(SAR::Core::FilterType filterType);
     void showFilterSettingsDialog(SAR::Core::FilterType filterType = SAR::Core::FilterType::Gaussian);
+    
+    // 新增的图像增强相关方法
+    void setupImageEnhancementControls();
+    void refreshImageDisplay();
+    void applyImageEnhancement();
 };
 
 #endif // MAINWINDOW_H

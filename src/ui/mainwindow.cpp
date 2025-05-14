@@ -16,36 +16,58 @@
 #include <QDateTime>
 
 MainWindow::MainWindow(QWidget *parent)
-  : QMainWindow(parent), ui(new Ui::MainWindow) {
+  : QMainWindow(parent)
+  , ui(new Ui::MainWindow)
+  , imageScene(new QGraphicsScene(this))
+  , imageView(nullptr)
+  , hasSelectedRegion(false)
+  , imageHandler(new SAR::Core::ImageHandler())
+  , analysisController(nullptr)
+  , reportGenerator(nullptr)
+{
   ui->setupUi(this);
 
   // 初始化成员变量
   imageScene = new QGraphicsScene(this);
   imageHandler = new SAR::Core::ImageHandler();
+  
+  // 设置日志记录器
+  imageHandler->setLogger([this](const QString &msg) { this->log(msg); });
+  
   // 创建分析控制器
   analysisController = new SAR::Core::AnalysisController(
-    this, imageHandler, [this](int progress, const QString &message) {
-      onAnalysisProgress(progress, message);
-    });
+    this, imageHandler, 
+    [this](int progress, const QString &message) {
+      this->onAnalysisProgress(progress, message);
+    }
+  );
+  
+  // 创建报告生成器
   reportGenerator = new SAR::UI::ReportGenerator(
-    this, [this](const QString &message) { LOG_INFO(message); });
+    this, [this](const QString &msg) { this->log(msg); }
+  );
 
+  // 设置分析选项
+  configureAnalysisOptions();
+  configureResultTabs();
+  
   // 设置窗口标题
   setWindowTitle(tr("SAR 图像质量分析工具"));
 
   // 设置图像查看器
   setupImageViewer();
+  
+  // 设置图像增强控件
+  setupImageEnhancementControls();
 
   // 设置信号连接
   setupConnections();
-
-  // 配置分析选项
-  configureAnalysisOptions();
-
-  // 更新状态栏
-  updateStatusBar(tr("准备就绪"));
-
-  LOG_INFO("主窗口初始化完成");
+  
+  // 禁用分析按钮
+  enableAnalysisButtons(false);
+  
+  // 日志初始化
+  log(tr("应用程序已启动"));
 }
 
 MainWindow::~MainWindow() {
@@ -349,6 +371,17 @@ bool MainWindow::loadImage(const QString &filePath) {
 
     // 启用分析按钮
     enableAnalysisButtons(true);
+    
+    // 启用图像增强控件
+    QList<QGroupBox*> enhancementGroups = findChildren<QGroupBox*>();
+    for (QGroupBox* group : enhancementGroups) {
+      if (group->property("enhancementGroup").toBool()) {
+        group->setEnabled(true);
+      }
+    }
+    
+    // 自动增强图像显示
+    onAutoEnhanceClicked();
 
     // 更新状态栏
     updateStatusBar(tr("已加载图像：%1").arg(QFileInfo(filePath).fileName()));
@@ -820,5 +853,218 @@ void MainWindow::showFilterSettingsDialog(SAR::Core::FilterType filterType) {
             QMessageBox::critical(this, tr("错误"), tr("无法应用滤波器，请查看日志了解详情"));
             updateStatusBar(tr("无法应用滤波器"));
         }
+    }
+}
+
+void MainWindow::setupImageEnhancementControls() {
+    // 创建增强控件容器
+    QGroupBox* enhancementGroup = new QGroupBox(tr("SAR图像增强"), this);
+    QVBoxLayout* enhancementLayout = new QVBoxLayout(enhancementGroup);
+    
+    // 创建显示模式选择下拉框
+    QHBoxLayout* displayModeLayout = new QHBoxLayout();
+    QLabel* displayModeLabel = new QLabel(tr("显示模式:"), this);
+    QComboBox* displayModeCombo = new QComboBox(this);
+    displayModeCombo->setObjectName("displayModeCombo");
+    displayModeCombo->addItem(tr("线性缩放"), static_cast<int>(SAR::Core::ImageDisplayMode::Linear));
+    displayModeCombo->addItem(tr("对数缩放"), static_cast<int>(SAR::Core::ImageDisplayMode::Logarithmic));
+    displayModeCombo->addItem(tr("平方根缩放"), static_cast<int>(SAR::Core::ImageDisplayMode::Sqrt));
+    displayModeCombo->addItem(tr("百分比裁剪"), static_cast<int>(SAR::Core::ImageDisplayMode::ClipPercent));
+    connect(displayModeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onDisplayModeChanged(int)));
+    displayModeLayout->addWidget(displayModeLabel);
+    displayModeLayout->addWidget(displayModeCombo);
+    
+    // 创建裁剪百分比设置
+    QGroupBox* clipGroup = new QGroupBox(tr("裁剪百分比设置"), this);
+    clipGroup->setObjectName("clipGroup");
+    QGridLayout* clipLayout = new QGridLayout(clipGroup);
+    
+    QLabel* lowerLabel = new QLabel(tr("下限 (%):"), this);
+    QDoubleSpinBox* lowerSpinBox = new QDoubleSpinBox(this);
+    lowerSpinBox->setObjectName("lowerClipSpinBox");
+    lowerSpinBox->setRange(0.0, 50.0);
+    lowerSpinBox->setValue(1.0);
+    lowerSpinBox->setSingleStep(0.5);
+    
+    QLabel* upperLabel = new QLabel(tr("上限 (%):"), this);
+    QDoubleSpinBox* upperSpinBox = new QDoubleSpinBox(this);
+    upperSpinBox->setObjectName("upperClipSpinBox");
+    upperSpinBox->setRange(50.0, 100.0);
+    upperSpinBox->setValue(99.0);
+    upperSpinBox->setSingleStep(0.5);
+    
+    connect(lowerSpinBox, SIGNAL(valueChanged(double)), this, SLOT(onClipPercentileChanged()));
+    connect(upperSpinBox, SIGNAL(valueChanged(double)), this, SLOT(onClipPercentileChanged()));
+    
+    clipLayout->addWidget(lowerLabel, 0, 0);
+    clipLayout->addWidget(lowerSpinBox, 0, 1);
+    clipLayout->addWidget(upperLabel, 1, 0);
+    clipLayout->addWidget(upperSpinBox, 1, 1);
+    
+    // 创建自动增强按钮
+    QPushButton* autoEnhanceButton = new QPushButton(tr("自动增强"), this);
+    autoEnhanceButton->setObjectName("autoEnhanceButton");
+    connect(autoEnhanceButton, SIGNAL(clicked()), this, SLOT(onAutoEnhanceClicked()));
+    
+    // 将控件添加到布局
+    enhancementLayout->addLayout(displayModeLayout);
+    enhancementLayout->addWidget(clipGroup);
+    enhancementLayout->addWidget(autoEnhanceButton);
+    enhancementLayout->addStretch();
+    
+    // 找到适合的位置添加增强控件
+    if (ui->dockWidgetContents_analysis && ui->verticalLayout_analysis) {
+        // 添加到分析面板中
+        ui->verticalLayout_analysis->insertWidget(0, enhancementGroup);
+    } else if (ui->dockWidgetContents_log && ui->verticalLayout_log) {
+        // 添加到日志面板上方
+        ui->verticalLayout_log->insertWidget(0, enhancementGroup);
+    } else {
+        // 如果没找到合适的布局，直接添加到主窗口
+        QVBoxLayout* centralLayout = new QVBoxLayout();
+        centralLayout->addWidget(enhancementGroup);
+        this->setCentralWidget(new QWidget(this));
+        this->centralWidget()->setLayout(centralLayout);
+    }
+    
+    // 初始禁用控件，等图像加载后启用
+    enhancementGroup->setEnabled(false);
+    // 保存控件指针以便后续访问
+    enhancementGroup->setProperty("enhancementGroup", true);
+    
+    // 设置裁剪控件初始状态
+    clipGroup->setVisible(false); // 默认不显示裁剪控件
+}
+
+void MainWindow::refreshImageDisplay() {
+    if (!imageHandler->isValid()) {
+        return;
+    }
+    
+    QPixmap pixmap = imageHandler->getDisplayPixmap(imageView->size());
+    if (pixmap.isNull()) {
+        QMessageBox::warning(this, tr("图像显示失败"),
+                         tr("无法将图像转换为可显示格式"));
+        return;
+    }
+    
+    // 保存当前的变换状态
+    QTransform currentTransform;
+    if (imageScene->items().size() > 0) {
+        QGraphicsItem* item = imageScene->items().first();
+        currentTransform = item->transform();
+    }
+    
+    // 清除场景并添加新的图像
+    imageScene->clear();
+    QGraphicsPixmapItem *item = imageScene->addPixmap(pixmap);
+    
+    // 应用之前的变换
+    item->setTransform(currentTransform);
+    
+    // 更新场景边界
+    imageScene->setSceneRect(item->boundingRect());
+    
+    // 更新状态栏
+    updateStatusBar(tr("已刷新图像显示: %1").arg(QFileInfo(currentImagePath).fileName()));
+}
+
+void MainWindow::applyImageEnhancement() {
+    if (!imageHandler->isValid()) {
+        return;
+    }
+    
+    // 刷新图像显示
+    refreshImageDisplay();
+}
+
+void MainWindow::onDisplayModeChanged(int index) {
+    if (!imageHandler->isValid()) {
+        return;
+    }
+    
+    QComboBox* comboBox = qobject_cast<QComboBox*>(sender());
+    if (!comboBox) {
+        return;
+    }
+    
+    // 获取选中的显示模式
+    SAR::Core::ImageDisplayMode mode = static_cast<SAR::Core::ImageDisplayMode>(
+        comboBox->itemData(index).toInt());
+    
+    // 设置显示模式
+    imageHandler->setDisplayMode(mode);
+    
+    // 更新裁剪控件可见性
+    QGroupBox* clipGroup = findChild<QGroupBox*>("clipGroup");
+    if (clipGroup) {
+        clipGroup->setVisible(mode == SAR::Core::ImageDisplayMode::ClipPercent);
+    }
+    
+    // 应用图像增强
+    applyImageEnhancement();
+}
+
+void MainWindow::onClipPercentileChanged() {
+    if (!imageHandler->isValid()) {
+        return;
+    }
+    
+    QDoubleSpinBox* lowerSpinBox = findChild<QDoubleSpinBox*>("lowerClipSpinBox");
+    QDoubleSpinBox* upperSpinBox = findChild<QDoubleSpinBox*>("upperClipSpinBox");
+    
+    if (!lowerSpinBox || !upperSpinBox) {
+        return;
+    }
+    
+    // 获取设置的裁剪百分比
+    double lowerPercent = lowerSpinBox->value();
+    double upperPercent = upperSpinBox->value();
+    
+    // 设置裁剪百分比
+    imageHandler->setClipPercentile(lowerPercent, upperPercent);
+    
+    // 应用图像增强
+    applyImageEnhancement();
+}
+
+void MainWindow::onAutoEnhanceClicked() {
+    if (!imageHandler->isValid()) {
+        return;
+    }
+    
+    // 执行自动增强
+    if (imageHandler->autoEnhance()) {
+        // 更新UI控件状态
+        QComboBox* displayModeCombo = findChild<QComboBox*>("displayModeCombo");
+        if (displayModeCombo) {
+            // 获取当前显示模式
+            SAR::Core::ImageDisplayMode mode = imageHandler->getDisplayMode();
+            // 更新下拉框选择
+            for (int i = 0; i < displayModeCombo->count(); i++) {
+                if (displayModeCombo->itemData(i).toInt() == static_cast<int>(mode)) {
+                    displayModeCombo->setCurrentIndex(i);
+                    break;
+                }
+            }
+        }
+        
+        // 获取裁剪百分比
+        QPair<double, double> clipValues = imageHandler->getClipPercentile();
+        
+        // 更新裁剪百分比控件
+        QDoubleSpinBox* lowerSpinBox = findChild<QDoubleSpinBox*>("lowerClipSpinBox");
+        QDoubleSpinBox* upperSpinBox = findChild<QDoubleSpinBox*>("upperClipSpinBox");
+        
+        if (lowerSpinBox && upperSpinBox) {
+            lowerSpinBox->setValue(clipValues.first);
+            upperSpinBox->setValue(clipValues.second);
+        }
+        
+        // 应用图像增强
+        applyImageEnhancement();
+        
+        // 更新状态栏
+        updateStatusBar(tr("已自动增强图像显示"));
     }
 }

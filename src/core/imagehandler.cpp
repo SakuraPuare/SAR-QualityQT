@@ -6,6 +6,7 @@
 #include <QCoreApplication> // <--- 包含 QCoreApplication 用于 translate
 #include <vector>
 #include <cmath>
+#include <algorithm> // 用于std::sort, std::nth_element
 
 #include <opencv2/imgproc.hpp> // 包含 cv::split, cv::magnitude, cv::normalize, cv::minMaxLoc, cv::convertTo
 #include <opencv2/core/types_c.h> // For cv::typeToString
@@ -215,9 +216,96 @@ const cv::Mat &ImageHandler::getImageData() const {
     return currentImage;
 }
 
+// --- SAR图像高动态范围处理方法实现 ---
+
+void ImageHandler::setDisplayMode(ImageDisplayMode mode) {
+    m_displayMode = mode;
+    log(QCoreApplication::translate("ImageHandler", "图像显示模式已设置为: %1")
+        .arg([this]() {
+            switch (m_displayMode) {
+                case ImageDisplayMode::Linear: return QCoreApplication::translate("ImageHandler", "线性缩放");
+                case ImageDisplayMode::Logarithmic: return QCoreApplication::translate("ImageHandler", "对数缩放");
+                case ImageDisplayMode::Sqrt: return QCoreApplication::translate("ImageHandler", "平方根缩放");
+                case ImageDisplayMode::ClipPercent: return QCoreApplication::translate("ImageHandler", "百分比裁剪(%1%, %2%)")
+                                            .arg(m_lowerClipPercent).arg(m_upperClipPercent);
+                default: return QCoreApplication::translate("ImageHandler", "未知");
+            }
+        }()));
+}
+
+ImageDisplayMode ImageHandler::getDisplayMode() const {
+    return m_displayMode;
+}
+
+void ImageHandler::setClipPercentile(double lower, double upper) {
+    // 验证参数
+    if (lower < 0) lower = 0;
+    if (upper > 100) upper = 100;
+    if (lower >= upper) {
+        log(QCoreApplication::translate("ImageHandler", "警告: 裁剪百分比参数无效 (lower >= upper)，使用默认值"));
+        lower = 1.0;
+        upper = 99.0;
+    }
+    
+    m_lowerClipPercent = lower;
+    m_upperClipPercent = upper;
+    
+    log(QCoreApplication::translate("ImageHandler", "裁剪百分比已设置为: 下限=%1%, 上限=%2%")
+        .arg(m_lowerClipPercent).arg(m_upperClipPercent));
+}
+
+QPair<double, double> ImageHandler::getClipPercentile() const {
+    return qMakePair(m_lowerClipPercent, m_upperClipPercent);
+}
+
+bool ImageHandler::autoEnhance() {
+    if (!isValid()) {
+        log(QCoreApplication::translate("ImageHandler", "错误: 图像无效，无法执行自动增强"));
+        return false;
+    }
+    
+    // 检测图像特性，选择最佳显示模式
+    cv::Scalar mean, stddev;
+    cv::meanStdDev(currentImage, mean, stddev);
+    double minVal, maxVal;
+    cv::minMaxLoc(currentImage, &minVal, &maxVal);
+    
+    // 判断图像动态范围
+    double dynamicRange = maxVal - minVal;
+    double meanValue = mean[0];
+    double stdValue = stddev[0];
+    double cvValue = stdValue / meanValue; // 变异系数
+    
+    log(QCoreApplication::translate("ImageHandler", "图像统计: 最小值=%1, 最大值=%2, 均值=%3, 标准差=%4")
+        .arg(minVal).arg(maxVal).arg(meanValue).arg(stdValue));
+    
+    // 基于图像特性自动选择显示模式
+    if (maxVal > 1000 || dynamicRange > 1000) {
+        // 高动态范围图像，使用对数缩放
+        setDisplayMode(ImageDisplayMode::Logarithmic);
+        log(QCoreApplication::translate("ImageHandler", "检测到高动态范围SAR图像，使用对数缩放"));
+    } else if (cvValue > 2.0) {
+        // 高变异系数，使用平方根缩放
+        setDisplayMode(ImageDisplayMode::Sqrt);
+        log(QCoreApplication::translate("ImageHandler", "检测到高变异系数图像，使用平方根缩放"));
+    } else if (maxVal - minVal > 255) {
+        // 中等动态范围，使用百分比裁剪
+        setDisplayMode(ImageDisplayMode::ClipPercent);
+        setClipPercentile(1.0, 99.0);
+        log(QCoreApplication::translate("ImageHandler", "检测到中等动态范围图像，使用百分比裁剪"));
+    } else {
+        // 标准图像，使用线性缩放
+        setDisplayMode(ImageDisplayMode::Linear);
+        log(QCoreApplication::translate("ImageHandler", "检测到标准范围图像，使用线性缩放"));
+    }
+    
+    return true;
+}
+
+// 修改prepareDisplayMat方法以使用新的显示模式
+
 cv::Mat ImageHandler::prepareDisplayMat() const {
     if (!isValid()) {
-        // 使用 QCoreApplication::translate
         log(QCoreApplication::translate("ImageHandler", "Error: prepareDisplayMat called when image is not valid."));
         return cv::Mat(); // 返回空 Mat
     }
@@ -240,23 +328,35 @@ cv::Mat ImageHandler::prepareDisplayMat() const {
         sourceMat = currentImage;
     }
 
+    // 将图像转换为浮点类型进行处理
+    cv::Mat floatImage;
+    if (sourceMat.depth() != CV_32F) {
+        sourceMat.convertTo(floatImage, CV_32F);
+    } else {
+        floatImage = sourceMat.clone();
+    }
+    
+    // 应用选定的显示模式
+    cv::Mat enhancedImage;
+    switch (m_displayMode) {
+        case ImageDisplayMode::Logarithmic:
+            enhancedImage = applyLogScaling(floatImage);
+            break;
+        case ImageDisplayMode::Sqrt:
+            enhancedImage = applySqrtScaling(floatImage);
+            break;
+        case ImageDisplayMode::ClipPercent:
+            enhancedImage = applyClipPercentScaling(floatImage);
+            break;
+        case ImageDisplayMode::Linear:
+        default:
+            enhancedImage = applyLinearScaling(floatImage);
+            break;
+    }
+    
     // 归一化到 8 位灰度图 (0-255)
     cv::Mat displayMat;
-    if (sourceMat.depth() == CV_8U) {
-        displayMat = sourceMat.clone(); // 已经是 8U，直接复制
-        log(QCoreApplication::translate("ImageHandler", "ImageHandler: Display source is already CV_8U."));
-    } else {
-        double minVal, maxVal;
-        cv::minMaxLoc(sourceMat, &minVal, &maxVal);
-        log(QCoreApplication::translate("ImageHandler", "ImageHandler: Normalizing display source. Original range: [%1, %2]").arg(minVal).arg(maxVal));
-        if (maxVal > minVal) {
-            sourceMat.convertTo(displayMat, CV_8U, 255.0 / (maxVal - minVal), -minVal * 255.0 / (maxVal - minVal));
-        } else {
-            // 处理常量图像
-            sourceMat.convertTo(displayMat, CV_8U); // 转换为 0 或 255
-             log(QCoreApplication::translate("ImageHandler", "ImageHandler: Display source has constant value. Converted to uniform gray."));
-        }
-    }
+    cv::normalize(enhancedImage, displayMat, 0, 255, cv::NORM_MINMAX, CV_8U);
 
     // 确保结果是 CV_8UC1
     if (displayMat.type() != CV_8UC1) {
@@ -271,6 +371,102 @@ cv::Mat ImageHandler::prepareDisplayMat() const {
     }
 
     return displayMat;
+}
+
+// 实现不同的图像缩放方法
+
+cv::Mat ImageHandler::applyLinearScaling(const cv::Mat& image) const {
+    // 线性缩放就是直接使用原图像
+    return image.clone();
+}
+
+cv::Mat ImageHandler::applyLogScaling(const cv::Mat& image) const {
+    cv::Mat result;
+    double minVal, maxVal;
+    cv::minMaxLoc(image, &minVal, &maxVal);
+    
+    // 避免对小于或等于零的值取对数
+    double offset = 0;
+    if (minVal <= 0) {
+        offset = 1.0 - minVal; // 确保最小值至少为1.0
+    }
+    
+    // 应用对数变换: log(1 + (image - minVal))
+    cv::log(image + offset, result);
+    return result;
+}
+
+cv::Mat ImageHandler::applySqrtScaling(const cv::Mat& image) const {
+    cv::Mat result;
+    double minVal, maxVal;
+    cv::minMaxLoc(image, &minVal, &maxVal);
+    
+    // 避免对负值取平方根
+    double offset = 0;
+    if (minVal < 0) {
+        offset = -minVal; // 确保最小值至少为0
+    }
+    
+    // 应用平方根变换: sqrt(image - minVal)
+    cv::sqrt(image + offset, result);
+    return result;
+}
+
+cv::Mat ImageHandler::applyClipPercentScaling(const cv::Mat& image) const {
+    // 获取图像尺寸
+    int width = image.cols;
+    int height = image.rows;
+    int totalPixels = width * height;
+    
+    // 将图像数据提取到向量中以计算百分位数
+    std::vector<float> pixelValues(totalPixels);
+    if (image.isContinuous()) {
+        // 如果图像数据是连续的，可以直接复制
+        std::memcpy(pixelValues.data(), image.ptr<float>(), totalPixels * sizeof(float));
+    } else {
+        // 如果不连续，需要逐行复制
+        int idx = 0;
+        for (int i = 0; i < height; i++) {
+            const float* row = image.ptr<float>(i);
+            for (int j = 0; j < width; j++) {
+                pixelValues[idx++] = row[j];
+            }
+        }
+    }
+    
+    // 确定下限和上限索引
+    int lowerIdx = std::max(0, static_cast<int>(totalPixels * m_lowerClipPercent / 100.0));
+    int upperIdx = std::min(totalPixels - 1, static_cast<int>(totalPixels * m_upperClipPercent / 100.0));
+    
+    if (lowerIdx >= upperIdx) {
+        // 安全检查
+        lowerIdx = 0;
+        upperIdx = totalPixels - 1;
+    }
+    
+    // 使用部分排序找到百分位数值
+    std::nth_element(pixelValues.begin(), pixelValues.begin() + lowerIdx, pixelValues.end());
+    float lowerVal = pixelValues[lowerIdx];
+    
+    std::nth_element(pixelValues.begin() + lowerIdx, pixelValues.begin() + upperIdx, pixelValues.end());
+    float upperVal = pixelValues[upperIdx];
+    
+    // 创建结果图像
+    cv::Mat result;
+    
+    // 对原图像进行裁剪和缩放
+    result = image.clone();
+    for (int i = 0; i < height; i++) {
+        float* row = result.ptr<float>(i);
+        for (int j = 0; j < width; j++) {
+            // 裁剪值到指定范围
+            row[j] = std::max(lowerVal, std::min(upperVal, row[j]));
+            // 缩放到 [0, 1] 范围
+            row[j] = (row[j] - lowerVal) / (upperVal - lowerVal);
+        }
+    }
+    
+    return result;
 }
 
 QPixmap ImageHandler::getDisplayPixmap(const QSize &targetSize) const {
