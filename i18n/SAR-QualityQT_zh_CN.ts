@@ -1087,135 +1087,488 @@ Error during radiometric statistics calculation: %1</source>
     </message>
 </context>
 <context>
+    <name>FilterSettingsDialog</name>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="17"/>
+        <source>滤波器设置</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="79"/>
+        <source>低通滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="80"/>
+        <source>高通滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="81"/>
+        <source>带通滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="82"/>
+        <source>中值滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="83"/>
+        <source>高斯滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="84"/>
+        <source>双边滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="85"/>
+        <source>Lee滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="86"/>
+        <source>Frost滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="87"/>
+        <source>Kuan滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="88"/>
+        <source>滤波器类型:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="95"/>
+        <source>内核大小:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="102"/>
+        <source>Sigma值:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="109"/>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="160"/>
+        <source>半径:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="117"/>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="169"/>
+        <source>外半径:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="125"/>
+        <source>阻尼系数:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="129"/>
+        <source>实时预览</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="166"/>
+        <source>内半径:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/filter_settings_dialog.cpp" line="176"/>
+        <source>空间Sigma:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ImageFilters</name>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="16"/>
+        <source>错误：输入图像为空</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="43"/>
+        <source>警告：未知滤波器类型，使用高斯滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="51"/>
+        <source>低通滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="53"/>
+        <source>高通滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="55"/>
+        <source>带通滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="57"/>
+        <source>中值滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="59"/>
+        <source>高斯滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="61"/>
+        <source>双边滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="63"/>
+        <source>Lee滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="65"/>
+        <source>Frost滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="67"/>
+        <source>Kuan滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="69"/>
+        <source>自定义滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="71"/>
+        <source>未知滤波器</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="78"/>
+        <source>应用低通滤波器...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="160"/>
+        <source>低通滤波器应用完成</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="167"/>
+        <source>应用高通滤波器...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="249"/>
+        <source>高通滤波器应用完成</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="256"/>
+        <source>应用带通滤波器...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="340"/>
+        <source>带通滤波器应用完成</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="347"/>
+        <source>应用中值滤波器...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="352"/>
+        <location filename="../src/core/imagefilters.cpp" line="370"/>
+        <source>警告：内核大小必须为奇数，已调整为 %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="358"/>
+        <source>中值滤波器应用完成，内核大小：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="365"/>
+        <source>应用高斯滤波器...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="378"/>
+        <source>高斯滤波器应用完成，内核大小：%1，Sigma：%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="385"/>
+        <source>应用双边滤波器...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="394"/>
+        <source>双边滤波器应用完成，直径：%1，色彩Sigma：%2，空间Sigma：%3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="402"/>
+        <source>应用Lee滤波器...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="456"/>
+        <source>Lee滤波器应用完成，内核大小：%1，阻尼系数：%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="463"/>
+        <source>应用Frost滤波器...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="545"/>
+        <source>Frost滤波器应用完成，内核大小：%1，阻尼系数：%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="553"/>
+        <source>应用自定义滤波器：%1...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="557"/>
+        <source>警告：自定义滤波器 %1 尚未实现</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="590"/>
+        <source>应用Kuan滤波器...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagefilters.cpp" line="661"/>
+        <source>Kuan滤波器应用完成，内核大小：%1，阻尼系数：%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ImageHandler</name>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="47"/>
+        <location filename="../src/core/imagehandler.cpp" line="50"/>
         <source>Closed GDAL dataset: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="52"/>
+        <location filename="../src/core/imagehandler.cpp" line="55"/>
         <source>Released cv::Mat memory.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="62"/>
+        <location filename="../src/core/imagehandler.cpp" line="65"/>
         <source>Error: Invalid (empty) file path provided to loadImage.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="67"/>
+        <location filename="../src/core/imagehandler.cpp" line="70"/>
         <source>ImageHandler: Attempting to load image: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="76"/>
+        <location filename="../src/core/imagehandler.cpp" line="79"/>
         <source>Error: Could not open image file &apos;%1&apos; with GDAL. Error: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="84"/>
+        <location filename="../src/core/imagehandler.cpp" line="87"/>
         <source>ImageHandler: Successfully opened dataset: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="92"/>
+        <location filename="../src/core/imagehandler.cpp" line="95"/>
         <source>Error: Image has invalid dimensions (%1x%2) or zero bands (%3).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="104"/>
+        <location filename="../src/core/imagehandler.cpp" line="107"/>
         <source>Error: Could not access raster band 1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="111"/>
+        <location filename="../src/core/imagehandler.cpp" line="114"/>
         <source>ImageHandler: Properties: %1x%2 pixels, %3 bands, Data type: %4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="135"/>
+        <location filename="../src/core/imagehandler.cpp" line="138"/>
         <source>Error: Unsupported GDAL data type for reading: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="156"/>
+        <location filename="../src/core/imagehandler.cpp" line="159"/>
         <source>Error reading raster data using RasterIO. GDAL Error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="166"/>
+        <location filename="../src/core/imagehandler.cpp" line="169"/>
         <source>Exception getting type string for cv::Mat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="170"/>
+        <location filename="../src/core/imagehandler.cpp" line="173"/>
         <source>ImageHandler: Image data successfully read into cv::Mat. Type: %1, Channels: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="194"/>
-        <location filename="../src/core/imagehandler.cpp" line="207"/>
+        <location filename="../src/core/imagehandler.cpp" line="197"/>
+        <location filename="../src/core/imagehandler.cpp" line="210"/>
         <source>N/A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="203"/>
+        <location filename="../src/core/imagehandler.cpp" line="206"/>
         <source>Warning: Could not get band 1 to retrieve data type string.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="204"/>
+        <location filename="../src/core/imagehandler.cpp" line="207"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="219"/>
-        <source>Error: prepareDisplayMat called when image is not valid.</source>
+        <location filename="../src/core/imagehandler.cpp" line="223"/>
+        <source>图像显示模式已设置为: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/core/imagehandler.cpp" line="226"/>
-        <source>ImageHandler: Calculating magnitude from complex data for display.</source>
+        <source>线性缩放</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="227"/>
+        <source>对数缩放</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="228"/>
+        <source>平方根缩放</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="229"/>
+        <source>百分比裁剪(%1%, %2%)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/core/imagehandler.cpp" line="231"/>
-        <source>ImageHandler: Converting complex channels to CV_32F for magnitude calculation.</source>
+        <source>未知</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/core/imagehandler.cpp" line="245"/>
-        <source>ImageHandler: Display source is already CV_8U.</source>
+        <source>警告: 裁剪百分比参数无效 (lower &gt;= upper)，使用默认值</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="249"/>
-        <source>ImageHandler: Normalizing display source. Original range: [%1, %2]</source>
+        <location filename="../src/core/imagehandler.cpp" line="253"/>
+        <source>裁剪百分比已设置为: 下限=%1%, 上限=%2%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="255"/>
-        <source>ImageHandler: Display source has constant value. Converted to uniform gray.</source>
+        <location filename="../src/core/imagehandler.cpp" line="263"/>
+        <source>错误: 图像无效，无法执行自动增强</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="261"/>
+        <location filename="../src/core/imagehandler.cpp" line="279"/>
+        <source>图像统计: 最小值=%1, 最大值=%2, 均值=%3, 标准差=%4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="286"/>
+        <source>检测到高动态范围SAR图像，使用对数缩放</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="290"/>
+        <source>检测到高变异系数图像，使用平方根缩放</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="295"/>
+        <source>检测到中等动态范围图像，使用百分比裁剪</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="299"/>
+        <source>检测到标准范围图像，使用线性缩放</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="309"/>
+        <source>Error: prepareDisplayMat called when image is not valid.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="316"/>
+        <source>ImageHandler: Calculating magnitude from complex data for display.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="321"/>
+        <source>ImageHandler: Converting complex channels to CV_32F for magnitude calculation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="519"/>
+        <location filename="../src/core/imagehandler.cpp" line="522"/>
+        <location filename="../src/core/imagehandler.cpp" line="546"/>
+        <location filename="../src/core/imagehandler.cpp" line="549"/>
+        <source>错误：图像未加载或无效，无法应用滤波器</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="532"/>
+        <location filename="../src/core/imagehandler.cpp" line="559"/>
+        <source>错误：滤波处理失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="536"/>
+        <source>成功应用 %1 滤波器</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="568"/>
+        <source>成功应用 %1 滤波器并更新当前图像</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/core/imagehandler.cpp" line="363"/>
         <source>Error: prepareDisplayMat resulted in unexpected type: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="277"/>
+        <location filename="../src/core/imagehandler.cpp" line="475"/>
         <source>Error: getDisplayPixmap called when image is not valid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="284"/>
+        <location filename="../src/core/imagehandler.cpp" line="482"/>
         <source>Error: Failed to prepare display Mat.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/core/imagehandler.cpp" line="301"/>
+        <location filename="../src/core/imagehandler.cpp" line="499"/>
         <source>Error: Unsupported number of channels for conversion to QImage.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1228,467 +1581,593 @@ Error during radiometric statistics calculation: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="43"/>
-        <source>图像显示区域 (请替换为 QGraphicsView 或类似组件)</source>
+        <location filename="../src/ui/mainwindow.ui" line="49"/>
+        <source>图像显示区域</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="66"/>
+        <location filename="../src/ui/mainwindow.ui" line="72"/>
         <source>评估结果</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="76"/>
+        <location filename="../src/ui/mainwindow.ui" line="82"/>
         <source>概览</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="90"/>
+        <location filename="../src/ui/mainwindow.ui" line="102"/>
         <source>积分旁瓣比</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="104"/>
+        <location filename="../src/ui/mainwindow.ui" line="116"/>
         <source>峰值旁瓣比</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="118"/>
-        <location filename="../src/ui/mainwindow.ui" line="773"/>
+        <location filename="../src/ui/mainwindow.ui" line="130"/>
+        <location filename="../src/ui/mainwindow.ui" line="807"/>
         <source>距离模糊度</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="132"/>
-        <location filename="../src/ui/mainwindow.ui" line="778"/>
+        <location filename="../src/ui/mainwindow.ui" line="144"/>
+        <location filename="../src/ui/mainwindow.ui" line="812"/>
         <source>方位模糊度</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="146"/>
+        <location filename="../src/ui/mainwindow.ui" line="158"/>
         <source>信噪比</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="160"/>
+        <location filename="../src/ui/mainwindow.ui" line="172"/>
         <source>NESZ</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="174"/>
-        <location filename="../src/ui/mainwindow.ui" line="505"/>
+        <location filename="../src/ui/mainwindow.ui" line="186"/>
+        <location filename="../src/ui/mainwindow.ui" line="539"/>
         <source>辐射精度</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="188"/>
-        <location filename="../src/ui/mainwindow.ui" line="512"/>
-        <location filename="../src/ui/mainwindow.ui" line="788"/>
+        <location filename="../src/ui/mainwindow.ui" line="200"/>
+        <location filename="../src/ui/mainwindow.ui" line="546"/>
+        <location filename="../src/ui/mainwindow.ui" line="822"/>
         <source>辐射分辨率</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="202"/>
+        <location filename="../src/ui/mainwindow.ui" line="214"/>
         <source>等效视数</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="234"/>
+        <location filename="../src/ui/mainwindow.ui" line="246"/>
         <source>导出为 PDF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="241"/>
+        <location filename="../src/ui/mainwindow.ui" line="253"/>
         <source>导出为 TXT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="264"/>
+        <location filename="../src/ui/mainwindow.ui" line="276"/>
         <source>文件(&amp;F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="276"/>
+        <location filename="../src/ui/mainwindow.ui" line="288"/>
         <source>编辑(&amp;E)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="282"/>
+        <location filename="../src/ui/mainwindow.ui" line="294"/>
         <source>视图(&amp;V)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="298"/>
+        <location filename="../src/ui/mainwindow.ui" line="310"/>
         <source>分析(&amp;A)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/ui/mainwindow.ui" line="314"/>
+        <source>滤波(&amp;F)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="348"/>
         <source>帮助(&amp;H)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="328"/>
-        <location filename="../src/ui/mainwindow.ui" line="642"/>
+        <location filename="../src/ui/mainwindow.ui" line="362"/>
+        <location filename="../src/ui/mainwindow.ui" line="676"/>
         <source>工具栏</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="355"/>
+        <location filename="../src/ui/mainwindow.ui" line="389"/>
         <source>日志输出</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="380"/>
-        <location filename="../src/ui/mainwindow.ui" line="758"/>
+        <location filename="../src/ui/mainwindow.ui" line="414"/>
+        <location filename="../src/ui/mainwindow.ui" line="792"/>
         <source>图像列表</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="417"/>
+        <location filename="../src/ui/mainwindow.ui" line="451"/>
         <source>分析面板</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="448"/>
+        <location filename="../src/ui/mainwindow.ui" line="482"/>
         <source>局部质量评价</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="454"/>
-        <location filename="../src/ui/mainwindow.ui" line="763"/>
+        <location filename="../src/ui/mainwindow.ui" line="488"/>
+        <location filename="../src/ui/mainwindow.ui" line="797"/>
         <source>积分旁瓣比 (ISLR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="461"/>
-        <location filename="../src/ui/mainwindow.ui" line="768"/>
+        <location filename="../src/ui/mainwindow.ui" line="495"/>
+        <location filename="../src/ui/mainwindow.ui" line="802"/>
         <source>峰值旁瓣比 (PSLR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="468"/>
+        <location filename="../src/ui/mainwindow.ui" line="502"/>
         <source>距离模糊度 (RASR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="475"/>
+        <location filename="../src/ui/mainwindow.ui" line="509"/>
         <source>方位模糊度 (AASR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="485"/>
+        <location filename="../src/ui/mainwindow.ui" line="519"/>
         <source>全局质量评价</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="491"/>
+        <location filename="../src/ui/mainwindow.ui" line="525"/>
         <source>信噪比分析 (SNR)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="498"/>
-        <location filename="../src/ui/mainwindow.ui" line="783"/>
+        <location filename="../src/ui/mainwindow.ui" line="532"/>
+        <location filename="../src/ui/mainwindow.ui" line="817"/>
         <source>噪声等效后向散射系数 (NESZ)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="519"/>
-        <location filename="../src/ui/mainwindow.ui" line="793"/>
+        <location filename="../src/ui/mainwindow.ui" line="553"/>
+        <location filename="../src/ui/mainwindow.ui" line="827"/>
         <source>等效视数 (ENL)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="529"/>
+        <location filename="../src/ui/mainwindow.ui" line="563"/>
         <source>全选</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="539"/>
+        <location filename="../src/ui/mainwindow.ui" line="573"/>
         <source>开始分析</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="574"/>
+        <location filename="../src/ui/mainwindow.ui" line="608"/>
         <source>打开图像(O)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="577"/>
+        <location filename="../src/ui/mainwindow.ui" line="611"/>
         <source>Ctrl+O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="582"/>
+        <location filename="../src/ui/mainwindow.ui" line="616"/>
         <source>关闭图像(C)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="587"/>
+        <location filename="../src/ui/mainwindow.ui" line="621"/>
         <source>导出为 PDF (.pdf)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="592"/>
+        <location filename="../src/ui/mainwindow.ui" line="626"/>
         <source>导出为 文本文件 (.txt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="597"/>
+        <location filename="../src/ui/mainwindow.ui" line="631"/>
         <source>打印预览(V)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="605"/>
+        <location filename="../src/ui/mainwindow.ui" line="639"/>
         <source>打印(P)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="608"/>
+        <location filename="../src/ui/mainwindow.ui" line="642"/>
         <source>Ctrl+P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="613"/>
+        <location filename="../src/ui/mainwindow.ui" line="647"/>
         <source>最近打开的文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="618"/>
+        <location filename="../src/ui/mainwindow.ui" line="652"/>
         <source>退出(X)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="621"/>
+        <location filename="../src/ui/mainwindow.ui" line="655"/>
         <source>Alt+F4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="626"/>
+        <location filename="../src/ui/mainwindow.ui" line="660"/>
         <source>撤销(U)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="631"/>
+        <location filename="../src/ui/mainwindow.ui" line="665"/>
         <source>参数设置(P)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="653"/>
+        <location filename="../src/ui/mainwindow.ui" line="687"/>
         <source>状态栏</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="664"/>
+        <location filename="../src/ui/mainwindow.ui" line="698"/>
         <source>日志窗口</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="669"/>
+        <location filename="../src/ui/mainwindow.ui" line="703"/>
         <source>全屏显示(F)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="672"/>
+        <location filename="../src/ui/mainwindow.ui" line="706"/>
         <source>F11</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="680"/>
+        <location filename="../src/ui/mainwindow.ui" line="714"/>
         <source>开始评估(R)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="683"/>
+        <location filename="../src/ui/mainwindow.ui" line="717"/>
         <source>F5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="691"/>
+        <location filename="../src/ui/mainwindow.ui" line="725"/>
         <source>选择评估区域(S)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="696"/>
+        <location filename="../src/ui/mainwindow.ui" line="730"/>
         <source>查看帮助(H)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="701"/>
+        <location filename="../src/ui/mainwindow.ui" line="735"/>
         <source>关于(A)...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="709"/>
+        <location filename="../src/ui/mainwindow.ui" line="743"/>
         <source>放大</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="717"/>
+        <location filename="../src/ui/mainwindow.ui" line="751"/>
         <source>缩小</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="725"/>
+        <location filename="../src/ui/mainwindow.ui" line="759"/>
         <source>全图显示</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="736"/>
+        <location filename="../src/ui/mainwindow.ui" line="770"/>
         <source>漫游</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="744"/>
+        <location filename="../src/ui/mainwindow.ui" line="778"/>
         <source>保存报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.ui" line="747"/>
+        <location filename="../src/ui/mainwindow.ui" line="781"/>
         <source>保存评估报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="31"/>
+        <location filename="../src/ui/mainwindow.ui" line="832"/>
+        <source>分析算法阈值设置</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="835"/>
+        <source>设置各项分析指标的阈值</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="840"/>
+        <source>低通滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="843"/>
+        <source>应用低通滤波器</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="848"/>
+        <source>高通滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="851"/>
+        <source>应用高通滤波器</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="856"/>
+        <source>带通滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="859"/>
+        <source>应用带通滤波器</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="864"/>
+        <source>中值滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="867"/>
+        <source>应用中值滤波器</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="872"/>
+        <source>高斯滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="875"/>
+        <source>应用高斯滤波器</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="880"/>
+        <source>双边滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="883"/>
+        <source>应用双边滤波器</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="888"/>
+        <source>Lee滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="891"/>
+        <source>应用Lee滤波器（SAR图像专用）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="896"/>
+        <source>Frost滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="899"/>
+        <source>应用Frost滤波器（SAR图像专用）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="904"/>
+        <source>Kuan滤波</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="907"/>
+        <source>应用Kuan滤波器（SAR图像专用）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="912"/>
+        <source>滤波器设置...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.ui" line="915"/>
+        <source>配置滤波器参数</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="55"/>
         <source>SAR 图像质量分析工具</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="46"/>
-        <source>准备就绪</source>
+        <location filename="../src/ui/mainwindow.cpp" line="70"/>
+        <source>应用程序已启动</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="299"/>
+        <location filename="../src/ui/mainwindow.cpp" line="315"/>
         <source>不支持的文件格式</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="300"/>
+        <location filename="../src/ui/mainwindow.cpp" line="316"/>
         <source>文件 %1 不是支持的图像格式。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="352"/>
+        <location filename="../src/ui/mainwindow.cpp" line="340"/>
+        <location filename="../src/ui/mainwindow.cpp" line="946"/>
+        <source>图像显示失败</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="341"/>
+        <source>无法将图像转换为可显示格式：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="387"/>
         <source>已加载图像：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="358"/>
+        <location filename="../src/ui/mainwindow.cpp" line="393"/>
         <source>加载失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="359"/>
+        <location filename="../src/ui/mainwindow.cpp" line="394"/>
         <source>无法加载图像文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="380"/>
+        <location filename="../src/ui/mainwindow.cpp" line="415"/>
         <source>保存日志</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="380"/>
+        <location filename="../src/ui/mainwindow.cpp" line="415"/>
         <source>日志文件 (*.log);;所有文件 (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="390"/>
+        <location filename="../src/ui/mainwindow.cpp" line="425"/>
         <source>保存失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="391"/>
+        <location filename="../src/ui/mainwindow.cpp" line="426"/>
         <source>无法保存日志文件：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="399"/>
+        <location filename="../src/ui/mainwindow.cpp" line="434"/>
         <source>打开 SAR 图像</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="400"/>
+        <location filename="../src/ui/mainwindow.cpp" line="435"/>
         <source>图像文件 (*.tif *.tiff *.jpg *.jpeg *.png *.bmp);;所有文件 (*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="415"/>
+        <location filename="../src/ui/mainwindow.cpp" line="450"/>
         <source>已关闭图像</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="439"/>
+        <location filename="../src/ui/mainwindow.cpp" line="474"/>
         <source>无图像</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="439"/>
+        <location filename="../src/ui/mainwindow.cpp" line="474"/>
         <source>请先加载 SAR 图像</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="466"/>
+        <location filename="../src/ui/mainwindow.cpp" line="501"/>
         <source>未选择方法</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="466"/>
+        <location filename="../src/ui/mainwindow.cpp" line="501"/>
         <source>请选择至少一种分析方法</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="612"/>
-        <location filename="../src/ui/mainwindow.cpp" line="626"/>
+        <location filename="../src/ui/mainwindow.cpp" line="647"/>
+        <location filename="../src/ui/mainwindow.cpp" line="661"/>
         <source>导出成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="612"/>
-        <location filename="../src/ui/mainwindow.cpp" line="626"/>
+        <location filename="../src/ui/mainwindow.cpp" line="647"/>
+        <location filename="../src/ui/mainwindow.cpp" line="661"/>
         <source>报告已成功导出</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="615"/>
-        <location filename="../src/ui/mainwindow.cpp" line="629"/>
+        <location filename="../src/ui/mainwindow.cpp" line="650"/>
+        <location filename="../src/ui/mainwindow.cpp" line="664"/>
         <source>导出失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="615"/>
-        <location filename="../src/ui/mainwindow.cpp" line="629"/>
+        <location filename="../src/ui/mainwindow.cpp" line="650"/>
+        <location filename="../src/ui/mainwindow.cpp" line="664"/>
         <source>无法导出报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="633"/>
+        <location filename="../src/ui/mainwindow.cpp" line="668"/>
         <source>无结果</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="633"/>
+        <location filename="../src/ui/mainwindow.cpp" line="668"/>
         <source>没有分析结果可导出</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="644"/>
+        <location filename="../src/ui/mainwindow.cpp" line="679"/>
         <source>区域选择</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="645"/>
+        <location filename="../src/ui/mainwindow.cpp" line="680"/>
         <source>请在图像上选择感兴趣区域</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="688"/>
+        <location filename="../src/ui/mainwindow.cpp" line="723"/>
         <source>关于</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="689"/>
+        <location filename="../src/ui/mainwindow.cpp" line="724"/>
         <source>SAR 图像质量分析工具
 版本 1.0
 
@@ -1696,8 +2175,113 @@ Error during radiometric statistics calculation: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/mainwindow.cpp" line="710"/>
+        <location filename="../src/ui/mainwindow.cpp" line="745"/>
         <source>分析已完成</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="760"/>
+        <source>阈值设置已更新</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="809"/>
+        <source>警告</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="809"/>
+        <source>请先加载图像</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="830"/>
+        <source>正在应用 %1...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="850"/>
+        <source>成功应用 %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="853"/>
+        <source>错误</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="853"/>
+        <source>无法应用滤波器，请查看日志了解详情</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="854"/>
+        <source>无法应用滤波器</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="861"/>
+        <source>SAR图像增强</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="866"/>
+        <source>显示模式:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="869"/>
+        <source>线性缩放</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="870"/>
+        <source>对数缩放</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="871"/>
+        <source>平方根缩放</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="872"/>
+        <source>百分比裁剪</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="878"/>
+        <source>裁剪百分比设置</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="882"/>
+        <source>下限 (%):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="889"/>
+        <source>上限 (%):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="905"/>
+        <source>自动增强</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="947"/>
+        <source>无法将图像转换为可显示格式</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="969"/>
+        <source>已刷新图像显示: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/mainwindow.cpp" line="1068"/>
+        <source>已自动增强图像显示</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1858,188 +2442,172 @@ Error during radiometric statistics calculation: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="127"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="130"/>
         <source>方法：SNR (信噪比)
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="128"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="131"/>
         <source>结果：%1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="136"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="139"/>
         <source>方法：积分旁瓣比分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="137"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="140"/>
         <source>结果：ISLR = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="144"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="147"/>
         <source>方法：峰值旁瓣比分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="145"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="148"/>
         <source>结果：PSLR = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="157"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="160"/>
         <source>方法：距离模糊度分析 (RASR)
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="158"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="161"/>
         <source>结果：RASR = %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="159"/>
-        <location filename="../src/ui/analysis_controller.cpp" line="176"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="162"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="178"/>
         <source>参数：
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="160"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="163"/>
         <source>  PRF = %1 Hz
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="161"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="164"/>
         <source>  R0 = %1 km
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="162"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="165"/>
         <source>  入射角 = %1 度
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="174"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="176"/>
         <source>方法：方位模糊度分析 (AASR)
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="175"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="177"/>
         <source>结果：AASR = %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="177"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="182"/>
         <source>  多普勒中心频率 = %1 Hz
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="178"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="187"/>
         <source>  处理带宽 = %1 Hz
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="186"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="198"/>
         <source>方法：噪声等效零散射截面分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="187"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="199"/>
         <source>结果：NESZ = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="194"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="206"/>
         <source>方法：辐射精度分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="195"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="207"/>
         <source>结果：辐射精度 = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="196"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="208"/>
         <source>详细信息：
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="197"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="209"/>
         <source>  平均亮度 = %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="199"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="211"/>
         <source>  对比度 = %1
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="201"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="213"/>
         <source>  动态范围 = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="209"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="221"/>
         <source>方法：辐射分辨率分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="210"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="222"/>
         <source>结果：辐射分辨率 = %1 dB
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="217"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="229"/>
         <source>方法：等效视数分析
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/analysis_controller.cpp" line="218"/>
+        <location filename="../src/ui/analysis_controller.cpp" line="230"/>
         <source>结果：ENL = %1
 </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/report_generator.cpp" line="312"/>
-        <source>质量指标	结果值	单位	符合标准
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/report_generator.cpp" line="366"/>
-        <source>是</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/ui/report_generator.cpp" line="366"/>
-        <source>否</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2065,44 +2633,71 @@ Error during radiometric statistics calculation: %1</source>
 <context>
     <name>SAR::UI::ReportGenerator</name>
     <message>
-        <location filename="../src/ui/report_generator.cpp" line="29"/>
+        <location filename="../src/ui/report_generator.cpp" line="31"/>
         <source>不支持的报告格式：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/report_generator.cpp" line="69"/>
+        <location filename="../src/ui/report_generator.cpp" line="63"/>
         <source>保存 PDF 报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/report_generator.cpp" line="72"/>
+        <location filename="../src/ui/report_generator.cpp" line="65"/>
         <source>PDF 文件 (*.pdf)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/report_generator.cpp" line="83"/>
-        <location filename="../src/ui/report_generator.cpp" line="116"/>
+        <location filename="../src/ui/report_generator.cpp" line="226"/>
         <source>无法打开文件进行写入：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/report_generator.cpp" line="93"/>
+        <location filename="../src/ui/report_generator.cpp" line="193"/>
         <source>PDF 报告已保存至：%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/report_generator.cpp" line="104"/>
+        <location filename="../src/ui/report_generator.cpp" line="215"/>
         <source>保存文本报告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/report_generator.cpp" line="107"/>
+        <location filename="../src/ui/report_generator.cpp" line="217"/>
         <source>文本文件 (*.txt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/ui/report_generator.cpp" line="126"/>
+        <location filename="../src/ui/report_generator.cpp" line="318"/>
         <source>文本报告已保存至：%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SAR::UI::ThresholdSettingsDialog</name>
+    <message>
+        <location filename="../src/ui/threshold_settings_dialog.cpp" line="17"/>
+        <source>分析算法阈值设置</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/threshold_settings_dialog.cpp" line="42"/>
+        <source>阈值设置</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/threshold_settings_dialog.cpp" line="48"/>
+        <source>重置为默认值</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/threshold_settings_dialog.cpp" line="49"/>
+        <source>确定</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/ui/threshold_settings_dialog.cpp" line="50"/>
+        <source>取消</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
