@@ -256,6 +256,62 @@ namespace SAR {
             // 添加表格
             out << result.toTableText(thresholds);
             
+            // 添加详细文本信息部分
+            out << "\n\n====================================\n";
+            out << "详细分析结果\n";
+            out << "====================================\n\n";
+            
+            // 添加各个分析结果的详细信息
+            QMapIterator<QString, SAR::Core::AnalysisResultItem> i(result.getAllResults());
+            while (i.hasNext()) {
+                i.next();
+                const SAR::Core::AnalysisResultItem& item = i.value();
+                
+                out << "* " << item.methodName << "\n";
+                out << "------------------------------------\n";
+                
+                if (item.isSuccess) {
+                    out << "结果值：";
+                    out << QString::number(item.numericValue);
+                    if (!item.unit.isEmpty()) {
+                        out << " " << item.unit;
+                    }
+                    out << "\n";
+                    
+                    if (!item.description.isEmpty()) {
+                        out << item.description << "\n";
+                    }
+                    
+                    // 附加数值结果
+                    if (!item.additionalValues.isEmpty()) {
+                        out << "详细数值：\n";
+                        QMapIterator<QString, double> j(item.additionalValues);
+                        while (j.hasNext()) {
+                            j.next();
+                            out << "  - " << j.key() << ": " << QString::number(j.value()) << "\n";
+                        }
+                    }
+                    
+                    // 附加信息
+                    if (!item.additionalInfo.isEmpty()) {
+                        out << "附加信息：\n";
+                        QMapIterator<QString, QString> k(item.additionalInfo);
+                        while (k.hasNext()) {
+                            k.next();
+                            // 过滤掉详细结果，因为可能包含HTML标签
+                            if (k.key() != "详细结果") {
+                                out << "  - " << k.key() << ": " << k.value() << "\n";
+                            }
+                        }
+                    }
+                } else {
+                    out << "分析失败\n";
+                    out << "错误信息：" << item.errorMessage << "\n";
+                }
+                
+                out << "\n";
+            }
+            
             file.close();
 
             if (logCallback) {
